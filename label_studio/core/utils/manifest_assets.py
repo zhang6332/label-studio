@@ -24,6 +24,7 @@ def get_manifest_asset(path: str) -> str:
     Usage in template:
     {% manifest_asset 'main.js' %}
     """
+    _p = getattr(settings, 'URL_PREFIX', '') or ''
     if path in _MANIFEST:
-        return f'{settings.FRONTEND_HOSTNAME}{_MANIFEST[path]}'
-    return f'{settings.FRONTEND_HOSTNAME}/react-app/{path}'
+        return f'{settings.FRONTEND_HOSTNAME}{_p}{_MANIFEST[path]}'
+    return f'{settings.FRONTEND_HOSTNAME}{_p}/react-app/{path}'

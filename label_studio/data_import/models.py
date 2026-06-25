@@ -49,8 +49,8 @@ class FileUpload(models.Model):
 
     @property
     def url(self):
-        if settings.FORCE_SCRIPT_NAME and not (settings.HOSTNAME and settings.CLOUD_FILE_STORAGE_ENABLED):
-            return settings.FORCE_SCRIPT_NAME + '/' + self.file.url.lstrip('/')
+        if settings.URL_PREFIX and not (settings.HOSTNAME and settings.CLOUD_FILE_STORAGE_ENABLED):
+            return settings.URL_PREFIX + '/' + self.file.url.lstrip('/')
         else:
             return self.file.url
 

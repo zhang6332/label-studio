@@ -31,14 +31,16 @@ from drf_spectacular.views import (
     SpectacularYAMLAPIView,
 )
 
-urlpatterns = [
+_P = getattr(settings, 'URL_PREFIX', '') or ''
+
+_inner_patterns = [
     re_path(r'^$', views.main, name='main'),
     re_path(r'^sw\.js$', views.static_file_with_host_resolver('js/sw.js', content_type='text/javascript')),
     re_path(
         r'^sw-fallback\.js$',
         views.static_file_with_host_resolver('js/sw-fallback.js', content_type='text/javascript'),
     ),
-    re_path(r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico', permanent=True)),
+    re_path(r'^favicon\.ico$', RedirectView.as_view(url=_P + '/static/images/favicon.ico', permanent=True)),
     re_path(
         r'^label-studio-frontend/(?P<path>.*)$',
         serve,
@@ -78,23 +80,21 @@ urlpatterns = [
     re_path(r'trigger500/', views.TriggerAPIError.as_view(), name='metrics'),
     re_path(r'samples/time-series.csv', views.samples_time_series, name='static_time_series'),
     re_path(r'samples/paragraphs.json', views.samples_paragraphs, name='samples_paragraphs'),
-    # Legacy swagger URLs redirect to new drf-spectacular URLs
-    re_path(r'^swagger\.json$', lambda request: HttpResponseRedirect('/docs/api/schema/json/'), name='schema-json'),
-    re_path(r'^swagger\.yaml$', lambda request: HttpResponseRedirect('/docs/api/schema/yaml/'), name='schema-yaml'),
+    re_path(r'^swagger\.json$', lambda request: HttpResponseRedirect(_P + '/docs/api/schema/json/'), name='schema-json'),
+    re_path(r'^swagger\.yaml$', lambda request: HttpResponseRedirect(_P + '/docs/api/schema/yaml/'), name='schema-yaml'),
     re_path(
-        r'^swagger/$', lambda request: HttpResponseRedirect('/docs/api/schema/swagger-ui/'), name='schema-swagger-ui'
+        r'^swagger/$', lambda request: HttpResponseRedirect(_P + '/docs/api/schema/swagger-ui/'), name='schema-swagger-ui'
     ),
-    # Again for legacy reasons, docs/api?format=openapi redirects to docs/api/schema/json/
     path(
         'docs/api/',
-        lambda request: HttpResponseRedirect('/docs/api/schema/json/')
+        lambda request: HttpResponseRedirect(_P + '/docs/api/schema/json/')
         if request.GET.get('format') == 'openapi'
-        else HttpResponseRedirect('/docs/api/schema/redoc/'),
+        else HttpResponseRedirect(_P + '/docs/api/schema/redoc/'),
         name='docs-api',
     ),
     path(
         'docs/',
-        RedirectView.as_view(url='/static/docs/public/guide/introduction.html', permanent=False),
+        RedirectView.as_view(url=_P + '/static/docs/public/guide/introduction.html', permanent=False),
         name='docs-redirect',
     ),
     path('admin/', admin.site.urls),
@@ -111,6 +111,14 @@ urlpatterns = [
     path('docs/api/schema/json/', SpectacularJSONAPIView.as_view(), name='schema-json'),
     path('docs/api/schema/yaml/', SpectacularYAMLAPIView.as_view(), name='schema-yaml'),
 ]
+
+if _P:
+    urlpatterns = [
+        re_path(r'^$', lambda request: HttpResponseRedirect(_P + '/')),
+        re_path(r'^' + _P.lstrip('/') + '/', include(_inner_patterns)),
+    ]
+else:
+    urlpatterns = _inner_patterns
 
 if settings.DEBUG:
     try:
