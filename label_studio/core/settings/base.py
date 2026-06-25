@@ -19,6 +19,15 @@ from django.core.exceptions import ImproperlyConfigured
 
 from label_studio.core.utils.params import get_bool_env, get_env, get_env_list, has_env
 
+# Default Owner account credentials. Applied via setdefault at settings load
+# time so EVERY launch path (server.py start / manage.py runserver / uwsgi /
+# tests) gets the same default, while docker -e / shell export / data-dir .env
+# (which set the var before settings load) still override it. The actual Owner
+# is created by server.py::_create_user (start) or the runserver command
+# override (manage.py runserver).
+os.environ.setdefault('LABEL_STUDIO_USERNAME', 'zjh@zjh.com')
+os.environ.setdefault('LABEL_STUDIO_PASSWORD', 'zjh')
+
 formatter = 'standard'
 JSON_LOG = get_bool_env('JSON_LOG', False)
 if JSON_LOG:

@@ -119,6 +119,26 @@ def export_project(project_id, export_format, path, serializer_context=None):
         tasks += ExportDataSerializer(_task_ids, many=True, **serializer_options).data
 
     # convert to output format
+    # CONVERTER_DOWNLOAD_RESOURCES=True means the caller wants images included.
+    # The SDK's Converter.convert() overrides `download_resources` from the
+    # format NAME (COCO=>False, COCO_WITH_IMAGES=>True), so a bare COCO/YOLO
+    # format would silently produce an imageless export even when
+    # CONVERTER_DOWNLOAD_RESOURCES is True. Upgrade bare formats to their
+    # _WITH_IMAGES variant when resources are requested.
+    if settings.CONVERTER_DOWNLOAD_RESOURCES:
+        _with_images = {
+            'COCO': 'COCO_WITH_IMAGES',
+            'YOLO': 'YOLO_WITH_IMAGES',
+            'YOLO_OBB': 'YOLO_OBB_WITH_IMAGES',
+        }
+        if export_format in _with_images:
+            logger.info(
+                'CONVERTER_DOWNLOAD_RESOURCES=True: upgrading export format %s to %s to include images',
+                export_format,
+                _with_images[export_format],
+            )
+            export_format = _with_images[export_format]
+
     export_file, _, filename = DataExport.generate_export_file(
         project, tasks, export_format, settings.CONVERTER_DOWNLOAD_RESOURCES, {}
     )

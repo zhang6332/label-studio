@@ -32,6 +32,8 @@ DEFAULT_USERNAME = 'default_user@localhost'
 def _setup_env():
     sys.path.insert(0, LS_PATH)
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'label_studio.core.settings.label_studio')
+    # Default Owner credentials (LABEL_STUDIO_USERNAME/PASSWORD) are set via
+    # setdefault in core/settings/base.py, which loads for every launch path.
     get_wsgi_application()
 
 

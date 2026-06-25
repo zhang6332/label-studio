@@ -1,6 +1,7 @@
 import hashlib
 import json
 import logging
+import os
 import pathlib
 import shutil
 from datetime import datetime
@@ -360,7 +361,12 @@ class ExportMixin:
             converter = Converter(
                 config=self.project.get_parsed_config(),
                 project_dir=None,
-                upload_dir=out_dir,
+                # Point at the real LS upload source so get_local_path can copy
+                # /data/upload/<project_id>/<file> locally (matching the legacy
+                # generate_export_file path). Using out_dir here left new-export
+                # (snapshot convert) dependent on http downloads, which silently
+                # dropped images when the upload file wasn't fetchable.
+                upload_dir=os.path.join(settings.MEDIA_ROOT, settings.UPLOAD_DIR),
                 download_resources=download_resources,
                 # for downloading resource we need access to the API
                 access_token=self.project.organization.created_by.auth_token.key,

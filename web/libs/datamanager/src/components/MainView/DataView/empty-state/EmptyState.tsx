@@ -10,7 +10,7 @@ import {
   IconCloudProviderAzure,
   IconCloudProviderRedis,
 } from "@humansignal/icons";
-import { Button, IconExternal, Typography, Tooltip } from "@humansignal/ui";
+import { Button, IconCloudCustom, IconExternal, Typography, Tooltip } from "@humansignal/ui";
 import { getDocsUrl } from "../../../../../../editor/src/utils/docs";
 import { ABILITY, useAuth } from "@humansignal/core/providers/AuthProvider";
 
@@ -155,6 +155,11 @@ const StorageProviderIcons = () => (
     <Tooltip title="Redis Storage">
       <div className="flex items-center justify-center p-2" aria-label="Redis Storage">
         <IconCloudProviderRedis width={32} height={32} className="text-neutral-content-subtler" />
+      </div>
+    </Tooltip>
+    <Tooltip title="Aliyun OSS">
+      <div className="flex items-center justify-center p-2" aria-label="Aliyun OSS">
+        <IconCloudCustom width={32} height={32} className="text-neutral-content-subtler" />
       </div>
     </Tooltip>
   </div>

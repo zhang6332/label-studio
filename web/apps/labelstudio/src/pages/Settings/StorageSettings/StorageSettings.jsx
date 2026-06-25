@@ -135,6 +135,11 @@ export const StorageSettings = () => {
                     <IconCloudProviderRedis width={32} height={32} className="text-neutral-content-subtler" />
                   </div>
                 </Tooltip>
+                <Tooltip title="Aliyun OSS">
+                  <div className="flex items-center justify-center p-2" aria-label="Aliyun OSS">
+                    <IconCloudCustom width={32} height={32} className="text-neutral-content-subtler" />
+                  </div>
+                </Tooltip>
               </div>
             }
             actions={
