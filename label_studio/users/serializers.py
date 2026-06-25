@@ -108,7 +108,15 @@ class BaseWhoAmIUserSerializer(BaseUserSerializer):
         fields = BaseUserSerializer.Meta.fields + ('permissions',)
 
     def get_permissions(self, user) -> list[str]:
-        return [perm for _, perm in all_permissions]
+        from core.rbac import user_effective_permissions
+
+        # Anonymous / unauthenticated users: expose the full list so the
+        # signup flow (which reads permissions before login) keeps working.
+        if user is None or not getattr(user, 'is_authenticated', False):
+            return [perm for _, perm in all_permissions]
+
+        granted = user_effective_permissions(user)
+        return sorted(granted)
 
 
 class UserSimpleSerializer(BaseUserSerializer):

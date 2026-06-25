@@ -57,8 +57,8 @@ const InvitationModal = () => {
     <div className={cn("invite").toClassName()}>
       <Input value={link} style={{ width: "100%" }} readOnly />
       <Typography size="small" className="text-neutral-content-subtler mt-base mb-wider">
-        Invite members to join your Label Studio instance. People that you invite have full access to all of your
-        projects.{" "}
+        Invite members to join your Label Studio instance. New invitees join with the Annotator role by default — you
+        can promote them to Reviewer or Manager from the People page after they sign up.{" "}
         <a
           href="https://labelstud.io/guide/signup.html"
           target="_blank"

@@ -6,7 +6,7 @@ import logging
 
 import redis
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from io_storages.base_models import (
@@ -145,6 +145,14 @@ class RedisExportStorage(RedisStorageMixin, ExportStorage):
         # create link if everything ok
         RedisExportStorageLink.create(annotation, self)
 
+    def delete_annotation(self, annotation):
+        client = self.get_client()
+        logger.debug(f'Deleting object on {self.__class__.__name__} Storage {self} for annotation {annotation}')
+        key = RedisExportStorageLink.get_key(annotation)
+        client.delete(key)
+        # delete link if everything ok
+        RedisExportStorageLink.objects.filter(storage=self, annotation=annotation).delete()
+
     def validate_connection(self, client=None):
         if client is None:
             client = self.get_client()
@@ -158,6 +166,16 @@ def export_annotation_to_redis_storages(sender, instance, **kwargs):
         for storage in project.io_storages_redisexportstorages.all():
             logger.debug(f'Export {instance} to Redis storage {storage}')
             storage.save_annotation(instance)
+
+
+@receiver(pre_delete, sender=Annotation)
+def delete_annotation_from_redis_storages(sender, instance, **kwargs):
+    links = RedisExportStorageLink.objects.filter(annotation=instance)
+    for link in links:
+        storage = link.storage
+        if storage.can_delete_objects:
+            logger.debug(f'Delete {instance} from Redis storage {storage}')  # nosec
+            storage.delete_annotation(instance)
 
 
 class RedisImportStorageLink(ImportStorageLink):

@@ -16,7 +16,7 @@ if sys.platform == 'win32':
 
 from django.core.management import call_command
 from django.core.wsgi import get_wsgi_application
-from django.db import DEFAULT_DB_ALIAS, IntegrityError, connections
+from django.db import DEFAULT_DB_ALIAS, IntegrityError, connections, transaction
 from django.db.backends.signals import connection_created
 from django.db.migrations.executor import MigrationExecutor
 
@@ -152,30 +152,59 @@ def _create_user(input_args, config):
     if not password and not input_args.quiet_mode:
         password = getpass.getpass(f'User password for {username}: ')
 
-    try:
-        user = User.objects.create_user(email=username, password=password)
-        user.is_staff = True
-        user.is_superuser = True
-        user.save()
+    org = Organization.objects.first()
+
+    # If the organization already exists but is owned by a different account,
+    # rebind the existing owner account to the env-configured credentials
+    # instead of creating a second user. This keeps exactly one owner in the
+    # system and preserves every project / task / annotation created so far,
+    # and avoids creating-then-deleting a duplicate user + auth token.
+    if org is not None and org.created_by_id is not None and org.created_by.email != username:
+        owner = org.created_by
+        owner.email = username
+        owner.username = username.split('@')[0]
+        if password:
+            owner.set_password(password)
+        owner.is_staff = True
+        owner.is_superuser = True
+        owner.save()
 
         if token and len(token) > 5:
             from rest_framework.authtoken.models import Token
 
-            Token.objects.filter(key=user.auth_token.key).update(key=token)
-        elif token:
-            print(f'Token {token} is not applied to user {DEFAULT_USERNAME} ' f"because it's empty or len(token) < 5")
+            Token.objects.filter(user=owner).update(key=token)
+
+        owner.active_organization = org
+        owner.save(update_fields=['active_organization'])
+        return owner
+
+    try:
+        # Wrap in a savepoint so that an IntegrityError on create_user
+        # (username already taken) is rolled back without poisoning the
+        # surrounding transaction — otherwise the subsequent User.objects.get
+        # would raise TransactionManagementError under a wrapped transaction.
+        with transaction.atomic():
+            user = User.objects.create_user(email=username, password=password)
+            user.is_staff = True
+            user.is_superuser = True
+            user.save()
+
+            if token and len(token) > 5:
+                from rest_framework.authtoken.models import Token
+
+                Token.objects.filter(key=user.auth_token.key).update(key=token)
+            elif token:
+                print(f'Token {token} is not applied to user {DEFAULT_USERNAME} ' f"because it's empty or len(token) < 5")
 
     except IntegrityError:
         print('User {} already exists'.format(username))
 
     user = User.objects.get(email=username)
-    org = Organization.objects.first()
     if not org:
         org = Organization.create_organization(
             created_by=user, title='Label Studio', legacy_api_tokens_enabled=input_args.enable_legacy_api_token
         )
-    else:
-        org.add_user(user)
+
     user.active_organization = org
     user.save(update_fields=['active_organization'])
 
@@ -371,7 +400,7 @@ def main():
             migrated = False
             project_path = pathlib.Path(input_args.project_name)
             if project_path.exists():
-                print('Project directory from previous version of label-studio found')
+                print('Project directory from previous version of Label Studio found')
                 print('Start migrating..')
                 config_path = project_path / 'config.json'
                 config = _get_config(config_path)

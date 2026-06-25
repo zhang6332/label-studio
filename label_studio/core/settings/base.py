@@ -89,6 +89,8 @@ from label_studio.core.utils.io import get_data_dir
 logger = logging.getLogger(__name__)
 SILENCED_SYSTEM_CHECKS = []
 
+URL_PREFIX = ''
+
 # Hostname is used for proper path generation to the resources, pages, etc
 HOSTNAME = get_env('HOST', '')
 if HOSTNAME:
@@ -107,9 +109,9 @@ if HOSTNAME:
             # http[s]://domain.com:8080/script_name => /script_name
             pattern = re.compile(r'^http[s]?:\/\/([^:\/\s]+(:\d*)?)(.*)?')
             match = pattern.match(HOSTNAME)
-            FORCE_SCRIPT_NAME = match.group(3)
-            if FORCE_SCRIPT_NAME:
-                logger.info('=> Django URL prefix is set to: %s', FORCE_SCRIPT_NAME)
+            URL_PREFIX = match.group(3)
+            if URL_PREFIX:
+                logger.info('=> URL prefix is set to: %s', URL_PREFIX)
 
 FRONTEND_HMR = get_bool_env('FRONTEND_HMR', False)
 FRONTEND_HOSTNAME = get_env('FRONTEND_HOSTNAME', 'http://localhost:8010' if FRONTEND_HMR else HOSTNAME)
@@ -121,7 +123,7 @@ if DOMAIN_FROM_REQUEST:
     if HOSTNAME and not HOSTNAME.startswith('/'):
         raise ImproperlyConfigured('LABEL_STUDIO_HOST must be a subpath if DOMAIN_FROM_REQUEST is True')
 
-INTERNAL_PORT = '8080'
+INTERNAL_PORT = get_env('INTERNAL_PORT', '6200')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_bool_env('DEBUG', True)
@@ -273,6 +275,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'core.api_permissions.HasObjectPermission',
+        'core.api_permissions.RBACPermission',
         'rest_framework.permissions.IsAuthenticated',
     ],
     'EXCEPTION_HANDLER': 'core.utils.common.custom_exception_handler',
@@ -447,8 +450,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 STATIC_URL = '/static/'
-# if FORCE_SCRIPT_NAME:
-#    STATIC_URL = FORCE_SCRIPT_NAME + STATIC_URL
+if URL_PREFIX:
+    STATIC_URL = URL_PREFIX + STATIC_URL
 logger.info(f'=> Static URL is set to: {STATIC_URL}')
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_build')
@@ -494,6 +497,8 @@ USER_ADDITIONAL_BANNED_SUBNETS = get_env_list('USER_ADDITIONAL_BANNED_SUBNETS', 
 MEDIA_ROOT = os.path.join(BASE_DATA_DIR, 'media')
 os.makedirs(MEDIA_ROOT, exist_ok=True)
 MEDIA_URL = '/data/'
+if URL_PREFIX:
+    MEDIA_URL = URL_PREFIX + MEDIA_URL
 UPLOAD_DIR = 'upload'
 AVATAR_PATH = 'avatars'
 
@@ -808,6 +813,7 @@ S3_TRUSTED_STORAGE_DOMAINS = get_env_list(
     'S3_TRUSTED_STORAGE_DOMAINS',
     [
         'amazonaws.com',
+        'aliyuncs.com',
         'scw.cloud',
         'yandexcloud.net',
         'digitaloceanspaces.com',

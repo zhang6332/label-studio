@@ -32,6 +32,12 @@ export const StorageSet = forwardRef(
     const api = useContext(ApiContext);
     const project = useAtomValue(projectAtom);
 
+    // Hide enterprise-only providers (marked `disabled`) — the community build
+    // has no backend for them, so they must not be selectable in the form.
+    const visibleProviders = Object.fromEntries(
+      Object.entries(providers).filter(([, provider]) => !provider.disabled),
+    );
+
     const useNewStorageScreen = ff.isActive(ff.FF_NEW_STORAGES);
 
     const showStorageFormModal = useCallback(
@@ -57,7 +63,7 @@ export const StorageSet = forwardRef(
               project={project.id}
               rootClass={rootClass}
               storageTypes={storageTypes}
-              providers={providers}
+              providers={visibleProviders}
               onSubmit={async () => {
                 modalRef.close();
                 fetchStorages();

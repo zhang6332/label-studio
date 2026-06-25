@@ -17,6 +17,7 @@ from organizations.serializers import (
     OrganizationInviteSerializer,
     OrganizationMemberListParamsSerializer,
     OrganizationMemberListSerializer,
+    OrganizationMemberRoleUpdateSerializer,
     OrganizationMemberSerializer,
     OrganizationSerializer,
 )
@@ -267,15 +268,17 @@ class OrganizationMemberListAPI(generics.ListAPIView):
         },
     ),
 )
-class OrganizationMemberDetailAPI(GetParentObjectMixin, generics.RetrieveDestroyAPIView):
+class OrganizationMemberDetailAPI(GetParentObjectMixin, generics.RetrieveUpdateDestroyAPIView):
     permission_required = ViewClassPermission(
         GET=all_permissions.organizations_view,
         DELETE=all_permissions.organizations_change,
+        PATCH=all_permissions.organizations_change,
+        PUT=all_permissions.organizations_change,
     )
     parent_queryset = Organization.objects.all()
     parser_classes = (JSONParser, FormParser, MultiPartParser)
     serializer_class = OrganizationMemberSerializer
-    http_method_names = ['delete', 'get']
+    http_method_names = ['delete', 'get', 'patch', 'put']
 
     @property
     def permission_classes(self):
@@ -299,6 +302,41 @@ class OrganizationMemberDetailAPI(GetParentObjectMixin, generics.RetrieveDestroy
         self.check_object_permissions(request, member)
         serializer = self.get_serializer(member)
         return Response(serializer.data)
+
+    def patch(self, request, pk=None, user_pk=None, **kwargs):
+        return self._update_role(request, pk, user_pk, partial=True)
+
+    def put(self, request, pk=None, user_pk=None, **kwargs):
+        return self._update_role(request, pk, user_pk, partial=False)
+
+    def _update_role(self, request, pk, user_pk, partial: bool):
+        org = self.parent_object
+        if org != request.user.active_organization:
+            raise PermissionDenied('You can update members only for your current active organization')
+
+        from core.rbac import Roles, user_has_permission
+
+        if not user_has_permission(request.user, all_permissions.organizations_change):
+            raise PermissionDenied('Your role does not allow changing member roles.')
+
+        target_user = get_object_or_404(User, pk=user_pk)
+        member = get_object_or_404(OrganizationMember, user=target_user, organization=org)
+        if member.deleted_at is not None:
+            raise NotFound('Member not found')
+
+        if member.is_owner:
+            raise PermissionDenied('Cannot change the role of the organization owner.')
+
+        serializer = OrganizationMemberRoleUpdateSerializer(data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        new_role = serializer.validated_data['role']
+
+        if member.role != new_role:
+            member.role = new_role
+            member.save(update_fields=['role', 'updated_at'])
+
+        response_serializer = self.get_serializer(member)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request, pk=None, user_pk=None):
         org = self.parent_object
@@ -386,8 +424,6 @@ class OrganizationInviteAPI(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         org = request.user.active_organization
         invite_url = '{}?token={}'.format(reverse('user-signup'), org.token)
-        if hasattr(settings, 'FORCE_SCRIPT_NAME') and settings.FORCE_SCRIPT_NAME:
-            invite_url = invite_url.replace(settings.FORCE_SCRIPT_NAME, '', 1)
         serializer = OrganizationInviteSerializer(data={'invite_url': invite_url, 'token': org.token})
         serializer.is_valid()
         return Response(serializer.data, status=200)

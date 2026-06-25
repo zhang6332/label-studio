@@ -3,6 +3,7 @@
 
 from typing import TypedDict
 
+from core.rbac import DEFAULT_ORG_ROLE, Roles, is_valid_org_role
 from drf_dynamic_fields import DynamicFieldsMixin
 from drf_spectacular.utils import extend_schema_serializer
 from organizations.models import Organization, OrganizationMember
@@ -68,12 +69,16 @@ class UserOrganizationMemberListSerializer(UserSerializer):
 
 class OrganizationMemberListSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     user = UserOrganizationMemberListSerializer()
+    role = serializers.SerializerMethodField(read_only=True)
     created_projects = serializers.SerializerMethodField(read_only=True)
     contributed_to_projects = serializers.SerializerMethodField(read_only=True)
 
+    def get_role(self, member) -> str:
+        return member.effective_role
+
     class Meta:
         model = OrganizationMember
-        fields = ['id', 'organization', 'user', 'created_projects', 'contributed_to_projects']
+        fields = ['id', 'organization', 'user', 'role', 'created_projects', 'contributed_to_projects']
 
     def get_created_projects(self, member) -> list[ProjectInfo] | None:
         if not self.context.get('contributed_to_projects', False):
@@ -91,8 +96,12 @@ class OrganizationMemberListSerializer(DynamicFieldsMixin, serializers.ModelSeri
 class OrganizationMemberSerializer(DynamicFieldsMixin, serializers.ModelSerializer):
     annotations_count = serializers.SerializerMethodField(read_only=True)
     contributed_projects_count = serializers.SerializerMethodField(read_only=True)
+    role = serializers.SerializerMethodField(read_only=True)
     created_projects = serializers.SerializerMethodField(read_only=True)
     contributed_to_projects = serializers.SerializerMethodField(read_only=True)
+
+    def get_role(self, member) -> str:
+        return member.effective_role
 
     def get_annotations_count(self, member) -> int:
         org = self.context.get('organization')
@@ -139,12 +148,32 @@ class OrganizationMemberSerializer(DynamicFieldsMixin, serializers.ModelSerializ
         fields = [
             'user',
             'organization',
+            'role',
             'contributed_projects_count',
             'annotations_count',
             'created_at',
             'created_projects',
             'contributed_to_projects',
         ]
+
+
+class OrganizationMemberRoleUpdateSerializer(serializers.Serializer):
+    """Input serializer for PATCH /api/organizations/:pk/memberships/:userPk/.
+
+    `owner` is reserved for the organization creator and may not be set
+    via this endpoint.
+    """
+    role = serializers.ChoiceField(
+        choices=[(r, r.capitalize()) for r in Roles.ORG_LEVEL if r != Roles.OWNER],
+        default=DEFAULT_ORG_ROLE,
+    )
+
+    def validate_role(self, value):
+        if not is_valid_org_role(value) or value == Roles.OWNER:
+            raise serializers.ValidationError(
+                'Role must be one of: manager, reviewer, annotator.'
+            )
+        return value
 
 
 # =========================================

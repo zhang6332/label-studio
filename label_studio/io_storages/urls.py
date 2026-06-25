@@ -50,6 +50,19 @@ from io_storages.localfiles.api import (
     LocalFilesImportStorageValidateAPI,
 )
 from io_storages.localfiles.views import localfiles_data
+from io_storages.oss.api import (
+    OssExportStorageDetailAPI,
+    OssExportStorageFormLayoutAPI,
+    OssExportStorageListAPI,
+    OssExportStorageSyncAPI,
+    OssExportStorageValidateAPI,
+    OssImportStorageDetailAPI,
+    OssImportStorageFormLayoutAPI,
+    OssImportStorageListAPI,
+    OssImportStorageSerializer,
+    OssImportStorageSyncAPI,
+    OssImportStorageValidateAPI,
+)
 from io_storages.redis.api import (
     RedisExportStorageDetailAPI,
     RedisExportStorageFormLayoutAPI,
@@ -150,6 +163,22 @@ _api_urlpatterns = [
     path('export/redis/<int:pk>/sync', RedisExportStorageSyncAPI.as_view(), name='export-storage-redis-sync'),
     path('export/redis/validate', RedisExportStorageValidateAPI.as_view(), name='export-storage-redis-validate'),
     path('export/redis/form', RedisExportStorageFormLayoutAPI.as_view(), name='export-storage-redis-form'),
+    # Aliyun OSS
+    path('oss/', OssImportStorageListAPI.as_view(), name='storage-oss-list'),
+    path('oss/<int:pk>', OssImportStorageDetailAPI.as_view(), name='storage-oss-detail'),
+    path('oss/<int:pk>/sync', OssImportStorageSyncAPI.as_view(), name='storage-oss-sync'),
+    path('oss/validate', OssImportStorageValidateAPI.as_view(), name='storage-oss-validate'),
+    path('oss/form', OssImportStorageFormLayoutAPI.as_view(), name='storage-oss-form'),
+    path(
+        'oss/files',
+        ImportStorageListFilesAPI().as_view(serializer_class=OssImportStorageSerializer),
+        name='storage-oss-list-files',
+    ),
+    path('export/oss', OssExportStorageListAPI.as_view(), name='export-storage-oss-list'),
+    path('export/oss/<int:pk>', OssExportStorageDetailAPI.as_view(), name='export-storage-oss-detail'),
+    path('export/oss/<int:pk>/sync', OssExportStorageSyncAPI.as_view(), name='export-storage-oss-sync'),
+    path('export/oss/validate', OssExportStorageValidateAPI.as_view(), name='export-storage-oss-validate'),
+    path('export/oss/form', OssExportStorageFormLayoutAPI.as_view(), name='export-storage-oss-form'),
 ]
 if settings.ENABLE_LOCAL_FILES_STORAGE:
     _api_urlpatterns += [

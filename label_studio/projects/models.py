@@ -7,6 +7,13 @@ from typing import Any, Mapping, Optional
 from annoying.fields import AutoOneToOneField
 from core.current_request import CurrentContext
 from core.feature_flags import flag_set
+from core.rbac import (
+    DEFAULT_PROJECT_ROLE,
+    Roles,
+    is_valid_project_role,
+    normalize_project_role,
+    permissions_for_role,
+)
 from core.label_config import (
     check_control_in_config_by_regex,
     check_toname_in_config_by_regex,
@@ -1401,8 +1408,24 @@ class ProjectMember(models.Model):
     )
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='members', help_text='Project ID')
     enabled = models.BooleanField(default=True, help_text='Project member is enabled')
+    role = models.CharField(
+        _('role'),
+        max_length=32,
+        choices=tuple((r, r.capitalize()) for r in Roles.PROJECT_LEVEL),
+        default=DEFAULT_PROJECT_ROLE,
+        help_text='RBAC role scoped to this project membership.',
+    )
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
+
+    @property
+    def permissions(self) -> frozenset:
+        return permissions_for_role(normalize_project_role(self.role))
+
+    def save(self, *args, **kwargs):
+        if not is_valid_project_role(self.role):
+            self.role = DEFAULT_PROJECT_ROLE
+        super().save(*args, **kwargs)
 
 
 class ProjectSummary(models.Model):

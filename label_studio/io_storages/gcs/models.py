@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 from core.redis import start_job_async_or_sync
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from google.auth.transport.requests import AuthorizedSession
@@ -263,6 +263,18 @@ class GCSExportStorage(GCSStorageMixin, ExportStorage):
         # create link if everything ok
         GCSExportStorageLink.create(annotation, self)
 
+    def delete_annotation(self, annotation):
+        bucket = self.get_bucket()
+        logger.debug(f'Deleting object on {self.__class__.__name__} Storage {self} for annotation {annotation}')
+        key = GCSExportStorageLink.get_key(annotation)
+        key = str(self.prefix) + '/' + key if self.prefix else key
+        try:
+            bucket.delete_blob(key)
+        except Exception as e:
+            logger.debug(f'Blob {key} deletion skipped: {e}')
+        # delete link if everything ok
+        GCSExportStorageLink.objects.filter(storage=self, annotation=annotation).delete()
+
 
 def async_export_annotation_to_gcs_storages(annotation: 'Annotation | int'):
     if isinstance(annotation, int):
@@ -284,6 +296,16 @@ def export_annotation_to_gcs_storages(sender, instance, **kwargs):
     storages = getattr(instance.project, 'io_storages_gcsexportstorages', None)
     if storages and storages.exists():  # avoid excess jobs in rq
         start_job_async_or_sync(async_export_annotation_to_gcs_storages, instance.pk)
+
+
+@receiver(pre_delete, sender=Annotation)
+def delete_annotation_from_gcs_storages(sender, instance, **kwargs):
+    links = GCSExportStorageLink.objects.filter(annotation=instance)
+    for link in links:
+        storage = link.storage
+        if storage.can_delete_objects:
+            logger.debug(f'Delete {instance} from GCS storage {storage}')  # nosec
+            storage.delete_annotation(instance)
 
 
 class GCSImportStorageLink(ImportStorageLink):

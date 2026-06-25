@@ -2,6 +2,13 @@
 """
 import logging
 
+from core.rbac import (
+    DEFAULT_ORG_ROLE,
+    Roles,
+    is_valid_org_role,
+    normalize_org_role,
+    permissions_for_role,
+)
 from core.utils.common import create_hash, load_func
 from django.conf import settings
 from django.db import models, transaction
@@ -23,6 +30,14 @@ class OrganizationMember(OrganizationMemberMixin, models.Model):
     )
     organization = models.ForeignKey(
         'organizations.Organization', on_delete=models.CASCADE, help_text='Organization ID'
+    )
+
+    role = models.CharField(
+        _('role'),
+        max_length=32,
+        choices=Roles.CHOICES,
+        default=DEFAULT_ORG_ROLE,
+        help_text='RBAC role scoped to this organization.',
     )
 
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
@@ -53,7 +68,30 @@ class OrganizationMember(OrganizationMemberMixin, models.Model):
 
     @cached_property
     def is_owner(self):
-        return self.user.id == self.organization.created_by.id
+        # created_by is SET_NULL when the owner account is deleted; guard with
+        # the raw FK id to avoid AttributeError on .created_by.id in that case.
+        created_by_id = self.organization.created_by_id
+        return created_by_id is not None and self.user.id == created_by_id
+
+    @property
+    def effective_role(self) -> str:
+        if self.is_owner:
+            return Roles.OWNER
+        return normalize_org_role(self.role)
+
+    @property
+    def permissions(self) -> frozenset:
+        return permissions_for_role(self.effective_role)
+
+    def save(self, *args, **kwargs):
+        if not is_valid_org_role(self.role):
+            self.role = DEFAULT_ORG_ROLE
+        if self.is_owner:
+            self.role = Roles.OWNER
+        elif self.role == Roles.OWNER:
+            # 'owner' is reserved for the organization creator.
+            self.role = Roles.MANAGER
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ['pk']
@@ -135,15 +173,26 @@ class Organization(OrganizationMixin, models.Model):
         return self.projects.filter(members__user=user).exists()
 
     def has_permission(self, user):
-        return OrganizationMember.objects.filter(user=user, organization=self, deleted_at__isnull=True).exists()
+        from core.rbac import user_effective_permissions
 
-    def add_user(self, user):
+        if not OrganizationMember.objects.filter(
+            user=user, organization=self, deleted_at__isnull=True
+        ).exists():
+            return False
+        # Owner bypass: organization creator always permitted.
+        if self.created_by_id == user.id:
+            return True
+        # Block when the membership is active but role grants zero permissions
+        # (defensive — current default role always grants at least one perm).
+        return bool(user_effective_permissions(user))
+
+    def add_user(self, user, role=None):
         if self.users.filter(pk=user.pk).exists():
             logger.debug('User already exists in organization.')
             return
 
         with transaction.atomic():
-            om = OrganizationMember(user=user, organization=self)
+            om = OrganizationMember(user=user, organization=self, role=normalize_org_role(role))
             om.save()
 
             return om

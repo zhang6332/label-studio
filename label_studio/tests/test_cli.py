@@ -47,3 +47,59 @@ def test_user_active_organization_counters():
 
     assert user.active_organization_annotations().count() == 9
     assert user.active_organization_contributed_project_number() == 3
+
+
+@pytest.mark.django_db
+def test_env_user_is_owner_on_first_boot():
+    """First boot: env-configured user becomes the organization owner."""
+    args = parse_input_args(['init', 'test', '--username', 'owner@localhost', '--password', '12345678'])
+    user = _create_user(args, {})
+    org = user.active_organization
+    org.refresh_from_db()
+    assert org.created_by_id == user.id
+
+
+@pytest.mark.django_db
+def test_env_user_unchanged_on_restart():
+    """Restart with the same env credentials: owner stays the same, no new
+    user row created, no ownership churn."""
+    args = parse_input_args(['init', 'test', '--username', 'owner@localhost', '--password', '12345678'])
+    user = _create_user(args, {})
+
+    from users.models import User
+
+    count_before = User.objects.count()
+    user_again = _create_user(args, {})
+    count_after = User.objects.count()
+
+    assert user_again.id == user.id
+    assert count_after == count_before
+
+
+@pytest.mark.django_db
+def test_env_user_credentials_change_rebinds_owner():
+    """Restart with a DIFFERENT env username: instead of creating a second user,
+    the existing owner account is rebound to the new credentials. Same row,
+    same owner, all data preserved. System keeps exactly one owner."""
+    from users.models import User
+
+    args1 = parse_input_args(['init', 'test', '--username', 'old@localhost', '--password', 'pw_old'])
+    user1 = _create_user(args1, {})
+    org = user1.active_organization
+    owner_pk_before = org.created_by_id
+
+    # Restart with new credentials
+    args2 = parse_input_args(['init', 'test', '--username', 'new@localhost', '--password', 'pw_new'])
+    user2 = _create_user(args2, {})
+
+    org.refresh_from_db()
+
+    # The same owner row was rebound, not a new user created
+    assert org.created_by_id == owner_pk_before
+    assert org.created_by_id == user2.id
+    assert user2.email == 'new@localhost'
+    assert user2.check_password('pw_new')
+
+    # No duplicate user left behind — old email is gone, new email is the owner row
+    assert not User.objects.filter(email='old@localhost').exists()
+    assert User.objects.filter(email='new@localhost').count() == 1
