@@ -766,5 +766,6 @@
   "Label Studio Version: zjh": "Label Studio 版本：zjh",
   "Loading…": "加载中…",
   "User created": "用户已创建",
-  "Failed to create user": "创建用户失败"
+  "Failed to create user": "创建用户失败",
+  "Last activity on:": "最近活动于："
 }
