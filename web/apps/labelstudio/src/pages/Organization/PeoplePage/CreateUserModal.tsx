@@ -33,8 +33,7 @@ export const CreateUserModal = ({
   const modalRef = useRef<Modal>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [name, setName] = useState("");
   const [role, setRole] = useState("annotator");
   const [orgs, setOrgs] = useState<Array<{ id: number; title: string }>>([]);
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
@@ -57,8 +56,7 @@ export const CreateUserModal = ({
     if (!opened) return;
     setEmail("");
     setPassword("");
-    setFirstName("");
-    setLastName("");
+    setName("");
     setRole(availableRoles[availableRoles.length - 1]?.value ?? "annotator");
     setSelectedOrgs([]);
     api
@@ -87,7 +85,7 @@ export const CreateUserModal = ({
     setSaving(true);
     try {
       await api.callApi("createUserWithOrgs", {
-        body: { email, password, first_name: firstName, last_name: lastName, role, organization_ids: selectedOrgs },
+        body: { email, password, first_name: name, last_name: "", role, organization_ids: selectedOrgs },
       });
       toast.show({ message: `User ${email} created` });
       onCreated?.();
@@ -120,22 +118,12 @@ export const CreateUserModal = ({
       }
       body={
         <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: 16 }}>
-          <div style={{ display: "flex", gap: 8 }}>
-            <Input
-              type="text"
-              placeholder="First Name"
-              value={firstName}
-              onChange={(e: any) => setFirstName(e.target.value)}
-              style={{ flex: 1 }}
-            />
-            <Input
-              type="text"
-              placeholder="Last Name"
-              value={lastName}
-              onChange={(e: any) => setLastName(e.target.value)}
-              style={{ flex: 1 }}
-            />
-          </div>
+          <Input
+            type="text"
+            placeholder="Name"
+            value={name}
+            onChange={(e: any) => setName(e.target.value)}
+          />
           <Input
             type="text"
             placeholder="Email"
