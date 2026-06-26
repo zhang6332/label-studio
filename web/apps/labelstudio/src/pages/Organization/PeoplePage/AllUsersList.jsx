@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Spinner } from "../../../components";
+import { Userpic } from "@humansignal/ui";
+import { CopyableTooltip } from "../../../components/CopyableTooltip/CopyableTooltip";
 import { useAPI } from "../../../providers/ApiProvider";
 import { cn } from "../../../utils/bem";
 import "./PeopleList.scss";
@@ -11,11 +13,6 @@ const ROLE_LABELS = {
   annotator: "Annotator",
 };
 
-/**
- * Cross-organization (system-wide) user list.
- * Calls GET /api/organizations/all-users and renders every user with all
- * their organization memberships and roles.
- */
 export const AllUsersList = ({ onSelect, selectedUser }) => {
   const api = useAPI();
   const [users, setUsers] = useState(null);
@@ -42,37 +39,38 @@ export const AllUsersList = ({ onSelect, selectedUser }) => {
       <div className={cn("people-list").elem("wrapper").toClassName()}>
         <div className={cn("people-list").elem("users").toClassName()}>
           <div className={cn("people-list").elem("header").toClassName()}>
+            <div className={cn("people-list").elem("column").mix("avatar").toClassName()} />
             <div className={cn("people-list").elem("column").mix("email").toClassName()}>Email</div>
-            <div className={cn("people-list").elem("column").mix("name").toClassName()}>Name</div>
             <div className={cn("people-list").elem("column").mix("role").toClassName()}>Organizations & Roles</div>
+            <div className={cn("people-list").elem("column").mix("last-activity").toClassName()}>Role</div>
           </div>
           <div className={cn("people-list").elem("body").toClassName()}>
             {users.map((u) => {
               const active = u.id === selectedUser?.id;
+              const displayName = [u.first_name, u.last_name].filter(Boolean).join(" ").trim() || u.email;
+              const primaryRole = u.memberships?.[0]?.role;
+              const userObj = {
+                id: u.id,
+                email: u.email,
+                first_name: u.first_name || "",
+                last_name: u.last_name || "",
+                role: primaryRole,
+                memberships: u.memberships,
+                avatar: u.avatar,
+              };
               return (
                 <div
                   key={`alluser-${u.id}`}
                   className={cn("people-list").elem("user").mod({ active }).toClassName()}
-                  onClick={() =>
-                    onSelect?.({
-                      id: u.id,
-                      email: u.email,
-                      first_name: u.first_name,
-                      last_name: u.last_name,
-                      role: u.memberships?.[0]?.role,
-                      memberships: u.memberships,
-                    })
-                  }
-                  style={{ minHeight: 48, flexWrap: "wrap" }}
+                  onClick={() => onSelect?.(userObj)}
                 >
-                  <div className={cn("people-list").elem("field").mix("email").toClassName()}>{u.email}</div>
-                  <div className={cn("people-list").elem("field").mix("name").toClassName()}>
-                    {u.first_name} {u.last_name}
+                  <div className={cn("people-list").elem("field").mix("avatar").toClassName()}>
+                    <CopyableTooltip title={`User ID: ${u.id}`} textForCopy={u.id}>
+                      <Userpic user={userObj} style={{ width: 28, height: 28 }} />
+                    </CopyableTooltip>
                   </div>
-                  <div
-                    className={cn("people-list").elem("field").toClassName()}
-                    style={{ flex: 1, flexWrap: "wrap", gap: 4 }}
-                  >
+                  <div className={cn("people-list").elem("field").mix("email").toClassName()}>{u.email}</div>
+                  <div className={cn("people-list").elem("field").mix("role").toClassName()}>
                     {u.memberships?.map((m, i) => (
                       <span
                         key={i}
@@ -82,13 +80,16 @@ export const AllUsersList = ({ onSelect, selectedUser }) => {
                           marginRight: 4,
                           borderRadius: 12,
                           fontSize: 12,
-                          background: "var(--color-neutral-emphasis-subtle, #f0f0f0)",
-                          color: "var(--color-neutral-content-subtler, #666)",
+                          background: "var(--color-neutral-emphasis-subtle)",
+                          color: "var(--color-neutral-content-subtler)",
                         }}
                       >
                         {m.organization_title} · {ROLE_LABELS[m.role] ?? m.role}
                       </span>
                     ))}
+                  </div>
+                  <div className={cn("people-list").elem("field").mix("last-activity").toClassName()}>
+                    {ROLE_LABELS[primaryRole] ?? primaryRole}
                   </div>
                 </div>
               );
