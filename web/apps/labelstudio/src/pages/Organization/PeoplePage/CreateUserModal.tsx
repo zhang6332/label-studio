@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, useToast } from "@humansignal/ui";
 import { Modal } from "../../../components/Modal/ModalPopup";
-import { Input, Select } from "../../../components/Form";
+import { Input } from "../../../components/Form";
 import { useAPI } from "../../../providers/ApiProvider";
 
 const ALL_ROLES = [
@@ -130,17 +130,20 @@ export const CreateUserModal = ({
             onChange={(e: any) => setPassword(e.target.value)}
             autoComplete="new-password"
           />
-          <Select
-            placeholder="Role"
+          <select
             value={role}
-            onChange={(e: any) => setRole(e.target.value)}
-            options={availableRoles.map((r) => ({ value: r.value, label: r.label }))}
-          />
+            onChange={(e) => setRole(e.target.value)}
+            className="input-ls"
+          >
+            {availableRoles.map((r) => (
+              <option key={r.value} value={r.value}>
+                {r.label}
+              </option>
+            ))}
+          </select>
           <div>
             <div style={{ marginBottom: 4, fontSize: 13, fontWeight: 500 }}>Organizations</div>
-            {orgs.length === 0 && (
-              <div style={{ opacity: 0.5, fontSize: 13 }}>Loading…</div>
-            )}
+            {orgs.length === 0 && <div style={{ opacity: 0.5, fontSize: 13 }}>Loading…</div>}
             {orgs.map((org) => (
               <label
                 key={org.id}
