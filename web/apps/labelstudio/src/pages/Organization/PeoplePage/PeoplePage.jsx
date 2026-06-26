@@ -8,6 +8,7 @@ import { cn } from "../../../utils/bem";
 import { FF_AUTH_TOKENS, FF_LSDV_E_297, isFF } from "../../../utils/feature-flags";
 import "./PeopleInvitation.scss";
 import { PeopleList } from "./PeopleList";
+import { AllUsersList } from "./AllUsersList";
 import "./PeoplePage.scss";
 import { TokenSettingsModal } from "@humansignal/app-common/blocks/TokenSettingsModal";
 import { IconPlus } from "@humansignal/icons";
@@ -24,6 +25,7 @@ export const PeoplePage = () => {
   const [invitationOpen, setInvitationOpen] = useState(false);
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [memberListKey, setMemberListKey] = useState(0);
+  const [view, setView] = useState("current"); // "current" | "all"
   const auth = useAuth();
   // Owner = creator of the active org → can create manager/annotator.
   // Manager → backend restricts to annotator only.
@@ -77,6 +79,13 @@ export const PeoplePage = () => {
           <Space />
 
           <Space>
+            <Button
+              look="outlined"
+              onClick={() => setView((v) => (v === "current" ? "all" : "current"))}
+              aria-label="Toggle user list scope"
+            >
+              {view === "current" ? "All Users (System-wide)" : "Current Org Only"}
+            </Button>
             {isFF(FF_AUTH_TOKENS) && (
               <Button look="outlined" onClick={showApiTokenSettingsModal} aria-label="Show API token settings">
                 API Tokens Settings
@@ -96,19 +105,19 @@ export const PeoplePage = () => {
         </Space>
       </div>
       <div className={cn("people").elem("content").toClassName()}>
-        <PeopleList
-          key={memberListKey}
-          selectedUser={selectedUser}
-          defaultSelected={defaultSelected}
-          onSelect={(user) => selectUser(user)}
-        />
+        {view === "all" ? (
+          <AllUsersList selectedUser={selectedUser} onSelect={(user) => selectUser(user)} />
+        ) : (
+          <PeopleList
+            key={memberListKey}
+            selectedUser={selectedUser}
+            defaultSelected={defaultSelected}
+            onSelect={(user) => selectUser(user)}
+          />
+        )}
 
         {selectedUser ? (
-          <SelectedUser
-            user={selectedUser}
-            onClose={() => selectUser(null)}
-            onRoleChanged={handleRoleChanged}
-          />
+          <SelectedUser user={selectedUser} onClose={() => selectUser(null)} onRoleChanged={handleRoleChanged} />
         ) : (
           isFF(FF_LSDV_E_297) && <HeidiTips collection="organizationPage" />
         )}
