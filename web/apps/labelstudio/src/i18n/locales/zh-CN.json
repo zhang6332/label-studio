@@ -763,5 +763,8 @@
   "Action": "操作",
   "Batch prediction": "批量预测",
   "社区版": "zjh版",
-  "Label Studio Version: zjh": "Label Studio 版本：zjh"
+  "Label Studio Version: zjh": "Label Studio 版本：zjh",
+  "Loading…": "加载中…",
+  "User created": "用户已创建",
+  "Failed to create user": "创建用户失败"
 }
