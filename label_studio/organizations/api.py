@@ -490,16 +490,30 @@ class AllUsersListAPI(APIView):
         for m in members:
             uid = m.user_id
             if uid not in user_map:
+                u = m.user
+                # Fetch created projects for this user
+                created_projs = list(
+                    Project.objects.filter(created_by=u).values('id', 'title')[:50]
+                )
+                # Fetch contributed projects (projects where user has annotations)
+                contributed_ids = (
+                    Annotation.objects.filter(completed_by=u)
+                    .values_list('project_id', flat=True)
+                    .distinct()[:50]
+                )
+                contributed_projs = list(
+                    Project.objects.filter(id__in=contributed_ids).values('id', 'title')
+                )
                 user_map[uid] = {
-                    'id': m.user.id,
-                    'email': m.user.email,
-                    'first_name': m.user.first_name,
-                    'last_name': m.user.last_name,
-                    'avatar': m.user.avatar_url if hasattr(m.user, 'avatar_url') else None,
-                    'last_activity': m.user.last_activity_cached if hasattr(m.user, 'last_activity_cached') else None,
-                    'phone': getattr(m.user, 'phone', ''),
-                    'created_projects': [],
-                    'contributed_to_projects': [],
+                    'id': u.id,
+                    'email': u.email,
+                    'first_name': u.first_name,
+                    'last_name': u.last_name,
+                    'avatar': u.avatar_url if hasattr(u, 'avatar_url') else None,
+                    'last_activity': u.last_activity_cached if hasattr(u, 'last_activity_cached') else None,
+                    'phone': getattr(u, 'phone', ''),
+                    'created_projects': created_projs,
+                    'contributed_to_projects': contributed_projs,
                     'memberships': [],
                 }
             user_map[uid]['memberships'].append({
