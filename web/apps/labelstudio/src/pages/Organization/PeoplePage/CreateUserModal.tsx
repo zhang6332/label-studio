@@ -1,31 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, useToast } from "@humansignal/ui";
 import { Modal } from "../../../components/Modal/ModalPopup";
+import { Input } from "../../../components/Form";
 import { useAPI } from "../../../providers/ApiProvider";
 
-// All possible roles (highest to lowest). The modal will filter based on the
-// requester's level — you can only create users below your own level.
 const ALL_ROLES = [
   { value: "manager", label: "Manager" },
   { value: "reviewer", label: "Reviewer" },
   { value: "annotator", label: "Annotator" },
 ];
 
-// Level mapping (must match core/rbac.py ROLE_LEVEL).
 const ROLE_LEVEL: Record<string, number> = {
   owner: 4,
   manager: 3,
   reviewer: 2,
   annotator: 1,
-};
-
-const inputStyle: React.CSSProperties = {
-  padding: "8px 10px",
-  borderRadius: 6,
-  border: "1px solid var(--color-neutral-border, #ccc)",
-  fontSize: 14,
-  width: "100%",
-  boxSizing: "border-box",
 };
 
 export const CreateUserModal = ({
@@ -127,47 +116,51 @@ export const CreateUserModal = ({
       }
       body={
         <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: 16 }}>
-          <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            Email
-            <input
-              placeholder=""
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={inputStyle}
-              autoComplete="off"
-            />
-          </label>
-          <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            Password
-            <input
-              type="password"
-              placeholder=""
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={inputStyle}
-              autoComplete="new-password"
-            />
-          </label>
-          <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            Role
-            <select value={role} onChange={(e) => setRole(e.target.value)} style={inputStyle}>
-              {availableRoles.map((r) => (
-                <option key={r.value} value={r.value}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <Input
+            type="text"
+            placeholder="Email"
+            value={email}
+            onChange={(e: any) => setEmail(e.target.value)}
+            autoComplete="off"
+          />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e: any) => setPassword(e.target.value)}
+            autoComplete="new-password"
+          />
+          <Input
+            type="select"
+            placeholder="Role"
+            value={role}
+            onChange={(e: any) => setRole(e.target.value)}
+            options={availableRoles.map((r) => ({ value: r.value, label: r.label }))}
+          />
           <div>
-            <div style={{ marginBottom: 4 }}>Organizations (select one or more)</div>
-            {orgs.length === 0 && <div style={{ color: "#999", fontSize: 13 }}>Loading…</div>}
+            <div style={{ marginBottom: 4, fontSize: 14, color: "var(--color-neutral-content)" }}>
+              Organizations (select one or more)
+            </div>
+            {orgs.length === 0 && (
+              <div style={{ color: "var(--color-neutral-content-subtler)", fontSize: 13 }}>Loading…</div>
+            )}
             {orgs.map((org) => (
-              <label key={org.id} style={{ display: "block", padding: "4px 0", cursor: "pointer" }}>
+              <label
+                key={org.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  padding: "6px 0",
+                  cursor: "pointer",
+                  color: "var(--color-neutral-content)",
+                  fontSize: 14,
+                }}
+              >
                 <input
                   type="checkbox"
                   checked={selectedOrgs.includes(org.id)}
                   onChange={() => toggleOrg(org.id)}
-                  style={{ marginRight: 8 }}
+                  style={{ marginRight: 8, width: 16, height: 16, cursor: "pointer" }}
                 />
                 {org.title}
               </label>
