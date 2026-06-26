@@ -204,41 +204,49 @@ export function applyLang(lang: Lang): void {
   // Set <html lang="..."> so CSS can drive language-specific styling (e.g.
   // font-size parity between en/zh) without React state / re-render flicker.
   document.documentElement.lang = lang;
-  if (lang === "en") {
-    // English: no translation, but still normalize dates (strip commas)
-    // so the date format is consistent across languages.
-    translateDates(document.body);
-    observer = new MutationObserver((mutations) => {
-      for (const m of mutations) {
-        m.addedNodes.forEach((n) => {
-          if (n.nodeType === Node.ELEMENT_NODE || n.nodeType === Node.TEXT_NODE) translateDates(n);
-        });
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    return;
-  }
-  const dict = dictionaries[lang];
-  if (!dict) return;
 
-  translateRoot(document.body, dict);
-  translateSubstrings(document.body);
-  translateDates(document.body);
-  translateAttributes(document.body, dict);
+  const runAll = (root: Node) => {
+    if (lang === "en") {
+      translateDates(root);
+    } else {
+      const dict = dictionaries[lang];
+      translateRoot(root, dict);
+      translateSubstrings(root);
+      translateDates(root);
+      translateAttributes(root, dict);
+    }
+  };
 
+  // Initial pass over the entire body (catches already-rendered content).
+  runAll(document.body);
+
+  // MutationObserver: catches dynamically added nodes (React re-renders,
+  // lazy-loaded routes, portal tooltips, etc.).
   observer = new MutationObserver((mutations) => {
     for (const m of mutations) {
       m.addedNodes.forEach((n) => {
         if (n.nodeType === Node.ELEMENT_NODE || n.nodeType === Node.TEXT_NODE) {
-          translateRoot(n, dict);
-          translateSubstrings(n);
-          translateDates(n);
-          translateAttributes(n, dict);
+          runAll(n);
         }
       });
     }
   });
   observer.observe(document.body, { childList: true, subtree: true });
+
+  // Safety net: lazy-loaded route chunks (e.g. HomePage via React.lazy) may
+  // render AFTER the initial pass but their DOM mutations can be missed by
+  // the observer if React batches them in a way that the addedNodes don't
+  // contain the text nodes directly. A short-interval re-scan of the full
+  // body for the first few seconds catches these reliably.
+  if (lang !== "en") {
+    let polls = 0;
+    const maxPolls = 12; // 12 × 500ms = 6 seconds
+    const poll = setInterval(() => {
+      runAll(document.body);
+      polls++;
+      if (polls >= maxPolls) clearInterval(poll);
+    }, 500);
+  }
 }
 
 export function initI18n(): void {
