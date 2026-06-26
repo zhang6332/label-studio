@@ -62,7 +62,11 @@
     }
 
     &.orgs {
-      width: 140px;
+      flex: 1;
+      min-width: 120px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 
