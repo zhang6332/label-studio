@@ -34,8 +34,8 @@
   "Slack Community": "Slack 社区",
   "Learn, explore and get help": "学习、探索并获取帮助",
   "Label Studio Version:": "Label Studio 版本：",
-  "Label Studio Version: Community": "Label Studio 版本：zjh版",
-  "Community": "zjh版",
+  "Label Studio Version: Community": "Label Studio 版本：zjh",
+  "Community": "zjh",
   "Enterprise": "企业版",
   "Create": "创建",
   "Create Project": "创建项目",
@@ -762,5 +762,6 @@
   "Annotation Setting": "标注设置",
   "Action": "操作",
   "Batch prediction": "批量预测",
-  "社区版": "zjh版"
+  "社区版": "zjh版",
+  "Label Studio Version: zjh": "Label Studio 版本：zjh"
 }
