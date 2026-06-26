@@ -21,7 +21,7 @@ export const CreateUserModal = ({
   opened,
   onClosed,
   onCreated,
-  requesterLevel = 3, // default Manager; Owner passes 4
+  requesterLevel = 3,
 }: {
   opened: boolean;
   onClosed?: () => void;
@@ -33,16 +33,16 @@ export const CreateUserModal = ({
   const modalRef = useRef<Modal>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState("annotator");
   const [orgs, setOrgs] = useState<Array<{ id: number; title: string }>>([]);
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Filter roles: only show roles strictly below the requester's level.
   const availableRoles = ALL_ROLES.filter((r) => ROLE_LEVEL[r.value] < requesterLevel);
 
-  // Modal show/hide via ref (same pattern as InviteLink.tsx).
   useEffect(() => {
     if (modalRef.current && opened) {
       modalRef.current?.show?.();
@@ -51,14 +51,11 @@ export const CreateUserModal = ({
     }
   }, [opened]);
 
-  // Reset form + load orgs when opened.
+  // Load orgs on first open only; do NOT reset form on every opened change
+  // (so validation failures don't wipe user input).
   useEffect(() => {
     if (!opened) return;
-    setEmail("");
-    setPassword("");
-    setName("");
-    setRole(availableRoles[availableRoles.length - 1]?.value ?? "annotator");
-    setSelectedOrgs([]);
+    setErrors({});
     api
       .callApi("organizations", {})
       .then((data) => {
@@ -71,23 +68,55 @@ export const CreateUserModal = ({
 
   const toggleOrg = (id: number) => {
     setSelectedOrgs((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    setErrors((prev) => ({ ...prev, orgs: "" }));
   };
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const submit = async () => {
-    if (!email || !password) {
-      toast.show({ message: "Email and password are required", type: "error" });
-      return;
+    const newErrors: Record<string, string> = {};
+
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(email)) {
+      newErrors.email = "Invalid email format (e.g. user@example.com)";
     }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 4) {
+      newErrors.password = "Password must be at least 4 characters";
+    }
+
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
     if (selectedOrgs.length === 0) {
-      toast.show({ message: "Select at least one organization", type: "error" });
-      return;
+      newErrors.orgs = "Select at least one organization";
     }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      // Show first error as toast
+      const firstError = Object.values(newErrors)[0];
+      toast.show({ message: firstError, type: "error" });
+      return; // Do NOT close modal, do NOT clear inputs
+    }
+
     setSaving(true);
+    setErrors({});
     try {
       await api.callApi("createUserWithOrgs", {
         body: { email, password, first_name: name, last_name: "", role, organization_ids: selectedOrgs },
       });
       toast.show({ message: `User ${email} created` });
+      // Clear form only on success
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setName("");
+      setSelectedOrgs([]);
       onCreated?.();
       modalRef.current?.hide?.();
     } catch (e: any) {
@@ -96,6 +125,12 @@ export const CreateUserModal = ({
     } finally {
       setSaving(false);
     }
+  };
+
+  const errorStyle: React.CSSProperties = {
+    color: "var(--color-negative-content, #dc2626)",
+    fontSize: 12,
+    marginTop: 2,
   };
 
   return (
@@ -118,26 +153,48 @@ export const CreateUserModal = ({
       }
       body={
         <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: 16 }}>
-          <Input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e: any) => setName(e.target.value)}
-          />
-          <Input
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={(e: any) => setEmail(e.target.value)}
-            autoComplete="off"
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e: any) => setPassword(e.target.value)}
-            autoComplete="new-password"
-          />
+          <div>
+            <Input type="text" placeholder="Name" value={name} onChange={(e: any) => setName(e.target.value)} />
+          </div>
+          <div>
+            <Input
+              type="text"
+              placeholder="user@example.com"
+              value={email}
+              onChange={(e: any) => {
+                setEmail(e.target.value);
+                setErrors((prev) => ({ ...prev, email: "" }));
+              }}
+              autoComplete="off"
+            />
+            {errors.email && <div style={errorStyle}>{errors.email}</div>}
+          </div>
+          <div>
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e: any) => {
+                setPassword(e.target.value);
+                setErrors((prev) => ({ ...prev, password: "" }));
+              }}
+              autoComplete="new-password"
+            />
+            {errors.password && <div style={errorStyle}>{errors.password}</div>}
+          </div>
+          <div>
+            <Input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e: any) => {
+                setConfirmPassword(e.target.value);
+                setErrors((prev) => ({ ...prev, confirmPassword: "" }));
+              }}
+              autoComplete="new-password"
+            />
+            {errors.confirmPassword && <div style={errorStyle}>{errors.confirmPassword}</div>}
+          </div>
           <div>
             <div style={{ marginBottom: 6, fontSize: 13, fontWeight: 500 }}>Role</div>
             <div style={{ display: "flex", gap: 8 }}>
@@ -194,6 +251,7 @@ export const CreateUserModal = ({
                 {org.title}
               </label>
             ))}
+            {errors.orgs && <div style={errorStyle}>{errors.orgs}</div>}
           </div>
         </div>
       }
