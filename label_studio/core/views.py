@@ -166,13 +166,10 @@ def heidi_tips(request):
     # Catch all exceptions and return either the status code if there was a response, or default to 404 if there are network issues
     # This is done this way to catch thrown exceptions from the request itself which will occur for air-gapped environments
     except Exception:
-        # Any other HTTP error will return the error code, and other errors like connection/timeout errors will be a 404
-        content = {}
-        status_code = 404
-        if response is not None:
-            content['detail'] = response.reason
-            status_code = response.status_code
-        return HttpResponse(json.dumps(content), content_type='application/json', status=status_code)
+        # Network error (air-gapped, timeout, GitHub unreachable, etc.).
+        # Return empty JSON with 200 so the frontend degrades gracefully
+        # (no tips shown) instead of logging a 404 warning on every page load.
+        return HttpResponse(json.dumps({}), content_type='application/json', status=200)
 
     return HttpResponse(response.content, content_type='application/json')
 

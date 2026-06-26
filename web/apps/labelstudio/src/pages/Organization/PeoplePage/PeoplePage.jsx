@@ -148,7 +148,7 @@ export const PeoplePage = () => {
         opened={createUserOpen}
         onClosed={() => setCreateUserOpen(false)}
         onCreated={() => setMemberListKey((k) => k + 1)}
-        canCreateManager={isOwner}
+        requesterLevel={isOwner ? 4 : 3}
       />
     </div>
   );

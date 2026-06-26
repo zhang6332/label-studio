@@ -114,6 +114,25 @@ const SUBSTR_REPLACEMENTS: Record<string, string> = {
   Dec: "12月",
   AM: "上午",
   PM: "下午",
+  // Relative time (date-fns formatDistance: "5 minutes ago", "2 hours ago", etc.)
+  second: "秒",
+  seconds: "秒",
+  minute: "分钟",
+  minutes: "分钟",
+  hour: "小时",
+  hours: "小时",
+  day: "天",
+  days: "天",
+  week: "周",
+  weeks: "周",
+  month: "个月",
+  months: "个月",
+  year: "年",
+  years: "年",
+  ago: "前",
+  about: "约",
+  almost: "近",
+  over: "超过",
 };
 const SUBSTR_KEYS = Object.keys(SUBSTR_REPLACEMENTS).sort((a, b) => b.length - a.length);
 const SUBSTR_REGEX = new RegExp(

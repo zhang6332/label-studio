@@ -3,10 +3,21 @@ import { Button, useToast } from "@humansignal/ui";
 import { Modal } from "../../../components/Modal/ModalPopup";
 import { useAPI } from "../../../providers/ApiProvider";
 
-const ROLE_OPTIONS = [
-  { value: "annotator", label: "Annotator" },
+// All possible roles (highest to lowest). The modal will filter based on the
+// requester's level — you can only create users below your own level.
+const ALL_ROLES = [
   { value: "manager", label: "Manager" },
+  { value: "reviewer", label: "Reviewer" },
+  { value: "annotator", label: "Annotator" },
 ];
+
+// Level mapping (must match core/rbac.py ROLE_LEVEL).
+const ROLE_LEVEL: Record<string, number> = {
+  owner: 4,
+  manager: 3,
+  reviewer: 2,
+  annotator: 1,
+};
 
 const inputStyle: React.CSSProperties = {
   padding: "8px 10px",
@@ -17,22 +28,16 @@ const inputStyle: React.CSSProperties = {
   boxSizing: "border-box",
 };
 
-/**
- * Modal for creating a new user and assigning them to one or more
- * organizations with a role. Owner can create manager/annotator; Manager is
- * restricted to annotator by the backend (and we hide the option here when
- * canCreateManager is false).
- */
 export const CreateUserModal = ({
   opened,
   onClosed,
   onCreated,
-  canCreateManager = false,
+  requesterLevel = 3, // default Manager; Owner passes 4
 }: {
   opened: boolean;
   onClosed?: () => void;
   onCreated?: () => void;
-  canCreateManager?: boolean;
+  requesterLevel?: number;
 }) => {
   const api = useAPI();
   const toast = useToast();
@@ -44,9 +49,10 @@ export const CreateUserModal = ({
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
   const [saving, setSaving] = useState(false);
 
-  // Modal uses ref.show()/ref.hide() — opened prop alone is not enough
-  // (same pattern as InviteLink.tsx). Without this, clicking "Create User"
-  // sets state but the modal never appears.
+  // Filter roles: only show roles strictly below the requester's level.
+  const availableRoles = ALL_ROLES.filter((r) => ROLE_LEVEL[r.value] < requesterLevel);
+
+  // Modal show/hide via ref (same pattern as InviteLink.tsx).
   useEffect(() => {
     if (modalRef.current && opened) {
       modalRef.current?.show?.();
@@ -55,11 +61,12 @@ export const CreateUserModal = ({
     }
   }, [opened]);
 
+  // Reset form + load orgs when opened.
   useEffect(() => {
     if (!opened) return;
     setEmail("");
     setPassword("");
-    setRole("annotator");
+    setRole(availableRoles[availableRoles.length - 1]?.value ?? "annotator");
     setSelectedOrgs([]);
     api
       .callApi("organizations", {})
@@ -68,6 +75,7 @@ export const CreateUserModal = ({
         setOrgs(list.map((o: any) => ({ id: o.id, title: o.title })));
       })
       .catch(() => setOrgs([]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opened, api]);
 
   const toggleOrg = (id: number) => {
@@ -99,8 +107,6 @@ export const CreateUserModal = ({
     }
   };
 
-  const roles = canCreateManager ? ROLE_OPTIONS : ROLE_OPTIONS.filter((r) => r.value === "annotator");
-
   return (
     <Modal
       ref={modalRef}
@@ -124,26 +130,28 @@ export const CreateUserModal = ({
           <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             Email
             <input
-              placeholder="user@example.com"
+              placeholder=""
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               style={inputStyle}
+              autoComplete="off"
             />
           </label>
           <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             Password
             <input
               type="password"
-              placeholder="Password"
+              placeholder=""
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               style={inputStyle}
+              autoComplete="new-password"
             />
           </label>
           <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             Role
             <select value={role} onChange={(e) => setRole(e.target.value)} style={inputStyle}>
-              {roles.map((r) => (
+              {availableRoles.map((r) => (
                 <option key={r.value} value={r.value}>
                   {r.label}
                 </option>
@@ -151,8 +159,8 @@ export const CreateUserModal = ({
             </select>
           </label>
           <div>
-            <div style={{ marginBottom: 4 }}>Organizations</div>
-            {orgs.length === 0 && <div style={{ color: "#999", fontSize: 13 }}>Loading organizations…</div>}
+            <div style={{ marginBottom: 4 }}>Organizations (select one or more)</div>
+            {orgs.length === 0 && <div style={{ color: "#999", fontSize: 13 }}>Loading…</div>}
             {orgs.map((org) => (
               <label key={org.id} style={{ display: "block", padding: "4px 0", cursor: "pointer" }}>
                 <input
