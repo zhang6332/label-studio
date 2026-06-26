@@ -41,13 +41,14 @@ export const AllUsersList = ({ onSelect, selectedUser }) => {
           <div className={cn("people-list").elem("header").toClassName()}>
             <div className={cn("people-list").elem("column").mix("avatar").toClassName()} />
             <div className={cn("people-list").elem("column").mix("email").toClassName()}>Email</div>
-            <div className={cn("people-list").elem("column").mix("role").toClassName()}>Organizations & Roles</div>
-            <div className={cn("people-list").elem("column").mix("last-activity").toClassName()}>Role</div>
+            <div className={cn("people-list").elem("column").mix("name").toClassName()}>Name</div>
+            <div className={cn("people-list").elem("column").mix("role").toClassName()}>Role</div>
+            <div className={cn("people-list").elem("column").mix("last-activity").toClassName()}>Organizations</div>
           </div>
           <div className={cn("people-list").elem("body").toClassName()}>
             {users.map((u) => {
               const active = u.id === selectedUser?.id;
-              const displayName = [u.first_name, u.last_name].filter(Boolean).join(" ").trim() || u.email;
+              const fullName = [u.first_name, u.last_name].filter(Boolean).join(" ").trim();
               const primaryRole = u.memberships?.[0]?.role;
               const userObj = {
                 id: u.id,
@@ -70,26 +71,14 @@ export const AllUsersList = ({ onSelect, selectedUser }) => {
                     </CopyableTooltip>
                   </div>
                   <div className={cn("people-list").elem("field").mix("email").toClassName()}>{u.email}</div>
+                  <div className={cn("people-list").elem("field").mix("name").toClassName()}>
+                    {fullName || "—"}
+                  </div>
                   <div className={cn("people-list").elem("field").mix("role").toClassName()}>
-                    {u.memberships?.map((m, i) => (
-                      <span
-                        key={i}
-                        style={{
-                          display: "inline-block",
-                          padding: "2px 8px",
-                          marginRight: 4,
-                          borderRadius: 12,
-                          fontSize: 12,
-                          background: "var(--color-neutral-emphasis-subtle)",
-                          color: "var(--color-neutral-content-subtler)",
-                        }}
-                      >
-                        {m.organization_title} · {ROLE_LABELS[m.role] ?? m.role}
-                      </span>
-                    ))}
+                    {ROLE_LABELS[primaryRole] ?? primaryRole}
                   </div>
                   <div className={cn("people-list").elem("field").mix("last-activity").toClassName()}>
-                    {ROLE_LABELS[primaryRole] ?? primaryRole}
+                    {u.memberships?.map((m) => m.organization_title).join(", ")}
                   </div>
                 </div>
               );

@@ -33,6 +33,8 @@ export const CreateUserModal = ({
   const modalRef = useRef<Modal>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [role, setRole] = useState("annotator");
   const [orgs, setOrgs] = useState<Array<{ id: number; title: string }>>([]);
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
@@ -55,6 +57,8 @@ export const CreateUserModal = ({
     if (!opened) return;
     setEmail("");
     setPassword("");
+    setFirstName("");
+    setLastName("");
     setRole(availableRoles[availableRoles.length - 1]?.value ?? "annotator");
     setSelectedOrgs([]);
     api
@@ -83,7 +87,7 @@ export const CreateUserModal = ({
     setSaving(true);
     try {
       await api.callApi("createUserWithOrgs", {
-        body: { email, password, role, organization_ids: selectedOrgs },
+        body: { email, password, first_name: firstName, last_name: lastName, role, organization_ids: selectedOrgs },
       });
       toast.show({ message: `User ${email} created` });
       onCreated?.();
@@ -116,6 +120,22 @@ export const CreateUserModal = ({
       }
       body={
         <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: 16 }}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <Input
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e: any) => setFirstName(e.target.value)}
+              style={{ flex: 1 }}
+            />
+            <Input
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e: any) => setLastName(e.target.value)}
+              style={{ flex: 1 }}
+            />
+          </div>
           <Input
             type="text"
             placeholder="Email"
@@ -130,17 +150,38 @@ export const CreateUserModal = ({
             onChange={(e: any) => setPassword(e.target.value)}
             autoComplete="new-password"
           />
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="input-ls"
-          >
-            {availableRoles.map((r) => (
-              <option key={r.value} value={r.value}>
-                {r.label}
-              </option>
-            ))}
-          </select>
+          <div>
+            <div style={{ marginBottom: 6, fontSize: 13, fontWeight: 500 }}>Role</div>
+            <div style={{ display: "flex", gap: 8 }}>
+              {availableRoles.map((r) => (
+                <label
+                  key={r.value}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "6px 12px",
+                    borderRadius: 5,
+                    border: `2px solid ${role === r.value ? "var(--color-primary-base, #2563eb)" : "var(--color-neutral-border, #d1d5db)"}`,
+                    background: role === r.value ? "var(--color-primary-emphasis-subtle, #eff6ff)" : "transparent",
+                    cursor: "pointer",
+                    fontSize: 14,
+                    fontWeight: role === r.value ? 600 : 400,
+                  }}
+                >
+                  <input
+                    type="radio"
+                    name="role"
+                    value={r.value}
+                    checked={role === r.value}
+                    onChange={() => setRole(r.value)}
+                    style={{ width: 14, height: 14, cursor: "pointer" }}
+                  />
+                  {r.label}
+                </label>
+              ))}
+            </div>
+          </div>
           <div>
             <div style={{ marginBottom: 4, fontSize: 13, fontWeight: 500 }}>Organizations</div>
             {orgs.length === 0 && <div style={{ opacity: 0.5, fontSize: 13 }}>Loading…</div>}
