@@ -495,6 +495,11 @@ class AllUsersListAPI(APIView):
                     'email': m.user.email,
                     'first_name': m.user.first_name,
                     'last_name': m.user.last_name,
+                    'avatar': m.user.avatar_url if hasattr(m.user, 'avatar_url') else None,
+                    'last_activity': m.user.last_activity_cached if hasattr(m.user, 'last_activity_cached') else None,
+                    'phone': getattr(m.user, 'phone', ''),
+                    'created_projects': [],
+                    'contributed_to_projects': [],
                     'memberships': [],
                 }
             user_map[uid]['memberships'].append({
@@ -543,7 +548,11 @@ class CreateUserWithOrgsAPI(APIView):
             raise PermissionDenied('Managers can only create annotator users.')
 
         # Create the user
+        first_name = (request.data.get('first_name') or '').strip()
+        last_name = (request.data.get('last_name') or '').strip()
         user = User.objects.create_user(email=email, password=password)
+        user.first_name = first_name
+        user.last_name = last_name
         user.is_staff = True
         user.is_active = True
         user.save()

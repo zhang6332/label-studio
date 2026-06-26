@@ -58,6 +58,10 @@ export const AllUsersList = ({ onSelect, selectedUser }) => {
                 role: primaryRole,
                 memberships: u.memberships,
                 avatar: u.avatar,
+                last_activity: u.last_activity || new Date().toISOString(),
+                phone: u.phone || "",
+                created_projects: u.created_projects || [],
+                contributed_to_projects: u.contributed_to_projects || [],
               };
               return (
                 <div
@@ -71,9 +75,7 @@ export const AllUsersList = ({ onSelect, selectedUser }) => {
                     </CopyableTooltip>
                   </div>
                   <div className={cn("people-list").elem("field").mix("email").toClassName()}>{u.email}</div>
-                  <div className={cn("people-list").elem("field").mix("name").toClassName()}>
-                    {fullName || "—"}
-                  </div>
+                  <div className={cn("people-list").elem("field").mix("name").toClassName()}>{fullName || "—"}</div>
                   <div className={cn("people-list").elem("field").mix("role").toClassName()}>
                     {ROLE_LABELS[primaryRole] ?? primaryRole}
                   </div>
