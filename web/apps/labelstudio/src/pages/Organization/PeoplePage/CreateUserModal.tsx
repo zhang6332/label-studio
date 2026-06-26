@@ -3,6 +3,7 @@ import { Button, useToast } from "@humansignal/ui";
 import { Modal } from "../../../components/Modal/ModalPopup";
 import { Input } from "../../../components/Form";
 import { useAPI } from "../../../providers/ApiProvider";
+import { cn } from "../../../utils/bem";
 
 const ALL_ROLES = [
   { value: "manager", label: "Manager" },
@@ -130,13 +131,31 @@ export const CreateUserModal = ({
             onChange={(e: any) => setPassword(e.target.value)}
             autoComplete="new-password"
           />
-          <Input
-            type="select"
-            placeholder="Role"
-            value={role}
-            onChange={(e: any) => setRole(e.target.value)}
-            options={availableRoles.map((r) => ({ value: r.value, label: r.label }))}
-          />
+          <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 14, color: "var(--color-neutral-content)" }}>
+            Role
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className={cn("input-ls").toClassName()}
+              style={{
+                padding: "8px 10px",
+                borderRadius: 6,
+                border: "1px solid var(--color-neutral-border)",
+                background: "var(--color-neutral-background)",
+                color: "var(--color-neutral-content)",
+                fontSize: 14,
+                width: "100%",
+                boxSizing: "border-box",
+                cursor: "pointer",
+              }}
+            >
+              {availableRoles.map((r) => (
+                <option key={r.value} value={r.value}>
+                  {r.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <div>
             <div style={{ marginBottom: 4, fontSize: 14, color: "var(--color-neutral-content)" }}>
               Organizations (select one or more)
