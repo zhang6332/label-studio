@@ -102,7 +102,7 @@ export const PeoplePage = () => {
               onClick={() => setView((v) => (v === "current" ? "all" : "current"))}
               aria-label="Toggle user list scope"
             >
-              {view === "current" ? "All Users (System-wide)" : "Current Org Only"}
+              {view === "current" ? "All Users" : "Organization Users"}
             </Button>
             {isFF(FF_AUTH_TOKENS) && (
               <Button look="outlined" onClick={showApiTokenSettingsModal} aria-label="Show API token settings">

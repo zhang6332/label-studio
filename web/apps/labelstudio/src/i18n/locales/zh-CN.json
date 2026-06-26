@@ -631,8 +631,8 @@
   "Create User": "创建用户",
   "Create new user": "创建新用户",
   "Invite new member": "邀请新成员",
-  "All Users (System-wide)": "全部用户（全系统）",
-  "Current Org Only": "仅当前组织",
+  "All Users (System-wide)": "所有用户",
+  "Current Org Only": "组织用户",
   "Toggle user list scope": "切换用户列表范围",
   "You don't have permission to access this page.": "您没有权限访问此页面。",
   "Role": "角色",
@@ -767,5 +767,7 @@
   "Loading…": "加载中…",
   "User created": "用户已创建",
   "Failed to create user": "创建用户失败",
-  "Last activity on:": "最近活动于："
+  "Last activity on:": "最近活动于：",
+  "All Users": "所有用户",
+  "Organization Users": "组织用户"
 }
