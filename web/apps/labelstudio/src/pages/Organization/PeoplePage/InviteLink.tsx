@@ -39,7 +39,7 @@ export function InviteLink({
   return (
     <Modal
       ref={modalRef}
-      title="Invite members"
+      title="Invite Users"
       opened={opened}
       bareFooter={true}
       body={<InvitationModal />}
