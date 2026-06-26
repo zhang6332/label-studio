@@ -26,7 +26,7 @@ export const LanguageSwitcher = () => {
     <Dropdown.Trigger
       align="right"
       content={
-        <Menu>
+        <Menu size="small">
           {SUPPORTED.map((l) => (
             <Menu.Item key={l} label={(l === lang ? "✓ " : "") + langLabels[l]} onClick={() => select(l)} />
           ))}
@@ -45,6 +45,7 @@ export const LanguageSwitcher = () => {
           alignSelf: "center",
           height: 32,
           padding: "0 12px",
+          margin: "0 var(--spacing-base)",
           borderRadius: 24,
           border: `1px solid ${hover ? "var(--color-neutral-border-bold)" : "var(--color-neutral-border)"}`,
           background: hover ? "var(--color-neutral-surface)" : "var(--color-neutral-background)",
