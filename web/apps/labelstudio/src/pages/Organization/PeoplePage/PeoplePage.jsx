@@ -72,11 +72,11 @@ export const PeoplePage = () => {
     return localStorage.getItem("selectedUser");
   }, []);
 
-  // Annotators have no user-management access — hide the whole page.
+  // Only Owner/Manager can manage users — Reviewer and Annotator cannot.
+  // Reviewer's job is to review annotations, not manage users.
   const { permissions } = auth;
-  const isAnnotator =
-    !isOwner && !permissions.can("organizations.change") && !permissions.can("annotations.delete");
-  if (isAnnotator) {
+  const canManageUsers = isOwner || permissions.can("organizations.change");
+  if (!canManageUsers) {
     return (
       <div
         style={{
