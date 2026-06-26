@@ -44,6 +44,17 @@ export const CreateUserModal = ({
   const [selectedOrgs, setSelectedOrgs] = useState<number[]>([]);
   const [saving, setSaving] = useState(false);
 
+  // Modal uses ref.show()/ref.hide() — opened prop alone is not enough
+  // (same pattern as InviteLink.tsx). Without this, clicking "Create User"
+  // sets state but the modal never appears.
+  useEffect(() => {
+    if (modalRef.current && opened) {
+      modalRef.current?.show?.();
+    } else if (modalRef.current && (modalRef.current as any).visible) {
+      modalRef.current?.hide?.();
+    }
+  }, [opened]);
+
   useEffect(() => {
     if (!opened) return;
     setEmail("");
@@ -53,7 +64,7 @@ export const CreateUserModal = ({
     api
       .callApi("organizations", {})
       .then((data) => {
-        const list = Array.isArray(data) ? data : data?.results ?? [];
+        const list = Array.isArray(data) ? data : (data?.results ?? []);
         setOrgs(list.map((o: any) => ({ id: o.id, title: o.title })));
       })
       .catch(() => setOrgs([]));
@@ -112,7 +123,12 @@ export const CreateUserModal = ({
         <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: 16 }}>
           <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             Email
-            <input placeholder="user@example.com" value={email} onChange={(e) => setEmail(e.target.value)} style={inputStyle} />
+            <input
+              placeholder="user@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={inputStyle}
+            />
           </label>
           <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
             Password

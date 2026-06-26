@@ -112,12 +112,8 @@ export const PeoplePage = () => {
             <Button look="outlined" onClick={() => setCreateUserOpen(true)} aria-label="Create new user">
               Create User
             </Button>
-            <Button
-              leading={<IconPlus className="!h-4" />}
-              onClick={() => setInvitationOpen(true)}
-              aria-label="Invite new member"
-            >
-              Add Members
+            <Button look="outlined" onClick={() => setInvitationOpen(true)} aria-label="Invite users">
+              Invite Users
             </Button>
           </Space>
         </Space>
