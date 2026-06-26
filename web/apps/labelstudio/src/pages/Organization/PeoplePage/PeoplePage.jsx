@@ -72,6 +72,24 @@ export const PeoplePage = () => {
     return localStorage.getItem("selectedUser");
   }, []);
 
+  // Annotators have no user-management access — hide the whole page.
+  const { permissions } = auth;
+  const isAnnotator =
+    !isOwner && !permissions.can("organizations.change") && !permissions.can("annotations.delete");
+  if (isAnnotator) {
+    return (
+      <div
+        style={{
+          padding: 40,
+          textAlign: "center",
+          color: "var(--color-neutral-content-subtler, #999)",
+        }}
+      >
+        You don&apos;t have permission to access this page.
+      </div>
+    );
+  }
+
   return (
     <div className={cn("people").toClassName()}>
       <div className={cn("people").elem("controls").toClassName()}>

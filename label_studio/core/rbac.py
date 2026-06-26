@@ -46,6 +46,53 @@ class Roles:
     PROJECT_LEVEL = (MANAGER, REVIEWER, ANNOTATOR)
 
 
+# Role hierarchy: higher number = more powerful. A user may only manage
+# (change role / personal info / password) users strictly below their own
+# level — never peers or superiors.
+ROLE_LEVEL: dict = {
+    Roles.OWNER: 4,
+    Roles.MANAGER: 3,
+    Roles.REVIEWER: 2,
+    Roles.ANNOTATOR: 1,
+}
+
+
+def role_level(role: str | None) -> int:
+    return ROLE_LEVEL.get(normalize_org_role(role), 1)
+
+
+def can_manage_user(requester, target_user, organization) -> bool:
+    """True iff requester outranks target_user in the given organization.
+
+    Owner of the org manages everyone (the org creator is untouchable by
+    non-owners). Otherwise the requester's org-role level must be strictly
+    greater than the target's — same-level or higher cannot be managed.
+    """
+    from organizations.models import OrganizationMember
+
+    if requester is None or not getattr(requester, 'is_authenticated', False):
+        return False
+    if organization is None:
+        return False
+    # Owner of the org manages everyone (except they cannot demote themselves;
+    # that is handled by the is_owner check at the call site).
+    if organization.created_by_id == requester.id:
+        return True
+    # The org owner is untouchable by anyone else.
+    if target_user.id == organization.created_by_id:
+        return False
+
+    requester_member = OrganizationMember.objects.filter(
+        user=requester, organization=organization, deleted_at__isnull=True
+    ).first()
+    target_member = OrganizationMember.objects.filter(
+        user=target_user, organization=organization, deleted_at__isnull=True
+    ).first()
+    if requester_member is None or target_member is None:
+        return False
+    return role_level(requester_member.effective_role) > role_level(target_member.effective_role)
+
+
 # ---------------------------------------------------------------------------
 # Permission matrix
 #

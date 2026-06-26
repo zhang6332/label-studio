@@ -314,7 +314,7 @@ class OrganizationMemberDetailAPI(GetParentObjectMixin, generics.RetrieveUpdateD
         if org != request.user.active_organization:
             raise PermissionDenied('You can update members only for your current active organization')
 
-        from core.rbac import Roles, user_has_permission
+        from core.rbac import Roles, can_manage_user, user_has_permission
 
         if not user_has_permission(request.user, all_permissions.organizations_change):
             raise PermissionDenied('Your role does not allow changing member roles.')
@@ -326,6 +326,10 @@ class OrganizationMemberDetailAPI(GetParentObjectMixin, generics.RetrieveUpdateD
 
         if member.is_owner:
             raise PermissionDenied('Cannot change the role of the organization owner.')
+
+        # Hierarchy: requester must strictly outrank the target (no peers, no superiors).
+        if not can_manage_user(request.user, target_user, org):
+            raise PermissionDenied('You can only manage users below your role level.')
 
         serializer = OrganizationMemberRoleUpdateSerializer(data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)

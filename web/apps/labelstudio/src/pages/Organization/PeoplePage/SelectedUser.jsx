@@ -45,7 +45,20 @@ export const SelectedUser = ({ user, onClose, onRoleChanged }) => {
   }, [user.id, user.role]);
 
   const isOwner = role === "owner" || user.role === "owner";
-  const canEditRole = !isOwner && auth.can("organizations.change");
+  // Role hierarchy: Owner 4 > Manager 3 > Reviewer 2 > Annotator 1.
+  // Can only edit users strictly below the requester's level (no peers/superiors).
+  const ROLE_LEVEL = { owner: 4, manager: 3, reviewer: 2, annotator: 1 };
+  const { permissions } = auth;
+  const requesterIsOwner = Boolean(auth.user) && auth.user.active_organization_meta?.email === auth.user.email;
+  const requesterLevel = requesterIsOwner
+    ? 4
+    : permissions.can("organizations.change")
+      ? 3
+      : permissions.can("annotations.delete")
+        ? 2
+        : 1;
+  const targetLevel = ROLE_LEVEL[role] ?? ROLE_LEVEL[user.role] ?? 1;
+  const canEditRole = !isOwner && requesterLevel > targetLevel;
 
   const commitRole = async (nextRole) => {
     if (!nextRole || nextRole === user.role || saving) return;

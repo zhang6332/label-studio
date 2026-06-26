@@ -206,6 +206,14 @@ class UserAPI(viewsets.ModelViewSet):
         return context
 
     def update(self, request, *args, **kwargs):
+        # Hierarchy: only allow editing users below the requester's role level
+        # (prevents editing peers or superiors' personal info / password).
+        from core.rbac import can_manage_user
+
+        target = self.get_object()
+        if target.id != request.user.id:
+            if not can_manage_user(request.user, target, request.user.active_organization):
+                raise PermissionDenied('You can only edit users below your role level.')
         return super(UserAPI, self).update(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
