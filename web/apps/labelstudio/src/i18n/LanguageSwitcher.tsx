@@ -51,7 +51,7 @@ export const LanguageSwitcher = () => {
           background: hover ? "var(--color-neutral-surface)" : "var(--color-neutral-background)",
           color: "var(--color-neutral-content)",
           cursor: "pointer",
-          fontSize: "var(--font-size-16, 14px)",
+          fontSize: "13px",
           transition: "all 150ms ease-out",
         }}
       >

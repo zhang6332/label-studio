@@ -37,4 +37,7 @@ urlpatterns = [
     # invite
     path('api/invite', api.OrganizationInviteAPI.as_view(), name='organization-invite'),
     path('api/invite/reset-token', api.OrganizationResetTokenAPI.as_view(), name='organization-reset-token'),
+    # cross-org user management (system-wide)
+    path('api/organizations/all-users', api.AllUsersListAPI.as_view(), name='organization-all-users'),
+    path('api/organizations/create-user', api.CreateUserWithOrgsAPI.as_view(), name='organization-create-user'),
 ]

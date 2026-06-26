@@ -455,3 +455,109 @@ class OrganizationResetTokenAPI(APIView):
         serializer = OrganizationInviteSerializer(data={'invite_url': invite_url, 'token': org.token})
         serializer.is_valid()
         return Response(serializer.data, status=201)
+
+
+@method_decorator(
+    name='get',
+    decorator=extend_schema(
+        tags=['Organizations'],
+        summary='List all users across all organizations',
+        description='Retrieve every user in the system with their organization memberships and roles.',
+        extensions={'x-fern-audiences': ['public']},
+    ),
+)
+class AllUsersListAPI(APIView):
+    """Cross-organization (system-wide) user list with memberships and roles.
+
+    Visible to Owner/Manager (organizations.change).
+    """
+    permission_required = all_permissions.organizations_change
+    parser_classes = (JSONParser, FormParser, MultiPartParser)
+
+    def get(self, request, **kwargs):
+        from core.rbac import Roles
+
+        members = (
+            OrganizationMember.objects.filter(deleted_at__isnull=True)
+            .select_related('user', 'organization')
+            .order_by('user__email')
+        )
+        user_map = {}
+        for m in members:
+            uid = m.user_id
+            if uid not in user_map:
+                user_map[uid] = {
+                    'id': m.user.id,
+                    'email': m.user.email,
+                    'first_name': m.user.first_name,
+                    'last_name': m.user.last_name,
+                    'memberships': [],
+                }
+            user_map[uid]['memberships'].append({
+                'organization_id': m.organization_id,
+                'organization_title': m.organization.title,
+                'role': m.effective_role,
+            })
+        return Response(list(user_map.values()))
+
+
+@method_decorator(
+    name='post',
+    decorator=extend_schema(
+        tags=['Organizations'],
+        summary='Create a user and assign to one or more organizations',
+        description='Owner can create Manager/Annotator; Manager can only create Annotator.',
+        extensions={'x-fern-audiences': ['public']},
+    ),
+)
+class CreateUserWithOrgsAPI(APIView):
+    """Create a user and add them to one or more organizations with a role.
+
+    Role constraint: Owner -> manager/annotator; Manager -> annotator only.
+    """
+    permission_required = all_permissions.organizations_change
+    parser_classes = (JSONParser, FormParser, MultiPartParser)
+
+    def post(self, request, **kwargs):
+        from core.rbac import Roles, normalize_org_role
+
+        email = (request.data.get('email') or '').strip()
+        password = request.data.get('password') or ''
+        role = normalize_org_role(request.data.get('role'))
+        org_ids = request.data.get('organization_ids') or []
+
+        if not email or not password:
+            return Response({'detail': 'email and password are required'}, status=400)
+        if not org_ids:
+            return Response({'detail': 'at least one organization is required'}, status=400)
+
+        # Role constraint: is the requester an Owner anywhere?
+        requester_is_owner = OrganizationMember.objects.filter(
+            user=request.user, role=Roles.OWNER, deleted_at__isnull=True
+        ).exists()
+        if not requester_is_owner and role != Roles.ANNOTATOR:
+            raise PermissionDenied('Managers can only create annotator users.')
+
+        # Create the user
+        user = User.objects.create_user(email=email, password=password)
+        user.is_staff = True
+        user.is_active = True
+        user.save()
+
+        # Add to each organization with the chosen role
+        created = []
+        for org_id in org_ids:
+            org = Organization.objects.filter(id=org_id).first()
+            if org is None:
+                continue
+            org.add_user(user, role=role)
+            created.append({'organization_id': org.id, 'organization_title': org.title})
+
+        # active_organization = first org
+        user.active_organization_id = org_ids[0]
+        user.save(update_fields=['active_organization'])
+
+        return Response(
+            {'id': user.id, 'email': user.email, 'role': role, 'memberships': created},
+            status=status.HTTP_201_CREATED,
+        )

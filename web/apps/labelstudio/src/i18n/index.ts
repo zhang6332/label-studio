@@ -116,7 +116,10 @@ const SUBSTR_REPLACEMENTS: Record<string, string> = {
   PM: "下午",
 };
 const SUBSTR_KEYS = Object.keys(SUBSTR_REPLACEMENTS).sort((a, b) => b.length - a.length);
-const SUBSTR_REGEX = new RegExp(`\\b(${SUBSTR_KEYS.map((k) => k.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")).join("|")})\\b`, "g");
+const SUBSTR_REGEX = new RegExp(
+  `\\b(${SUBSTR_KEYS.map((k) => k.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")).join("|")})\\b`,
+  "g",
+);
 
 function translateSubstrings(root: Node): void {
   const ownerDoc = (root as Document).ownerDocument ?? document;
@@ -138,6 +141,34 @@ function translateSubstrings(root: Node): void {
   }
 }
 
+// Date localization: runs after substring replacement so month names are
+// already Chinese (e.g. "6月"). Reorders "dd M月 yyyy" -> "yyyy M月dd" and
+// strips commas, so "26 6月 2026, 11:00 上午" becomes "2026 6月26 11:00 上午".
+// Only touches text nodes that contain a month marker (月 or Jan..Dec).
+function translateDates(root: Node): void {
+  const ownerDoc = (root as Document).ownerDocument ?? document;
+  const walker = ownerDoc.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const pending: Array<[Text, string]> = [];
+  const monthRe = /月|\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/;
+  while (walker.nextNode()) {
+    const node = walker.currentNode as Text;
+    const parent = node.parentElement;
+    if (!parent || SKIP_TAGS.has(parent.tagName)) continue;
+    if (parent.closest("[data-i18n-skip]")) continue;
+    const value = node.nodeValue;
+    if (!value || !monthRe.test(value)) continue;
+    let replaced = value;
+    // "dd M月 yyyy" -> "yyyy M月dd"  (26 6月 2026 -> 2026 6月26)
+    replaced = replaced.replace(/(\d{1,2})\s+(\d{1,2})月\s+(\d{4})/g, "$3 $2月$1");
+    // strip commas inside date text
+    replaced = replaced.replace(/,\s*/g, " ");
+    if (replaced !== value) pending.push([node, replaced]);
+  }
+  for (const [node, val] of pending) {
+    if (node.nodeValue !== val) node.nodeValue = val;
+  }
+}
+
 export function applyLang(lang: Lang): void {
   if (observer) {
     observer.disconnect();
@@ -149,6 +180,7 @@ export function applyLang(lang: Lang): void {
 
   translateRoot(document.body, dict);
   translateSubstrings(document.body);
+  translateDates(document.body);
 
   observer = new MutationObserver((mutations) => {
     for (const m of mutations) {
@@ -156,6 +188,7 @@ export function applyLang(lang: Lang): void {
         if (n.nodeType === Node.ELEMENT_NODE || n.nodeType === Node.TEXT_NODE) {
           translateRoot(n, dict);
           translateSubstrings(n);
+          translateDates(n);
         }
       });
     }
