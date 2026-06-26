@@ -28,7 +28,12 @@ export const LanguageSwitcher = () => {
       content={
         <Menu size="small">
           {SUPPORTED.map((l) => (
-            <Menu.Item key={l} label={(l === lang ? "✓ " : "") + langLabels[l]} onClick={() => select(l)} />
+            <Menu.Item
+              key={l}
+              label={(l === lang ? "✓ " : "") + langLabels[l]}
+              onClick={() => select(l)}
+              style={{ fontSize: lang === "en" ? 14 : 13 }}
+            />
           ))}
         </Menu>
       }
@@ -51,7 +56,7 @@ export const LanguageSwitcher = () => {
           background: hover ? "var(--color-neutral-surface)" : "var(--color-neutral-background)",
           color: "var(--color-neutral-content)",
           cursor: "pointer",
-          fontSize: "13px",
+          fontSize: lang === "en" ? "14px" : "13px",
           transition: "all 150ms ease-out",
         }}
       >

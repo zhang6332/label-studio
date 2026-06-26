@@ -158,9 +158,11 @@ function translateDates(root: Node): void {
     const value = node.nodeValue;
     if (!value || !monthRe.test(value)) continue;
     let replaced = value;
+    // "M月 dd yyyy" -> "yyyy M月dd"  (6月 26 2026 -> 2026 6月26)
+    replaced = replaced.replace(/(\d{1,2})月\s+(\d{1,2})\s+(\d{4})/g, "$3 $1月$2");
     // "dd M月 yyyy" -> "yyyy M月dd"  (26 6月 2026 -> 2026 6月26)
     replaced = replaced.replace(/(\d{1,2})\s+(\d{1,2})月\s+(\d{4})/g, "$3 $2月$1");
-    // strip commas inside date text
+    // strip commas inside date text (Jun 26, 2026 -> Jun 26 2026)
     replaced = replaced.replace(/,\s*/g, " ");
     if (replaced !== value) pending.push([node, replaced]);
   }
@@ -174,7 +176,20 @@ export function applyLang(lang: Lang): void {
     observer.disconnect();
     observer = null;
   }
-  if (lang === "en") return;
+  if (lang === "en") {
+    // English: no translation, but still normalize dates (strip commas)
+    // so the date format is consistent across languages.
+    translateDates(document.body);
+    observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        m.addedNodes.forEach((n) => {
+          if (n.nodeType === Node.ELEMENT_NODE || n.nodeType === Node.TEXT_NODE) translateDates(n);
+        });
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    return;
+  }
   const dict = dictionaries[lang];
   if (!dict) return;
 
@@ -198,7 +213,7 @@ export function applyLang(lang: Lang): void {
 
 export function initI18n(): void {
   const lang = getLang();
-  if (lang === "en") return;
+  // Even English runs applyLang (to strip date commas uniformly).
   const run = () => applyLang(lang);
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", run, { once: true });

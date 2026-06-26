@@ -14,13 +14,20 @@ import { IconPlus } from "@humansignal/icons";
 import { useToast } from "@humansignal/ui";
 import { InviteLink } from "./InviteLink";
 import { SelectedUser } from "./SelectedUser";
+import { CreateUserModal } from "./CreateUserModal";
+import { useAuth } from "@humansignal/core/providers/AuthProvider";
 
 export const PeoplePage = () => {
   const apiSettingsModal = useRef();
   const toast = useToast();
   const [selectedUser, setSelectedUser] = useState(null);
   const [invitationOpen, setInvitationOpen] = useState(false);
+  const [createUserOpen, setCreateUserOpen] = useState(false);
   const [memberListKey, setMemberListKey] = useState(0);
+  const auth = useAuth();
+  // Owner = creator of the active org → can create manager/annotator.
+  // Manager → backend restricts to annotator only.
+  const isOwner = Boolean(auth.user) && auth.user.active_organization_meta?.email === auth.user.email;
 
   useUpdatePageTitle("People");
 
@@ -75,6 +82,9 @@ export const PeoplePage = () => {
                 API Tokens Settings
               </Button>
             )}
+            <Button look="outlined" onClick={() => setCreateUserOpen(true)} aria-label="Create new user">
+              Create User
+            </Button>
             <Button
               leading={<IconPlus className="!h-4" />}
               onClick={() => setInvitationOpen(true)}
@@ -109,6 +119,13 @@ export const PeoplePage = () => {
           console.log("hidden");
           setInvitationOpen(false);
         }}
+      />
+
+      <CreateUserModal
+        opened={createUserOpen}
+        onClosed={() => setCreateUserOpen(false)}
+        onCreated={() => setMemberListKey((k) => k + 1)}
+        canCreateManager={isOwner}
       />
     </div>
   );
