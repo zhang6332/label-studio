@@ -125,9 +125,7 @@ export const SelectedUser = ({ user, onClose, onRoleChanged }) => {
             ))}
           </select>
         ) : (
-          <div className={cn("user-info").elem("role-readonly").toClassName()}>
-            {ROLE_LABEL[role] ?? role}
-          </div>
+          <div className={cn("user-info").elem("role-readonly").toClassName()}>{ROLE_LABEL[role] ?? role}</div>
         )}
       </div>
 

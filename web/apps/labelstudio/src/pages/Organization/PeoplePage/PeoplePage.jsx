@@ -111,7 +111,12 @@ export const PeoplePage = () => {
               })()}
             </Button>
             {isFF(FF_AUTH_TOKENS) && (
-              <Button look="outlined" onClick={showApiTokenSettingsModal} aria-label="Show API token settings" data-i18n-skip>
+              <Button
+                look="outlined"
+                onClick={showApiTokenSettingsModal}
+                aria-label="Show API token settings"
+                data-i18n-skip
+              >
                 {getLang() === "zh-CN" ? "API 令牌设置" : "API Tokens Settings"}
               </Button>
             )}

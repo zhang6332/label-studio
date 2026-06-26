@@ -153,7 +153,13 @@ export const CreateUserModal = ({
       }
       body={
         <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: 16 }}>
-          <Input type="text" placeholder="Name" value={name} onChange={(e: any) => setName(e.target.value)} style={{ width: "100%" }} />
+          <Input
+            type="text"
+            placeholder="Name"
+            value={name}
+            onChange={(e: any) => setName(e.target.value)}
+            style={{ width: "100%" }}
+          />
           <div>
             <Input
               type="text"
