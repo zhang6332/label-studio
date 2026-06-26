@@ -15,6 +15,7 @@ import {
 } from "@humansignal/icons";
 import { LSLogo } from "../../assets/images";
 import { Button, Userpic, ThemeToggle } from "@humansignal/ui";
+import { LanguageSwitcher } from "../../i18n/LanguageSwitcher";
 import { useConfig } from "../../providers/ConfigProvider";
 import { useContextComponent, useFixedLocation } from "../../providers/RoutesProvider";
 import { useAuth } from "@humansignal/core/providers/AuthProvider";
@@ -173,6 +174,8 @@ export const Menubar = ({ enabled, defaultOpened, defaultPinned, children, onSid
               />
             </div>
           </div>
+
+          <LanguageSwitcher />
 
           {ff.isActive(ff.FF_THEME_TOGGLE) && <ThemeToggle />}
 
