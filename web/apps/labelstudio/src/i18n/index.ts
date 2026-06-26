@@ -83,6 +83,61 @@ function translateRoot(root: Node, dict: Record<string, string>): void {
 
 let observer: MutationObserver | null = null;
 
+// Substring replacements: applied after exact-match dict, to translate
+// fragments that contain dynamic content the dict can't key on — most
+// notably dates rendered by date-fns (English month names + am/pm).
+// Keys are matched case-sensitively as whole words; longest keys first to
+// avoid "May" shadowing nothing in particular but to be deterministic.
+const SUBSTR_REPLACEMENTS: Record<string, string> = {
+  January: "1月",
+  February: "2月",
+  March: "3月",
+  April: "4月",
+  May: "5月",
+  June: "6月",
+  July: "7月",
+  August: "8月",
+  September: "9月",
+  October: "10月",
+  November: "11月",
+  December: "12月",
+  Jan: "1月",
+  Feb: "2月",
+  Mar: "3月",
+  Apr: "4月",
+  Jun: "6月",
+  Jul: "7月",
+  Aug: "8月",
+  Sep: "9月",
+  Oct: "10月",
+  Nov: "11月",
+  Dec: "12月",
+  AM: "上午",
+  PM: "下午",
+};
+const SUBSTR_KEYS = Object.keys(SUBSTR_REPLACEMENTS).sort((a, b) => b.length - a.length);
+const SUBSTR_REGEX = new RegExp(`\\b(${SUBSTR_KEYS.map((k) => k.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")).join("|")})\\b`, "g");
+
+function translateSubstrings(root: Node): void {
+  const ownerDoc = (root as Document).ownerDocument ?? document;
+  const walker = ownerDoc.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const pending: Array<[Text, string]> = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode as Text;
+    const parent = node.parentElement;
+    if (!parent || SKIP_TAGS.has(parent.tagName)) continue;
+    if (parent.closest("[data-i18n-skip]")) continue;
+    const value = node.nodeValue;
+    if (!value || !SUBSTR_REGEX.test(value)) continue;
+    SUBSTR_REGEX.lastIndex = 0;
+    const replaced = value.replace(SUBSTR_REGEX, (m) => SUBSTR_REPLACEMENTS[m] ?? m);
+    if (replaced !== value) pending.push([node, replaced]);
+  }
+  for (const [node, val] of pending) {
+    if (node.nodeValue !== val) node.nodeValue = val;
+  }
+}
+
 export function applyLang(lang: Lang): void {
   if (observer) {
     observer.disconnect();
@@ -93,12 +148,14 @@ export function applyLang(lang: Lang): void {
   if (!dict) return;
 
   translateRoot(document.body, dict);
+  translateSubstrings(document.body);
 
   observer = new MutationObserver((mutations) => {
     for (const m of mutations) {
       m.addedNodes.forEach((n) => {
         if (n.nodeType === Node.ELEMENT_NODE || n.nodeType === Node.TEXT_NODE) {
           translateRoot(n, dict);
+          translateSubstrings(n);
         }
       });
     }

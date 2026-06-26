@@ -45,7 +45,7 @@ export const LanguageSwitcher = () => {
           alignSelf: "center",
           height: 32,
           padding: "0 12px",
-          margin: "0 var(--spacing-base)",
+          margin: "0 var(--spacing-base) 0 0",
           borderRadius: 24,
           border: `1px solid ${hover ? "var(--color-neutral-border-bold)" : "var(--color-neutral-border)"}`,
           background: hover ? "var(--color-neutral-surface)" : "var(--color-neutral-background)",
