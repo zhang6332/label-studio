@@ -99,7 +99,7 @@ export const PeopleList = ({ onSelect, selectedUser, defaultSelected }) => {
                       </div>
                       <div className={cn("people-list").elem("field").mix("email").toClassName()}>{user.email}</div>
                       <div className={cn("people-list").elem("field").mix("name").toClassName()}>
-                        {user.first_name} {user.last_name}
+                        {[user.first_name, user.last_name].filter(Boolean).join(" ").trim() || "—"}
                       </div>
                       <div className={cn("people-list").elem("field").mix("role").toClassName()}>
                         {ROLE_LABELS[role] ?? role}
