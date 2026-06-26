@@ -153,9 +153,7 @@ export const CreateUserModal = ({
       }
       body={
         <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: 16 }}>
-          <div>
-            <Input type="text" placeholder="Name" value={name} onChange={(e: any) => setName(e.target.value)} />
-          </div>
+          <Input type="text" placeholder="Name" value={name} onChange={(e: any) => setName(e.target.value)} style={{ width: "100%" }} />
           <div>
             <Input
               type="text"
@@ -166,6 +164,7 @@ export const CreateUserModal = ({
                 setErrors((prev) => ({ ...prev, email: "" }));
               }}
               autoComplete="off"
+              style={{ width: "100%" }}
             />
             {errors.email && <div style={errorStyle}>{errors.email}</div>}
           </div>
@@ -179,6 +178,7 @@ export const CreateUserModal = ({
                 setErrors((prev) => ({ ...prev, password: "" }));
               }}
               autoComplete="new-password"
+              style={{ width: "100%" }}
             />
             {errors.password && <div style={errorStyle}>{errors.password}</div>}
           </div>
@@ -192,6 +192,7 @@ export const CreateUserModal = ({
                 setErrors((prev) => ({ ...prev, confirmPassword: "" }));
               }}
               autoComplete="new-password"
+              style={{ width: "100%" }}
             />
             {errors.confirmPassword && <div style={errorStyle}>{errors.confirmPassword}</div>}
           </div>

@@ -1,3 +1,4 @@
+import { formatDistance } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 import { Spinner } from "../../../components";
 import { Userpic } from "@humansignal/ui";
@@ -43,7 +44,8 @@ export const AllUsersList = ({ onSelect, selectedUser }) => {
             <div className={cn("people-list").elem("column").mix("email").toClassName()}>Email</div>
             <div className={cn("people-list").elem("column").mix("name").toClassName()}>Name</div>
             <div className={cn("people-list").elem("column").mix("role").toClassName()}>Role</div>
-            <div className={cn("people-list").elem("column").mix("last-activity").toClassName()}>Organizations</div>
+            <div className={cn("people-list").elem("column").mix("last-activity").toClassName()}>Last Activity</div>
+            <div className={cn("people-list").elem("column").mix("orgs").toClassName()}>Organizations</div>
           </div>
           <div className={cn("people-list").elem("body").toClassName()}>
             {users.map((u) => {
@@ -80,7 +82,10 @@ export const AllUsersList = ({ onSelect, selectedUser }) => {
                     {ROLE_LABELS[primaryRole] ?? primaryRole}
                   </div>
                   <div className={cn("people-list").elem("field").mix("last-activity").toClassName()}>
-                    {u.memberships?.map((m) => m.organization_title).join(", ")}
+                    {u.last_activity ? formatDistance(new Date(u.last_activity), new Date(), { addSuffix: true }) : "—"}
+                  </div>
+                  <div className={cn("people-list").elem("field").mix("orgs").toClassName()}>
+                    {u.memberships?.map((m) => m.organization_title).join(", ") || "—"}
                   </div>
                 </div>
               );

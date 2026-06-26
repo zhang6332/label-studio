@@ -81,6 +81,7 @@ export const PeopleList = ({ onSelect, selectedUser, defaultSelected }) => {
                 <div className={cn("people-list").elem("column").mix("name").toClassName()}>Name</div>
                 <div className={cn("people-list").elem("column").mix("role").toClassName()}>Role</div>
                 <div className={cn("people-list").elem("column").mix("last-activity").toClassName()}>Last Activity</div>
+                <div className={cn("people-list").elem("column").mix("orgs").toClassName()}>Organizations</div>
               </div>
               <div className={cn("people-list").elem("body").toClassName()}>
                 {usersList.map(({ user, role }) => {
@@ -106,6 +107,9 @@ export const PeopleList = ({ onSelect, selectedUser, defaultSelected }) => {
                       </div>
                       <div className={cn("people-list").elem("field").mix("last-activity").toClassName()}>
                         {formatDistance(new Date(user.last_activity), new Date(), { addSuffix: true })}
+                      </div>
+                      <div className={cn("people-list").elem("field").mix("orgs").toClassName()}>
+                        {auth.user?.active_organization_meta?.title || "—"}
                       </div>
                     </div>
                   );

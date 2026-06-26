@@ -98,7 +98,7 @@
   "Filters": "筛选",
   "Sync": "同步",
   "Open": "打开",
-  "Name": "名称",
+  "Name": "姓名",
   "Type": "类型",
   "Task ID": "任务 ID",
   "Copy Task ID": "复制任务 ID",
@@ -769,5 +769,11 @@
   "Failed to create user": "创建用户失败",
   "Last activity on:": "最近活动于：",
   "All Users": "所有用户",
-  "Organization Users": "组织用户"
+  "Organization Users": "组织用户",
+  "Email is required": "邮箱为必填项",
+  "Invalid email format (e.g. user@example.com)": "邮箱格式不正确（例如 user@example.com）",
+  "Password is required": "密码为必填项",
+  "Password must be at least 4 characters": "密码至少需要4个字符",
+  "Passwords do not match": "两次输入的密码不一致",
+  "Confirm Password": "确认密码"
 }
