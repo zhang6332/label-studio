@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Button, useToast } from "@humansignal/ui";
 import { Modal } from "../../../components/Modal/ModalPopup";
-import { Input } from "../../../components/Form";
 import { useAPI } from "../../../providers/ApiProvider";
 
 const ALL_ROLES = [
@@ -15,6 +14,32 @@ const ROLE_LEVEL: Record<string, number> = {
   manager: 3,
   reviewer: 2,
   annotator: 1,
+};
+
+// Shared style for ALL form controls (input, select) — guarantees visual
+// consistency. Uses CSS variables so light/dark themes both work.
+const fieldStyle: React.CSSProperties = {
+  height: 38,
+  padding: "0 12px",
+  borderRadius: 5,
+  border: "1px solid var(--color-neutral-border, #d1d5db)",
+  background: "var(--color-neutral-background, #fff)",
+  color: "var(--color-neutral-content, #1f2937)",
+  fontSize: 14,
+  lineHeight: "20px",
+  width: "100%",
+  boxSizing: "border-box",
+  outline: "none",
+  cursor: "text",
+};
+
+const labelStyle: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: 4,
+  fontSize: 13,
+  fontWeight: 500,
+  color: "var(--color-neutral-content, #1f2937)",
 };
 
 export const CreateUserModal = ({
@@ -116,49 +141,46 @@ export const CreateUserModal = ({
       }
       body={
         <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: 16 }}>
-          <Input
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={(e: any) => setEmail(e.target.value)}
-            autoComplete="off"
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e: any) => setPassword(e.target.value)}
-            autoComplete="new-password"
-          />
-          <label
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 4,
-              fontSize: 14,
-              color: "var(--color-neutral-content)",
-            }}
-          >
+          <label style={labelStyle}>
+            Email
+            <input
+              type="text"
+              placeholder="user@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="off"
+              style={fieldStyle}
+            />
+          </label>
+          <label style={labelStyle}>
+            Password
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              style={fieldStyle}
+            />
+          </label>
+          <label style={labelStyle}>
             Role
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="select-ls"
-              style={{ width: "100%", cursor: "pointer", appearance: "auto" }}
+              style={{ ...fieldStyle, cursor: "pointer" }}
             >
               {availableRoles.map((r) => (
-                <option key={r.value} value={r.value} style={{ background: "var(--color-neutral-background)", color: "var(--color-neutral-content)" }}>
+                <option key={r.value} value={r.value}>
                   {r.label}
                 </option>
               ))}
             </select>
           </label>
           <div>
-            <div style={{ marginBottom: 4, fontSize: 14, color: "var(--color-neutral-content)" }}>
-              Organizations (select one or more)
-            </div>
+            <div style={{ ...labelStyle, marginBottom: 4 }}>Organizations (select one or more)</div>
             {orgs.length === 0 && (
-              <div style={{ color: "var(--color-neutral-content-subtler)", fontSize: 13 }}>Loading…</div>
+              <div style={{ color: "var(--color-neutral-content-subtler, #9ca3af)", fontSize: 13 }}>Loading…</div>
             )}
             {orgs.map((org) => (
               <label
@@ -166,9 +188,10 @@ export const CreateUserModal = ({
                 style={{
                   display: "flex",
                   alignItems: "center",
+                  gap: 8,
                   padding: "6px 0",
                   cursor: "pointer",
-                  color: "var(--color-neutral-content)",
+                  color: "var(--color-neutral-content, #1f2937)",
                   fontSize: 14,
                 }}
               >
@@ -176,7 +199,7 @@ export const CreateUserModal = ({
                   type="checkbox"
                   checked={selectedOrgs.includes(org.id)}
                   onChange={() => toggleOrg(org.id)}
-                  style={{ marginRight: 8, width: 16, height: 16, cursor: "pointer" }}
+                  style={{ width: 16, height: 16, cursor: "pointer", accentColor: "var(--color-primary-base, #2563eb)" }}
                 />
                 {org.title}
               </label>
