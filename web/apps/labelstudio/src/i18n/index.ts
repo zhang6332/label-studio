@@ -171,6 +171,31 @@ function translateDates(root: Node): void {
   }
 }
 
+// Attribute translation: title, aria-label, placeholder, alt. These are not
+// text nodes so translateRoot cannot reach them — without this, tooltips and
+// placeholders stay in the source language even under zh-CN.
+const TRANSLATABLE_ATTRS = ["title", "aria-label", "placeholder", "alt"];
+
+function translateAttributes(root: Node, dict: Record<string, string>): void {
+  if (!dict) return;
+  const els: Element[] = [];
+  const rootEl = root as Element;
+  if (rootEl.nodeType === Node.ELEMENT_NODE) {
+    els.push(rootEl);
+    rootEl.querySelectorAll?.("*")?.forEach((e) => els.push(e as Element));
+  } else if ((root as Document).querySelectorAll) {
+    (root as any).querySelectorAll("*").forEach((e: Element) => els.push(e));
+  }
+  for (const el of els) {
+    for (const attr of TRANSLATABLE_ATTRS) {
+      const v = el.getAttribute(attr);
+      if (!v) continue;
+      const translated = dict[v.trim()];
+      if (translated && translated !== v) el.setAttribute(attr, translated);
+    }
+  }
+}
+
 export function applyLang(lang: Lang): void {
   if (observer) {
     observer.disconnect();
@@ -196,6 +221,7 @@ export function applyLang(lang: Lang): void {
   translateRoot(document.body, dict);
   translateSubstrings(document.body);
   translateDates(document.body);
+  translateAttributes(document.body, dict);
 
   observer = new MutationObserver((mutations) => {
     for (const m of mutations) {
@@ -204,6 +230,7 @@ export function applyLang(lang: Lang): void {
           translateRoot(n, dict);
           translateSubstrings(n);
           translateDates(n);
+          translateAttributes(n, dict);
         }
       });
     }

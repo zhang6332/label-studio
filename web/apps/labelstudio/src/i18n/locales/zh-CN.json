@@ -610,5 +610,12 @@
   "Click on any hotkey below to assign a new key combination that works best for you.": "点击下方任一快捷键，为它分配更适合你的新按键组合。",
   "Editor": "编辑器",
   "Invalid hotkey object": "无效的快捷键对象",
-  "Invalid format: hotkeys property must be an array": "格式无效：hotkeys 属性必须是数组"
+  "Invalid format: hotkeys property must be an array": "格式无效：hotkeys 属性必须是数组",
+  "image": "图片",
+  "Image": "图片",
+  "audio": "音频",
+  "video": "视频",
+  "text": "文本",
+  "hypertext": "超文本",
+  "Hypertext": "超文本"
 }
