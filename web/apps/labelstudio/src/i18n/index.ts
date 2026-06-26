@@ -201,6 +201,9 @@ export function applyLang(lang: Lang): void {
     observer.disconnect();
     observer = null;
   }
+  // Set <html lang="..."> so CSS can drive language-specific styling (e.g.
+  // font-size parity between en/zh) without React state / re-render flicker.
+  document.documentElement.lang = lang;
   if (lang === "en") {
     // English: no translation, but still normalize dates (strip commas)
     // so the date format is consistent across languages.
