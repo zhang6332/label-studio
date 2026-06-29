@@ -669,44 +669,44 @@ export const HOTKEY_SECTIONS = [
   {
     id: "data_manager",
     title: t("Data Manager"),
-    description: "Shortcuts for navigating and managing tasks in Project's Data Manager",
+    description: t("Shortcuts for navigating and managing tasks in Project's Data Manager"),
   },
 
   {
     id: "regions",
-    title: "Region Management",
+    title: t("Region Management"),
     description: t("Shortcuts for creating, selecting and manipulating annotation regions"),
   },
 
   {
     id: "tools",
-    title: "Tools",
+    title: t("Tools"),
     description: t("Shortcuts for controlling tools panel when labeling images"),
   },
 
   {
     id: "audio",
-    title: "Audio Controls",
+    title: t("Audio Controls"),
     description: t("Shortcuts for controlling audio playback and navigation"),
   },
   {
     id: "video",
-    title: "Video Controls",
+    title: t("Video Controls"),
     description: t("Shortcuts for controlling video playback and navigation"),
   },
   {
     id: "timeseries",
-    title: "Time Series Controls",
+    title: t("Time Series Controls"),
     description: t("Shortcuts for manipulating time series data regions"),
   },
   {
     id: "image_gallery",
-    title: "Image Gallery Navigation",
+    title: t("Image Gallery Navigation"),
     description: t("Shortcuts for navigating between images in multi-image tasks"),
   },
   {
     id: "paragraphs",
-    title: "Paragraph Navigation",
+    title: t("Paragraph Navigation"),
     description: t("Shortcuts for navigating phrases and regions in paragraph/dialogue view"),
   },
 ];
