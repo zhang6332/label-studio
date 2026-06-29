@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import React, { type FormEvent, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { Dropdown, Menu } from "antd";
 
@@ -288,11 +289,11 @@ const Item: React.FC<RowProps> = ({ style, item, dimensionCallback, maxWidth, is
                                 addChild(id);
                               }}
                             >
-                              Add Inside
+                              {t("Add Inside")}
                             </Menu.Item>
                             {item.row.origin === "session" && (
                               <Menu.Item key="delete" className={styles.taxonomy__action} onClick={onDelete}>
-                                Delete
+                                {t("Delete")}
                               </Menu.Item>
                             )}
                           </Menu>
@@ -413,7 +414,7 @@ const TaxonomyDropdown = ({ show, flatten, items, dropdownRef, isEditable }: Tax
         autoComplete="off"
         className={styles.taxonomy__search}
         name="taxonomy__search"
-        placeholder="Search..."
+        placeholder={t("Search...")}
         onInput={onInput}
         ref={inputRef}
       />
@@ -441,9 +442,9 @@ const TaxonomyDropdown = ({ show, flatten, items, dropdownRef, isEditable }: Tax
                 look="string"
                 type="button"
                 onClick={addInside}
-                aria-label="Add new label"
+                aria-label={t("Add new label")}
               >
-                Add
+                {t("Add")}
               </Button>
             </div>
           ) : null}

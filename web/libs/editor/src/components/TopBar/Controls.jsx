@@ -2,6 +2,7 @@
  * @deprecated It was used only without FF_3873 in old interface.
  */
 
+import { t } from "@humansignal/core";
 import { inject, observer } from "mobx-react";
 import { IconBan, IconInfoOutline } from "@humansignal/icons";
 import { Button, Tooltip } from "@humansignal/ui";
@@ -80,9 +81,9 @@ export const Controls = controlsInjector(
 
     const RejectButton = useMemo(() => {
       return (
-        <ButtonTooltip key="reject" title="Reject annotation: [ Ctrl+Space ]">
+        <ButtonTooltip key="reject" title={t("Reject annotation: [ Ctrl+Space ]")}>
           <Button
-            aria-label="Reject current annotation"
+            aria-label={t("Reject current annotation")}
             disabled={disabled}
             look="danger"
             onClick={async (e) => {
@@ -95,7 +96,7 @@ export const Controls = controlsInjector(
               }
             }}
           >
-            Reject
+            {t("Reject")}
           </Button>
         </ButtonTooltip>
       );
@@ -105,9 +106,9 @@ export const Controls = controlsInjector(
       buttons.push(RejectButton);
 
       buttons.push(
-        <ButtonTooltip key="accept" title="Accept annotation: [ Ctrl+Enter ]">
+        <ButtonTooltip key="accept" title={t("Accept annotation: [ Ctrl+Enter ]")}>
           <Button
-            aria-label="Accept current annotation"
+            aria-label={t("Accept current annotation")}
             disabled={disabled}
             look="primary"
             onClick={async () => {
@@ -122,13 +123,13 @@ export const Controls = controlsInjector(
     } else if (annotation.skipped) {
       buttons.push(
         <div className={cn("controls").elem("skipped-info").toClassName()} key="skipped">
-          <IconBan color="#d00" /> Was skipped
+          <IconBan color="#d00" /> {t("Was skipped")}
         </div>,
       );
       buttons.push(
-        <ButtonTooltip key="cancel-skip" title="Cancel skip: []">
+        <ButtonTooltip key="cancel-skip" title={t("Cancel skip: []")}>
           <Button
-            aria-label="Cancel skip and return to annotation"
+            aria-label={t("Cancel skip and return to annotation")}
             disabled={disabled}
             look="outlined"
             onClick={async () => {
@@ -136,7 +137,7 @@ export const Controls = controlsInjector(
               store.unskipTask();
             }}
           >
-            Cancel skip
+            {t("Cancel skip")}
           </Button>
         </ButtonTooltip>,
       );
@@ -160,7 +161,7 @@ export const Controls = controlsInjector(
 
         if (showInfoIcon) {
           buttons.push(
-            <Tooltip key="skip-info" title="Annotators and Reviewers will not be able to skip this task">
+            <Tooltip key="skip-info" title={t("Annotators and Reviewers will not be able to skip this task")}>
               <IconInfoOutline width={20} height={20} className="text-neutral-content ml-auto cursor-pointer" />
             </Tooltip>,
           );
@@ -169,7 +170,7 @@ export const Controls = controlsInjector(
         buttons.push(
           <ButtonTooltip key="skip" title={tooltip}>
             <Button
-              aria-label="Skip current task"
+              aria-label={t("Skip current task")}
               disabled={isDisabled}
               variant="negative"
               look="outlined"
@@ -183,7 +184,7 @@ export const Controls = controlsInjector(
                 }
               }}
             >
-              Skip
+              {t("Skip")}
             </Button>
           </ButtonTooltip>,
         );
@@ -197,7 +198,7 @@ export const Controls = controlsInjector(
           <ButtonTooltip key="submit" title={title}>
             <div className={cn("controls").elem("tooltip-wrapper").toClassName()}>
               <Button
-                aria-label="Submit current annotation"
+                aria-label={t("Submit current annotation")}
                 disabled={disabled || submitDisabled}
                 look="primary"
                 onClick={async () => {
@@ -205,7 +206,7 @@ export const Controls = controlsInjector(
                   store.submitAnnotation();
                 }}
               >
-                Submit
+                {t("Submit")}
               </Button>
             </div>
           </ButtonTooltip>,
@@ -215,9 +216,9 @@ export const Controls = controlsInjector(
       if ((userGenerate && sentUserGenerate) || (!userGenerate && store.hasInterface("update"))) {
         const isUpdate = sentUserGenerate || versions.result;
         const button = (
-          <ButtonTooltip key="update" title="Update this task: [ Alt+Enter ]">
+          <ButtonTooltip key="update" title={t("Update this task: [ Alt+Enter ]")}>
             <Button
-              aria-label="Update current annotation"
+              aria-label={t("Update current annotation")}
               disabled={disabled || submitDisabled}
               look="primary"
               onClick={async () => {

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Select } from "@humansignal/ui";
 import { useCallback, useMemo } from "react";
 
@@ -56,10 +57,10 @@ export function SampleDatasetSelect({
 
   return (
     <div className="flex gap-3 items-center">
-      <span className="text-neutral-content-subtler">or use a sample dataset</span>
+      <span className="text-neutral-content-subtler">{t("or use a sample dataset")}</span>
       <Select
         value={sample?.url ?? undefined}
-        placeholder="Select sample"
+        placeholder={t("Select sample")}
         onChange={onSelect}
         triggerProps={{ onClick }}
         options={options}

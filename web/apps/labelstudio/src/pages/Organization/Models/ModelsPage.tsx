@@ -1,3 +1,4 @@
+import { t } from "../../../i18n";
 import { buttonVariant, Space } from "@humansignal/ui";
 import { useUpdatePageTitle } from "@humansignal/core";
 import { cn } from "apps/labelstudio/src/utils/bem";
@@ -23,7 +24,7 @@ ModelsPage.context = () => {
   return (
     <Space size="small">
       <Link to="/prompt/settings" className={buttonVariant({ size: "small" })}>
-        Create Model
+        {t("Create Model")}
       </Link>
     </Space>
   );

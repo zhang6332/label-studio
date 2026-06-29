@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer, Provider } from "mobx-react";
 import React from "react";
 import clsx from "clsx";
@@ -60,9 +61,9 @@ const AppComponent: React.FC<AppComponentProps> = ({ app }) => {
               <div className={rootClassName}>
                 {app.crashed ? (
                   <div className={clsx(rootCN.toClassName(), rootClassName)}>
-                    <span className={rootCN.elem("header").toClassName()}>Oops...</span>
+                    <span className={rootCN.elem("header").toClassName()}>{t("Oops...")}</span>
                     <span className={rootCN.elem("description").toClassName()}>
-                      Project has been deleted or not yet created.
+                      {t("Project has been deleted or not yet created.")}
                     </span>
                   </div>
                 ) : app.loading ? (

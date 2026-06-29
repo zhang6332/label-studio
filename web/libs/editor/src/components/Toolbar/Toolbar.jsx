@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useMemo, useState } from "react";
 import { inject, observer } from "mobx-react";
 
@@ -85,7 +86,7 @@ const SmartTools = observer(({ tools }) => {
       <div className={cn("toolbar").elem("group").toClassName()}>
         <Tool
           smart
-          label="Auto-Detect"
+          label={t("Auto-Detect")}
           active={hasSelected}
           icon={selected.iconClass}
           shortcut="tool:auto-detect"

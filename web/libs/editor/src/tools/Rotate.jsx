@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import { types } from "mobx-state-tree";
 
@@ -13,7 +14,7 @@ const ToolView = observer(({ item }) => {
         active={item.selected}
         icon={<IconRotateLeftTool />}
         ariaLabel="rotate-left"
-        label="Rotate Left"
+        label={t("Rotate Left")}
         shortcut="tool:rotate-left"
         onClick={() => {
           item.rotate(-90);
@@ -23,7 +24,7 @@ const ToolView = observer(({ item }) => {
         active={item.selected}
         icon={<IconRotateRightTool />}
         ariaLabel="rotate-right"
-        label="Rotate Right"
+        label={t("Rotate Right")}
         shortcut="tool:rotate-right"
         onClick={() => {
           item.rotate(90);

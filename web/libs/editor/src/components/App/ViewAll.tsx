@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { usePersistentState } from "@humansignal/core/lib/hooks/usePersistentState";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@humansignal/ui/lib/tabs";
 import type { MSTAnnotation, MSTStore } from "../../stores/types";
@@ -19,10 +20,10 @@ export const ViewAll = ({ store: annotationStore, annotations, root }: Props) =>
         <Tabs variant="default" value={tab} onValueChange={(value) => setTab(value as "summary" | "compare")}>
           <TabsList>
             <TabsTrigger value="summary" data-testid="compare-all-summary-tab">
-              Summary
+              {t("Summary")}
             </TabsTrigger>
             <TabsTrigger value="compare" data-testid="compare-all-side-by-side-tab">
-              Side-by-side
+              {t("Side-by-side")}
             </TabsTrigger>
           </TabsList>
 

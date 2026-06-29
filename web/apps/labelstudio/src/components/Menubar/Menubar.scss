@@ -14,7 +14,7 @@
   box-sizing: border-box;
   background-color: var(--color-neutral-background);
   border-bottom: 1px solid var(--color-neutral-border);
-  transition: background-color 400ms ease-out;
+  transition: background-color 120ms ease-out;
 
   &__spacer {
     width: var(--spacing-tight);

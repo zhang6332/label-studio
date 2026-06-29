@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject } from "mobx-react";
 import { Button, ButtonGroup } from "@humansignal/ui";
 import { Interface } from "../../Common/Interface";
@@ -94,14 +95,14 @@ export const LabelButton = injector(({ store, canLabel, size, target, selectedCo
             style={primaryStyle}
             onClick={onLabelAll}
           >
-            Label {selectedCount ? selectedCount : "All"} Task
+            {t("Label")} {selectedCount ? selectedCount : "All"} {t("Task")}
             {!selectedCount || selectedCount > 1 ? "s" : ""}
           </Button>
           <Dropdown.Trigger
             alignment="bottom-right"
             content={
               <Menu size="compact">
-                <Menu.Item onClick={onLabelVisible}>Label Tasks As Displayed</Menu.Item>
+                <Menu.Item onClick={onLabelVisible}>{t("Label Tasks As Displayed")}</Menu.Item>
               </Menu>
             }
           >

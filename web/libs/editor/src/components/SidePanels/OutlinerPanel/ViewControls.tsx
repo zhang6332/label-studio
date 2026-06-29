@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import {
   IconBoundingBox,
   IconClockTimeFourOutline,
@@ -72,7 +73,7 @@ export const ViewControls: FC<ViewControlsProps> = observer(
           return {
             label: (
               <>
-                <IconList /> Group Manually
+                <IconList /> {t("Group Manually")}
               </>
             ),
             selectedLabel: "Manual",
@@ -83,7 +84,7 @@ export const ViewControls: FC<ViewControlsProps> = observer(
           return {
             label: (
               <>
-                <IconBoundingBox /> Group by Label
+                <IconBoundingBox /> {t("Group by Label")}
               </>
             ),
             selectedLabel: "By Label",
@@ -94,7 +95,7 @@ export const ViewControls: FC<ViewControlsProps> = observer(
           return {
             label: (
               <>
-                <IconCursor /> Group by Tool
+                <IconCursor /> {t("Group by Tool")}
               </>
             ),
             selectedLabel: "By Tool",
@@ -110,17 +111,17 @@ export const ViewControls: FC<ViewControlsProps> = observer(
           return {
             label: (
               <>
-                <IconClockTimeFourOutline /> Order by Time
+                <IconClockTimeFourOutline /> {t("Order by Time")}
               </>
             ),
-            selectedLabel: "By Time",
+            selectedLabel: t("By Time"),
             icon: <IconClockTimeFourOutline width={16} height={16} />,
           };
         case "score":
           return {
             label: (
               <>
-                <IconPredictions /> Order by Score
+                <IconPredictions /> {t("Order by Score")}
               </>
             ),
             selectedLabel: "By Score",
@@ -130,7 +131,7 @@ export const ViewControls: FC<ViewControlsProps> = observer(
           return {
             label: (
               <>
-                <IconTimelineRegion /> Order by Media Start Time
+                <IconTimelineRegion /> {t("Order by Media Start Time")}
               </>
             ),
             selectedLabel: "By Media Start Time",

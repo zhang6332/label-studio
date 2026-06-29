@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { type FC, type RefObject, useCallback, useRef } from "react";
 import { cn } from "../../utils/bem";
 import { IconSend } from "@humansignal/icons";
@@ -49,7 +50,7 @@ export const CommentFormBase: FC<CommentFormProps> = observer(
         <TextArea
           actionRef={actionRef}
           name="comment"
-          placeholder="Add a comment"
+          placeholder={t("Add a comment")}
           value={value}
           rows={rows}
           maxRows={maxRows}
@@ -66,7 +67,7 @@ export const CommentFormBase: FC<CommentFormProps> = observer(
           onBlur={(e) => onBlur?.(e)}
         />
         <div className={cn("comment-form").elem("primary-action").toClassName()}>
-          <Button type="submit" aria-label="Submit comment" variant="neutral" look="string">
+          <Button type="submit" aria-label={t("Submit comment")} variant="neutral" look="string">
             <IconSend />
           </Button>
         </div>

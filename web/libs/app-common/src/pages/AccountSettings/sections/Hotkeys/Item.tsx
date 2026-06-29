@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useEffect, useState, useRef } from "react";
 import clsx from "clsx";
 
@@ -144,21 +145,21 @@ export const HotkeyItem = ({ hotkey, onEdit, isEditing, onSave, onCancel, onTogg
             )}
             onClick={startRecordingKeys}
             onKeyDown={handleKeyPress}
-            aria-label="Click to record keyboard shortcut"
+            aria-label={t("Click to record keyboard shortcut")}
           >
             {keyRecordingMode ? (
-              <span className="text-primary-content font-medium animate-pulse">Press keys now...</span>
+              <span className="text-primary-content font-medium animate-pulse">{t("Press keys now...")}</span>
             ) : editedKey ? (
               <KeyboardKey>{editedKey}</KeyboardKey>
             ) : (
-              <span className="text-neutral-content-subtler">Click to set shortcut</span>
+              <span className="text-neutral-content-subtler">{t("Click to set shortcut")}</span>
             )}
           </Button>
 
           {/* Action buttons */}
           <div className="flex flex-row gap-2">
             <Button variant="primary" onClick={handleSave} disabled={!editedKey || !!error}>
-              Apply
+              {t("Apply")}
             </Button>
             <Button variant="neutral" icon={<IconClose />} onClick={handleCancel} />
           </div>
@@ -189,7 +190,7 @@ export const HotkeyItem = ({ hotkey, onEdit, isEditing, onSave, onCancel, onTogg
       </div>
 
       {/* Current hotkey display (clickable to edit) */}
-      <Tooltip title="Click to edit hotkey">
+      <Tooltip title={t("Click to edit hotkey")}>
         <div
           className="flex items-center gap-2 cursor-pointer hover:opacity-80 hover:bg-primary-emphasis-subtle px-base py-base rounded-small"
           onClick={handleEdit}

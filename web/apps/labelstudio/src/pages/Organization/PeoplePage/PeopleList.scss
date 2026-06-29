@@ -1,12 +1,12 @@
 .people-list {
   width: 100%;
-  min-width: 650px;
   font-size: 16px;
 
   &__wrapper {
     border-radius: 4px;
     border: 1px solid var(--color-neutral-border);
     background: var(--color-neutral-background);
+    overflow: hidden;
   }
 
   &__loading {
@@ -17,60 +17,63 @@
     align-items: center;
   }
 
+  // Grid + subgrid layout: each column is min-width .. max-content, so columns
+  // shrink to their minimum when content is short and grow to fit long content.
+  // Header and every user row share the SAME column tracks via subgrid, so they
+  // stay perfectly aligned. When the summed column widths exceed the container,
+  // the table scrolls horizontally (overflow-x) instead of wrapping/squishing.
   &__users {
+    display: grid;
+    grid-template-columns:
+      32px
+      minmax(100px, max-content)
+      minmax(150px, max-content)
+      minmax(90px, max-content)
+      minmax(90px, max-content)
+      minmax(120px, max-content)
+      minmax(120px, max-content);
     width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
     text-align: left;
-    border-collapse: collapse;
   }
 
   &__header {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
     font-weight: 500;
-    display: flex;
+  }
+
+  // body doesn't need its own box — let user rows participate directly in the
+  // users grid so subgrid column sharing works across header + all rows.
+  &__body {
+    display: contents;
   }
 
   &__column,
   &__field {
     z-index: 2;
-    height: 48px;
+    min-height: 48px;
     padding: 0 10px;
     border: none;
     color: var(--color-neutral-content);
     display: flex;
-    position: relative;
     align-items: center;
+    // Column width is decided by the grid track above; content that exceeds it
+    // is truncated with an ellipsis (single line — no more row-height chaos).
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     &.avatar {
-      width: 28px;
-      box-sizing: content-box;
-    }
-
-    &.name {
-      flex: 1;
-    }
-
-    &.email {
-      width: 200px;
+      justify-content: center;
     }
 
     &.role {
-      width: 120px;
       text-transform: capitalize;
     }
 
-    &.last-activity {
-      width: 140px;
-    }
-
-    &.orgs {
-      flex: 1;
-      min-width: 120px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-
-  &__field {
     &.last-activity {
       color: var(--color-neutral-content);
     }
@@ -82,8 +85,10 @@
   }
 
   &__user {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
     cursor: pointer;
-    display: flex;
 
     &:nth-child(odd):not(&_active) {
       background-color: var(--color-neutral-emphasis-subtle);

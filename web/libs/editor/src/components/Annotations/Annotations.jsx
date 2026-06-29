@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Component } from "react";
 import { Badge, Card, List, Popconfirm } from "antd";
 import { Button } from "@humansignal/ui";
@@ -25,7 +26,7 @@ export const DraftPanel = observer(({ item }) => {
 
   if (!item.selected) {
     if (!item.draft) return null;
-    return <div>draft{saved}</div>;
+    return <div>{t("draft")}{saved}</div>;
   }
   if (!item.versions.result || !item.versions.result.length) {
     return <div>{saved ? `draft${saved}` : "not submitted draft"}</div>;
@@ -53,7 +54,7 @@ const Annotation = observer(({ item, store }) => {
         ev.preventDefault();
         item.setGroundTruth(false);
       }}
-      aria-label="Unset ground truth"
+      aria-label={t("Unset ground truth")}
     >
       <StarOutlined />
     </Button>
@@ -113,12 +114,12 @@ const Annotation = observer(({ item, store }) => {
    * Title of card
    */
   if (item.userGenerate && !item.sentUserGenerate) {
-    annotationID = <span className={styles.title}>Unsaved Annotation</span>;
+    annotationID = <span className={styles.title}>{t("Unsaved Annotation")}</span>;
   } else {
     if (item.pk) {
-      annotationID = <span className={styles.title}>ID {item.pk}</span>;
+      annotationID = <span className={styles.title}>{t("ID")} {item.pk}</span>;
     } else if (item.id) {
-      annotationID = <span className={styles.title}>ID {item.id}</span>;
+      annotationID = <span className={styles.title}>{t("ID")} {item.id}</span>;
     }
   }
 
@@ -148,7 +149,7 @@ const Annotation = observer(({ item, store }) => {
         {store.hasInterface("ground-truth") && (item.ground_truth ? removeHoney() : setHoney())}
         &nbsp;
         {store.hasInterface("annotations:delete") && (
-          <Tooltip placement="topLeft" title="Delete selected annotation">
+          <Tooltip placement="topLeft" title={t("Delete selected annotation")}>
             <Popconfirm
               placement="bottomLeft"
               title={"Please confirm you want to delete this annotation"}
@@ -157,7 +158,7 @@ const Annotation = observer(({ item, store }) => {
               okType="danger"
               cancelText="Cancel"
             >
-              <Button size="small" look="string" variant="negative" aria-label="Delete selected annotation">
+              <Button size="small" look="string" variant="negative" aria-label={t("Delete selected annotation")}>
                 <DeleteOutlined />
               </Button>
             </Popconfirm>
@@ -190,7 +191,7 @@ const Annotation = observer(({ item, store }) => {
         </div>
         {/* platform uses was_cancelled so check both */}
         {store.hasInterface("skip") && (item.skipped || item.was_cancelled) && (
-          <Tooltip alignment="top-left" title="Skipped annotation">
+          <Tooltip alignment="top-left" title={t("Skipped annotation")}>
             <StopOutlined className={styles.skipped} />
           </Tooltip>
         )}
@@ -199,7 +200,7 @@ const Annotation = observer(({ item, store }) => {
             size="small"
             look="outlined"
             onClick={toggleVisibility}
-            aria-label="Toggle visibility of current annotation"
+            aria-label={t("Toggle visibility of current annotation")}
           >
             {item.hidden ? <EyeInvisibleOutlined /> : <EyeOutlined />}
           </Button>
@@ -217,7 +218,7 @@ class Annotations extends Component {
     const title = (
       <div className={`${styles.title} ${styles.titlespace}`}>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <h3>Annotations</h3>
+          <h3>{t("Annotations")}</h3>
         </div>
 
         <div style={{ marginRight: "1px" }}>
@@ -231,7 +232,7 @@ class Annotations extends Component {
 
                 store.annotationStore.selectAnnotation(c.id);
               }}
-              aria-label="Create new annotation"
+              aria-label={t("Create new annotation")}
             >
               <PlusOutlined />
             </Button>
@@ -245,7 +246,7 @@ class Annotations extends Component {
               ev.preventDefault();
               store.annotationStore.toggleViewingAllAnnotations();
             }}
-            aria-label="Toggle view of all annotations"
+            aria-label={t("Toggle view of all annotations")}
           >
             <WindowsOutlined />
           </Button>
@@ -257,7 +258,7 @@ class Annotations extends Component {
 
     return (
       <Card title={title} size="small" bodyStyle={{ padding: "0", paddingTop: "1px" }}>
-        <List>{store.annotationStore.annotations ? content : <p>No annotations submitted yet</p>}</List>
+        <List>{store.annotationStore.annotations ? content : <p>{t("No annotations submitted yet")}</p>}</List>
       </Card>
     );
   }

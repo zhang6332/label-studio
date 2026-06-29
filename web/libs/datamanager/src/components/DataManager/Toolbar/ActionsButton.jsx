@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { IconChevronDown, IconChevronRight, IconTrash } from "@humansignal/icons";
 import { Button, Spinner, Badge, EnterpriseBadge } from "@humansignal/ui";
 import { inject, observer } from "mobx-react";
@@ -241,7 +242,7 @@ export const ActionsButton = injector(
           <Menu size="compact">
             {isLoading || isFetching ? (
               <Menu.Item data-testid="loading-actions" disabled>
-                Loading actions...
+                {t("Loading actions...")}
               </Menu.Item>
             ) : (
               actionButtons
@@ -258,7 +259,7 @@ export const ActionsButton = injector(
           look="outlined"
           disabled={!hasSelected}
           trailing={<IconChevronDown />}
-          aria-label="Tasks Actions"
+          aria-label={t("Tasks Actions")}
           {...rest}
         >
           {selectedCount > 0 ? `${selectedCount} ${recordTypeLabel}${selectedCount > 1 ? "s" : ""}` : "Actions"}

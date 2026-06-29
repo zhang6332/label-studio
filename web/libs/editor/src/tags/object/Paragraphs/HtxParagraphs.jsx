@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import React, { Component, useCallback } from "react";
 import { inject, observer } from "mobx-react";
 
@@ -64,7 +65,7 @@ const ParagraphAudio = observer(({ item }) => {
 
   return (
     <>
-      {isBuffering && <div className="lsf-timeline-controls__buffering" aria-label="Buffering Media Source" />}
+      {isBuffering && <div className="lsf-timeline-controls__buffering" aria-label={t("Buffering Media Source")} />}
       <audio
         {...audioDefaultProps}
         controls={item.showplayer && !item.syncedAudio}
@@ -979,7 +980,7 @@ class HtxParagraphsView extends Component {
               }}
               label={"Auto-scroll"}
             />
-            <Tooltip alignment="top-left" title="Automatically sync transcript scrolling with audio playback">
+            <Tooltip alignment="top-left" title={t("Automatically sync transcript scrolling with audio playback")}>
               <IconHelp />
             </Tooltip>
           </div>

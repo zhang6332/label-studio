@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { type FC, useMemo } from "react";
 import { observer } from "mobx-react";
 import chroma from "chroma-js";
@@ -111,7 +112,7 @@ const LinkedRegion: FC<LinkedRegionProps> = observer(({ region, result, interact
             look="string"
             leading={<IconClose />}
             onClick={onUnlink}
-            aria-label="Unlink comment"
+            aria-label={t("Unlink comment")}
           />
         </div>
       )}

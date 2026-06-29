@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Callout, CalloutContent, CalloutHeader, CalloutIcon, CalloutTitle } from "@humansignal/ui/lib/callout/callout";
 import { IconWarning } from "@humansignal/icons";
 import { atomWithMutation, atomWithQuery, queryClientAtom } from "jotai-tanstack-query";
@@ -111,11 +112,11 @@ export function PersonalJWTToken() {
   const revoke = useCallback(
     async (token: string) => {
       confirm({
-        title: "Revoke Token",
+        title: t("Revoke Token"),
         body: `Are you sure you want to delete this access token? Any application using this token will need a new token to be able to access ${
           window?.APP_SETTINGS?.app_name || "Label Studio"
         }`,
-        okText: "Revoke",
+        okText: t("Revoke"),
         buttonLook: "negative",
         onOk: async () => {
           await revokeToken.mutateAsync({ token });
@@ -134,7 +135,7 @@ export function PersonalJWTToken() {
     setDialogOpened(true);
     modal({
       visible: true,
-      title: "New Auth Token",
+      title: t("New Auth Token"),
       style: { width: 680 },
       body: CreateTokenForm,
       closeOnClickOutside: false,
@@ -149,10 +150,10 @@ export function PersonalJWTToken() {
     <div className={styles.personalAccessToken}>
       <div className={tokensListClassName}>
         {tokens.isLoading ? (
-          <div>loading...</div>
+          <div>{t("loading...")}</div>
         ) : tokens.isSuccess && tokens.data && tokens.data.length ? (
           <div>
-            <Label text="Access Token" className={styles.label} />
+            <Label text={t("Access Token")} className={styles.label} />
             <div className="flex flex-col gap-2">
               {tokens.data.map((token, index) => {
                 return (
@@ -166,7 +167,7 @@ export function PersonalJWTToken() {
                       <div className={styles.tokenString}>{token.token}</div>
                     </div>
                     <Button variant="negative" look="outlined" onClick={() => revoke(token.token)}>
-                      Revoke
+                      {t("Revoke")}
                     </Button>
                   </div>
                 );
@@ -174,13 +175,13 @@ export function PersonalJWTToken() {
             </div>
           </div>
         ) : tokens.isError ? (
-          <div>Unable to load tokens list</div>
+          <div>{t("Unable to load tokens list")}</div>
         ) : null}
       </div>
-      <Tooltip title="You can only have one active token" disabled={!disallowAddingTokens}>
+      <Tooltip title={t("You can only have one active token")} disabled={!disallowAddingTokens}>
         <div style={{ width: "max-content" }}>
           <Button disabled={disallowAddingTokens || dialogOpened} onClick={openDialog}>
-            Create New Token
+            {t("Create New Token")}
           </Button>
         </div>
       </Tooltip>
@@ -198,11 +199,11 @@ function CreateTokenForm() {
 
   return (
     <div className="flex flex-col gap-2">
-      <p>Copy your new access token from below and keep it secure. </p>
+      <p>{t("Copy your new access token from below and keep it secure.")} </p>
 
       <div className="flex items-end w-full gap-2">
         <Input
-          label="Access Token"
+          label={t("Access Token")}
           labelProps={{ className: "flex-1", rawClassName: "flex-1" }}
           className="w-full"
           readOnly
@@ -215,7 +216,7 @@ function CreateTokenForm() {
 
       {data?.expires_at && (
         <div>
-          <Label text="Token Expiry Date" />
+          <Label text={t("Token Expiry Date")} />
           {data && format(new Date(data?.expires_at), "MMM dd, yyyy HH:mm z")}
         </div>
       )}
@@ -225,7 +226,7 @@ function CreateTokenForm() {
           <CalloutIcon>
             <IconWarning />
           </CalloutIcon>
-          <CalloutTitle>Manage your access tokens securely</CalloutTitle>
+          <CalloutTitle>{t("Manage your access tokens securely")}</CalloutTitle>
         </CalloutHeader>
         <CalloutContent>
           Do not share this key with anyone. If you suspect any keys have been compromised, you should revoke them and

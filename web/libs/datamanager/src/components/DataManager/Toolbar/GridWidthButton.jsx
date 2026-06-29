@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject } from "mobx-react";
 import { useCallback, useState } from "react";
 import { Button, ButtonGroup } from "@humansignal/ui";
@@ -50,7 +51,7 @@ export const GridWidthButton = injector(({ view, isGrid, gridWidth, fitImagesToW
       content={
         <div className="p-tight min-w-wide space-y-base">
           <div className="grid grid-cols-[1fr_min-content] gap-base items-center">
-            <span>Columns: {width}</span>
+            <span>{t("Columns:")} {width}</span>
             <ButtonGroup collapsed={false}>
               <Button
                 onClick={() => setGridWidth(width - 1)}
@@ -59,7 +60,7 @@ export const GridWidthButton = injector(({ view, isGrid, gridWidth, fitImagesToW
                 look="outlined"
                 leading={<IconMinus />}
                 size="small"
-                aria-label="Decrease columns number"
+                aria-label={t("Decrease columns number")}
               />
               <Button
                 onClick={() => setGridWidth(width + 1)}
@@ -68,20 +69,20 @@ export const GridWidthButton = injector(({ view, isGrid, gridWidth, fitImagesToW
                 look="outlined"
                 leading={<IconPlus />}
                 size="small"
-                aria-label="Increase columns number"
+                aria-label={t("Increase columns number")}
               />
             </ButtonGroup>
           </div>
           {hasImage && (
             <div className="grid grid-cols-[1fr_min-content] gap-base items-center">
-              <span>Fit images to width</span>
+              <span>{t("Fit images to width")}</span>
               <Toggle checked={fitImagesToWidth} onChange={handleFitImagesToWidthToggle} />
             </div>
           )}
         </div>
       }
     >
-      <Button size={size} variant="neutral" look="outlined" aria-label="Grid settings">
+      <Button size={size} variant="neutral" look="outlined" aria-label={t("Grid settings")}>
         <IconSettings />
       </Button>
     </Dropdown.Trigger>

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { ProviderForm } from "./provider-form";
@@ -27,7 +28,7 @@ const createTestProvider = (): ProviderConfig => ({
       required: true,
       defaultValue: "pat",
       options: [
-        { value: "pat", label: "Personal Access Token" },
+        { value: "pat", label: t("Personal Access Token") },
         { value: "sp", label: "Service Principal" },
         { value: "azure_sp", label: "Azure Service Principal" },
       ],
@@ -36,7 +37,7 @@ const createTestProvider = (): ProviderConfig => ({
     {
       name: "token",
       type: "password",
-      label: "Access Token",
+      label: t("Access Token"),
       schema: z.string().optional(),
       visibleWhen: { field: "auth_type", value: "pat" },
     },

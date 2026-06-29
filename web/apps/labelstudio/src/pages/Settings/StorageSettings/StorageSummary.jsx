@@ -1,3 +1,4 @@
+import { t } from "../../../i18n";
 import { format } from "date-fns/esm";
 import { Button, CodeBlock, IconFileCopy, Space, Tooltip } from "@humansignal/ui";
 import { DescriptionList } from "../../../components/DescriptionList/DescriptionList";
@@ -50,7 +51,7 @@ export const StorageSummary = ({ target, storage, className, storageTypes = [] }
       `meta = ${JSON.stringify(storage.meta)}\n`;
 
     const currentModal = modal({
-      title: "Storage Sync Error Log",
+      title: t("Storage Sync Error Log"),
       body: <CodeBlock code={msg} variant="negative" className="max-h-[50vh] overflow-y-auto" />,
       footer: (
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -61,18 +62,18 @@ export const StorageSummary = ({ target, storage, className, storageTypes = [] }
                   href="https://labelstud.io/guide/storage.html#Troubleshooting"
                   target="_blank"
                   rel="noreferrer noopener"
-                  aria-label="Learn more about cloud storage troubleshooting"
+                  aria-label={t("Learn more about cloud storage troubleshooting")}
                 >
-                  See docs
+                  {t("See docs")}
                 </a>{" "}
-                for troubleshooting tips on cloud storage connections.
+                {t("for troubleshooting tips on cloud storage connections.")}
               </>
             </div>
           )}
           <Space>
             <CopyButton msg={msg} />
             <Button variant="primary" className="w-[7rem]" onClick={() => currentModal.close()}>
-              Close
+              {t("Close")}
             </Button>
           </Space>
         </div>
@@ -114,7 +115,7 @@ export const StorageSummary = ({ target, storage, className, storageTypes = [] }
               className="cursor-pointer border-b border-dashed border-negative-border-subtle text-negative-content"
               onClick={handleButtonClick}
             >
-              {storageStatus} (View Logs)
+              {storageStatus} {t("(View Logs)")}
             </span>
           ) : (
             storageStatus
@@ -127,7 +128,7 @@ export const StorageSummary = ({ target, storage, className, storageTypes = [] }
               <span>{last_sync_count}</span>
             </Tooltip>
             <Tooltip title={total_annotations_help}>
-              <span> ({total_annotations} total)</span>
+              <span> ({total_annotations} {t("total)")}</span>
             </Tooltip>
           </DescriptionList.Item>
         ) : (
@@ -136,7 +137,7 @@ export const StorageSummary = ({ target, storage, className, storageTypes = [] }
               <span>{last_sync_count + tasks_existed}</span>
             </Tooltip>
             <Tooltip title={tasks_added_help}>
-              <span> ({last_sync_count} new)</span>
+              <span> ({last_sync_count} {t("new)")}</span>
             </Tooltip>
           </DescriptionList.Item>
         )}

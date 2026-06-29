@@ -19,7 +19,7 @@
     opacity: 0;
     background: linear-gradient(to right, rgba(var(--color-neutral-shadow-raw) / 16%), rgba(var(--color-neutral-shadow-raw) / 0%));
     z-index: 1;
-    transition: opacity 300ms ease-out;
+    transition: opacity 120ms ease-out;
   }
 
   &_scrolled {
@@ -51,7 +51,7 @@
     padding-right: 77px;
     position: relative;
     transform: translateX(calc(-1 * var(--carousel-left)));
-    transition: all 200ms ease-out 0s;
+    transition: all 120ms ease-out 0s;
   }
 
   &__carousel-controls {

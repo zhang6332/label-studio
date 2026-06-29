@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type { WindowFunctionType } from "./WindowFunctions";
 import type { ColorScheme } from "./ColorMapper";
 
@@ -16,7 +17,7 @@ export const WINDOWING_OPTIONS = [
   { value: "hann", label: "Hann" },
   { value: "hamming", label: "Hamming" },
   { value: "blackman", label: "Blackman" },
-  { value: "rectangular", label: "Rectangular" },
+  { value: "rectangular", label: t("Rectangular") },
 ] as const;
 
 // Performance tuning constants for painting

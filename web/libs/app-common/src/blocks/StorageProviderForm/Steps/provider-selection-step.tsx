@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Label } from "@humansignal/ui";
 import { useEffect } from "react";
 import { ProviderGrid } from "../components";
@@ -51,13 +52,13 @@ export const ProviderSelectionStep = ({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">Choose your cloud storage provider</h2>
-        <p className="text-muted-foreground">Select the cloud storage service where your data is stored</p>
+        <h2 className="text-xl font-semibold">{t("Choose your cloud storage provider")}</h2>
+        <p className="text-muted-foreground">{t("Select the cloud storage service where your data is stored")}</p>
       </div>
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label text="Storage Provider" required />
+          <Label text={t("Storage Provider")} required />
           <ProviderGrid
             providers={providers}
             selectedProvider={formData.provider}

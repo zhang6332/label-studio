@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 /**
  * To mock a request, you can define the endpoint inside `endpoints` with a schema that looks like this:
  * endpointName: {                                                        // endpointName is what is used when calling callAPI, passed in as a string
@@ -127,7 +128,7 @@ export const API_CONFIG = {
           duplication_done: null,
           require_comment_on_skip: false,
           data_types: {
-            text: "Text",
+            text: t("Text"),
           },
           reviewer_queue_total: 0,
           queue_left: 0,

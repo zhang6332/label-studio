@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useState } from "react";
 import { IconWarning, ToastType, useToast } from "@humansignal/ui";
 
@@ -34,13 +35,13 @@ export const HotkeysHeaderButtons = () => {
     <>
       <div className={`${styles.flexRow} justify-end gap-tight`}>
         <Button variant="neutral" look="outlined" onClick={() => setImportDialogOpen(true)}>
-          Import
+          {t("Import")}
         </Button>
         <Button variant="neutral" look="outlined" onClick={handleExportHotkeys}>
-          Export
+          {t("Export")}
         </Button>
         <Button variant="negative" look="outlined" onClick={handleResetToDefaults}>
-          Reset to Defaults
+          {t("Reset to Defaults")}
         </Button>
       </div>
 
@@ -247,7 +248,7 @@ export const HotkeysManager = () => {
       setDirtyState({});
 
       if (toast) {
-        toast.show({ message: "Hotkeys imported successfully", type: ToastType.info });
+        toast.show({ message: t("Hotkeys imported successfully"), type: ToastType.info });
       }
     } catch (error: unknown) {
       if (toast) {
@@ -324,7 +325,7 @@ export const HotkeysManager = () => {
       <Dialog open={duplicateConfirmDialog.open} onOpenChange={handleCancelDuplicate}>
         <DialogContent className="bg-neutral-surface">
           <DialogHeader>
-            <DialogTitle>Warning: Duplicate Hotkey Detected</DialogTitle>
+            <DialogTitle>{t("Warning: Duplicate Hotkey Detected")}</DialogTitle>
             <DialogDescription>
               The hotkey combination "<strong>{duplicateConfirmDialog.newKey}</strong>" is already being used by:
             </DialogDescription>
@@ -358,15 +359,15 @@ export const HotkeysManager = () => {
               <IconWarning className="text-warning-icon" />
             </div>
             <div>
-              Having duplicate hotkeys may cause conflicts and unexpected behavior. Are you sure you want to proceed?
+              {t("Having duplicate hotkeys may cause conflicts and unexpected behavior. Are you sure you want to proceed?")}
             </div>
           </DialogDescription>
 
           <DialogFooter>
             <Button variant="neutral" onClick={handleCancelDuplicate}>
-              Cancel
+              {t("Cancel")}
             </Button>
-            <Button onClick={handleConfirmDuplicate}>Allow Duplicate</Button>
+            <Button onClick={handleConfirmDuplicate}>{t("Allow Duplicate")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

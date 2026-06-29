@@ -2,6 +2,7 @@
  * @deprecated this file is not used; AnnotationsCarousel is used instead
  */
 
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Space } from "../../common/Space/Space";
@@ -140,7 +141,7 @@ export const Annotations = observer(({ store, annotationStore, commentStore }) =
       <div className={cn("annotations-list").toClassName()} ref={dropdownRef}>
         <div className={cn("annotations-list").elem("selected").toClassName()}>
           <Annotation
-            aria-label="Annotations List Toggle"
+            aria-label={t("Annotations List Toggle")}
             entity={annotationStore.selected}
             onClick={(e) => {
               e.stopPropagation();
@@ -184,14 +185,14 @@ const CreateAnnotation = observer(({ annotationStore, onClick }) => {
   return (
     <div
       className={cn("annotations-list").elem("create").toClassName()}
-      aria-label="Create Annotation"
+      aria-label={t("Create Annotation")}
       onClick={onCreateAnnotation}
     >
       <Space size="small">
         <Userpic className={cn("annotations-list").elem("userpic").mod({ prediction: true }).toClassName()}>
           <IconPlusCircle />
         </Userpic>
-        Create Annotation
+        {t("Create Annotation")}
       </Space>
     </div>
   );
@@ -229,7 +230,7 @@ const Annotation = observer(({ entity, selected, onClick, extra, ...props }) => 
               </div>
             ) : (
               <div className={cn("annotations-list").elem("created").toClassName()}>
-                created,{" "}
+                {t("created,")}{" "}
                 <TimeAgo className={cn("annotations-list").elem("date").toClassName()} date={entity.createdDate} />
               </div>
             )}

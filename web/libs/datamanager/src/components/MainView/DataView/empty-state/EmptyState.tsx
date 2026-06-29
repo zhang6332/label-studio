@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import React, { type FC, type ReactNode } from "react";
 import {
   IconUpload,
@@ -137,28 +138,28 @@ const renderEmptyStateLayout = ({
 // Storage provider icons component
 const StorageProviderIcons = () => (
   <div className="flex items-center justify-center gap-base mb-wide" data-testid="dm-storage-provider-icons">
-    <Tooltip title="Amazon S3">
-      <div className="flex items-center justify-center p-2" aria-label="Amazon S3">
+    <Tooltip title={t("Amazon S3")}>
+      <div className="flex items-center justify-center p-2" aria-label={t("Amazon S3")}>
         <IconCloudProviderS3 width={32} height={32} className="text-neutral-content-subtler" />
       </div>
     </Tooltip>
-    <Tooltip title="Google Cloud Storage">
-      <div className="flex items-center justify-center p-2" aria-label="Google Cloud Storage">
+    <Tooltip title={t("Google Cloud Storage")}>
+      <div className="flex items-center justify-center p-2" aria-label={t("Google Cloud Storage")}>
         <IconCloudProviderGCS width={32} height={32} className="text-neutral-content-subtler" />
       </div>
     </Tooltip>
-    <Tooltip title="Azure Blob Storage">
-      <div className="flex items-center justify-center p-2" aria-label="Azure Blob Storage">
+    <Tooltip title={t("Azure Blob Storage")}>
+      <div className="flex items-center justify-center p-2" aria-label={t("Azure Blob Storage")}>
         <IconCloudProviderAzure width={32} height={32} className="text-neutral-content-subtler" />
       </div>
     </Tooltip>
-    <Tooltip title="Redis Storage">
-      <div className="flex items-center justify-center p-2" aria-label="Redis Storage">
+    <Tooltip title={t("Redis Storage")}>
+      <div className="flex items-center justify-center p-2" aria-label={t("Redis Storage")}>
         <IconCloudProviderRedis width={32} height={32} className="text-neutral-content-subtler" />
       </div>
     </Tooltip>
-    <Tooltip title="Aliyun OSS">
-      <div className="flex items-center justify-center p-2" aria-label="Aliyun OSS">
+    <Tooltip title={t("Aliyun OSS")}>
+      <div className="flex items-center justify-center p-2" aria-label={t("Aliyun OSS")}>
         <IconCloudCustom width={32} height={32} className="text-neutral-content-subtler" />
       </div>
     </Tooltip>
@@ -180,8 +181,8 @@ const DocumentationLink = () => {
         className="inline-flex items-center gap-1"
         data-testid="dm-docs-data-import-link"
       >
-        See docs on importing data
-        <span className="sr-only"> (opens in a new tab)</span>
+        {t("See docs on importing data")}
+        <span className="sr-only"> {t("(opens in a new tab)")}</span>
         <IconExternal width={20} height={20} />
       </a>
     </Typography>
@@ -231,7 +232,7 @@ export const EmptyState: FC<EmptyStateProps> = ({
       description: "Try adjusting or clearing the filters to see more results",
       actions: (
         <Button variant="primary" look="outlined" onClick={onClearFilters} data-testid="dm-clear-filters-button">
-          Clear Filters
+          {t("Clear Filters")}
         </Button>
       ),
     });
@@ -268,7 +269,7 @@ export const EmptyState: FC<EmptyStateProps> = ({
               onClick={onLabelAllTasks}
               data-testid="dm-label-all-tasks-button"
             >
-              Label All Tasks
+              {t("Label All Tasks")}
             </Button>
           ),
         });
@@ -277,7 +278,7 @@ export const EmptyState: FC<EmptyStateProps> = ({
       if (isManualDistribution) {
         return renderEmptyStateLayout({
           icon: <IconInbox />,
-          title: "No tasks available",
+          title: t("No tasks available"),
           description: "Tasks assigned to you will appear here",
         });
       }
@@ -285,7 +286,7 @@ export const EmptyState: FC<EmptyStateProps> = ({
       // Fallback for annotators with unknown distribution setting
       return renderEmptyStateLayout({
         icon: <IconInbox width={40} height={40} />,
-        title: "No tasks available",
+        title: t("No tasks available"),
         description: "Tasks will appear here when they become available",
       });
     }
@@ -294,7 +295,7 @@ export const EmptyState: FC<EmptyStateProps> = ({
   // Default case: show import functionality (existing behavior for Owners/Admins/Managers)
   return renderEmptyStateLayout({
     icon: <IconUpload />,
-    title: "Import data to get your project started",
+    title: t("Import data to get your project started"),
     description: "Connect your cloud storage or upload files from your computer",
     testId: "empty-state-label",
     ariaLabelledBy: "dm-empty-title",
@@ -310,7 +311,7 @@ export const EmptyState: FC<EmptyStateProps> = ({
             onClick={onOpenSourceStorageModal}
             data-testid="dm-connect-source-storage-button"
           >
-            Connect Cloud Storage
+            {t("Connect Cloud Storage")}
           </Button>
         )}
 
@@ -322,7 +323,7 @@ export const EmptyState: FC<EmptyStateProps> = ({
             onClick={onOpenImportModal}
             data-testid="dm-import-button"
           >
-            Import
+            {t("Import")}
           </Button>
         )}
       </>

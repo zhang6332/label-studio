@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import { useCallback, useMemo } from "react";
@@ -82,7 +83,7 @@ export const FilterOperation = observer(({ filter, field, operator, value, disab
     <>
       <div className={columnClass.mix("operation").toClassName()}>
         <FilterDropdown
-          placeholder="Condition"
+          placeholder={t("Condition")}
           value={filter.operator}
           disabled={types.length === 1 || disabled}
           items={availableOperators ? operators.filter((op) => availableOperators.includes(op.value)) : operators}

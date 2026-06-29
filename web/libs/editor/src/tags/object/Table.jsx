@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Table } from "antd";
 import { inject, observer } from "mobx-react";
 import { flow, getEnv, types } from "mobx-state-tree";
@@ -96,14 +97,14 @@ const Model = types
         }
         // Otherwise, use generic Name/Value columns
         return [
-          { title: "Name", dataIndex: "type" },
-          { title: "Value", dataIndex: "value" },
+          { title: t("Name"), dataIndex: "type" },
+          { title: t("Value"), dataIndex: "value" },
         ];
       }
       if (!self._value[0]) {
         return [
-          { title: "Name", dataIndex: "type" },
-          { title: "Value", dataIndex: "value" },
+          { title: t("Name"), dataIndex: "type" },
+          { title: t("Value"), dataIndex: "value" },
         ];
       }
       return Object.keys(self._value[0]).map((value) => ({ title: value, dataIndex: value }));

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useMemo, useState, useEffect, useRef, useCallback } from "react";
 import { flexRender, getCoreRowModel, useReactTable, createColumnHelper } from "@tanstack/react-table";
 import type { ColumnDef, Row } from "@tanstack/react-table";
@@ -83,7 +84,7 @@ const ObservableCell = observer(
     ) : (
       (render?.(results, control) ?? (
         <span className="inline-flex items-center px-2 py-0.5 rounded-4 bg-neutral-surface-active text-xs font-medium">
-          {results.length} result{results.length > 1 ? "s" : ""}
+          {results.length} {t("result")}{results.length > 1 ? "s" : ""}
         </span>
       ))
     );
@@ -404,7 +405,7 @@ export const LabelingSummary = observer(({ hideInfo, annotations: all, controls,
       }),
     );
     columns.unshift({
-      header: "Annotator",
+      header: t("Annotator"),
       accessorKey: "id",
       size: columnWidths.id || 180,
       minSize: 150,

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type React from "react";
 import { type FC, useContext, useEffect, useMemo, useState } from "react";
 import { Tooltip, Select } from "@humansignal/ui";
@@ -44,7 +45,7 @@ const WINDOWING_OPTIONS = [
   { value: "hamming", label: "Hamming" },
   { value: "blackman", label: "Blackman" },
   { value: "sine", label: "Sine" },
-  { value: "rectangular", label: "Rectangular" },
+  { value: "rectangular", label: t("Rectangular") },
 ];
 
 // Colormap Helper functions
@@ -426,7 +427,7 @@ export const SpectrogramControl: FC<SpectrogramControlProps> = ({ waveform }) =>
   return (
     <div className={cn("spectrogram-controls").toClassName()}>
       {showWarning && (
-        <Tooltip title="High FFT or mel band values may cause performance issues or artifacts.">
+        <Tooltip title={t("High FFT or mel band values may cause performance issues or artifacts.")}>
           <IconWarningCircleFilled
             style={{
               color: "var(--color-warning-icon, #faad14)",
@@ -453,7 +454,7 @@ export const SpectrogramControl: FC<SpectrogramControlProps> = ({ waveform }) =>
         />
         <div className={cn("spectrogram-controls").elem("control").toClassName()}>
           <div className={cn("spectrogram-controls").elem("info").toClassName()}>
-            FFT Samples
+            {t("FFT Samples")}
             <Tooltip title={fftInfoText}>
               <IconInfoConfig />
             </Tooltip>
@@ -468,8 +469,8 @@ export const SpectrogramControl: FC<SpectrogramControlProps> = ({ waveform }) =>
       </div>
       <div className={cn("spectrogram-controls").elem("spectrogram-controls").toClassName()}>
         <div className={cn("spectrogram-controls").elem("info").toClassName()}>
-          Scale
-          <Tooltip title="Determines the frequency scale mapping: Linear, Logarithmic, or Mel (perceptual).">
+          {t("Scale")}
+          <Tooltip title={t("Determines the frequency scale mapping: Linear, Logarithmic, or Mel (perceptual).")}>
             <IconInfoConfig />
           </Tooltip>
         </div>
@@ -502,8 +503,8 @@ export const SpectrogramControl: FC<SpectrogramControlProps> = ({ waveform }) =>
         />
         <div className={cn("spectrogram-controls").elem("control").toClassName()}>
           <div className={cn("spectrogram-controls").elem("info").toClassName()}>
-            Spectogram dB
-            <Tooltip title="Controls the range of decibel values shown in the spectrogram. Lower values show quieter sounds.">
+            {t("Spectogram dB")}
+            <Tooltip title={t("Controls the range of decibel values shown in the spectrogram. Lower values show quieter sounds.")}>
               <IconInfoConfig />
             </Tooltip>
           </div>
@@ -539,7 +540,7 @@ export const SpectrogramControl: FC<SpectrogramControlProps> = ({ waveform }) =>
         </div>
       </div>
       <div className={cn("spectrogram-controls").elem("spectrogram-controls").toClassName()}>
-        <div className={cn("spectrogram-controls").elem("label").toClassName()}>Windowing Function</div>
+        <div className={cn("spectrogram-controls").elem("label").toClassName()}>{t("Windowing Function")}</div>
         <Select
           value={displayWindowFunc}
           onChange={handleChangeWindowingFunction}
@@ -548,7 +549,7 @@ export const SpectrogramControl: FC<SpectrogramControlProps> = ({ waveform }) =>
         />
       </div>
       <div className={cn("spectrogram-controls").elem("spectrogram-controls").toClassName()}>
-        <div className={cn("spectrogram-controls").elem("label").toClassName()}>Color Scheme</div>
+        <div className={cn("spectrogram-controls").elem("label").toClassName()}>{t("Color Scheme")}</div>
         <Select
           value={displayColorScheme}
           onChange={handleChangeColorScheme}

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import { Button } from "@humansignal/ui";
 import {
@@ -40,7 +41,7 @@ export default observer(({ store }) => {
             ev.preventDefault();
           }}
         >
-          Undo
+          {t("Undo")}
           {store.settings.enableHotkeys && store.settings.enableTooltips && <Hint>[ Ctrl+z ]</Hint>}
         </Button>
         <Button
@@ -52,7 +53,7 @@ export default observer(({ store }) => {
             ev.preventDefault();
           }}
         >
-          Redo
+          {t("Redo")}
         </Button>
         <Button
           type="ghost"
@@ -62,7 +63,7 @@ export default observer(({ store }) => {
             history && history.reset();
           }}
         >
-          Reset
+          {t("Reset")}
         </Button>
         {store.setPrelabeling && (
           <Button
@@ -72,7 +73,7 @@ export default observer(({ store }) => {
               store.resetPrelabeling();
             }}
           >
-            Reset Prelabeling
+            {t("Reset Prelabeling")}
           </Button>
         )}
         {store.hasInterface("debug") && (
@@ -91,7 +92,7 @@ export default observer(({ store }) => {
               store.toggleDescription();
             }}
           >
-            Hide Instructions
+            {t("Hide Instructions")}
           </Button>
         )}
         {store.description && !store.showingDescription && (
@@ -101,7 +102,7 @@ export default observer(({ store }) => {
               store.toggleDescription();
             }}
           >
-            Instructions
+            {t("Instructions")}
           </Button>
         )}
 

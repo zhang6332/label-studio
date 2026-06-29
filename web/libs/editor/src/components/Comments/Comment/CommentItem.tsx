@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import type React from "react";
 import { type FC, useCallback, useContext, useMemo, useState } from "react";
@@ -205,19 +206,19 @@ export const CommentItem: FC<CommentItemProps> = observer(
               </>
             ) : isConfirmDelete ? (
               <div className={cn("comment-item").elem("confirmForm").toClassName()}>
-                <div className={cn("comment-item").elem("question").toClassName()}>Are you sure?</div>
+                <div className={cn("comment-item").elem("question").toClassName()}>{t("Are you sure?")}</div>
                 <div className={cn("comment-item").elem("controls").toClassName()}>
                   <Button
                     onClick={() => deleteComment()}
                     size="small"
                     look="danger"
                     autoFocus
-                    aria-label="Delete comment"
+                    aria-label={t("Delete comment")}
                   >
-                    Yes
+                    {t("Yes")}
                   </Button>
-                  <Button onClick={() => setConfirmMode(false)} size="small" aria-label="Cancel delete">
-                    No
+                  <Button onClick={() => setConfirmMode(false)} size="small" aria-label={t("Cancel delete")}>
+                    {t("No")}
                   </Button>
                 </div>
               </div>
@@ -273,7 +274,7 @@ export const CommentItem: FC<CommentItemProps> = observer(
                               setConfirmMode(true);
                             }}
                           >
-                            Delete
+                            {t("Delete")}
                           </Menu.Item>
                         )}
                       </>
@@ -281,7 +282,7 @@ export const CommentItem: FC<CommentItemProps> = observer(
                   </Menu>
                 }
               >
-                <Button size="small" look="string" icon={<IconEllipsis />} aria-label="Comment options" />
+                <Button size="small" look="string" icon={<IconEllipsis />} aria-label={t("Comment options")} />
               </Dropdown.Trigger>
             )}
           </div>

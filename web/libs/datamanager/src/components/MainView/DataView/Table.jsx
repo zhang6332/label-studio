@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { IconQuestionOutline } from "@humansignal/icons";
 import { Tooltip, Badge, EnterpriseBadge } from "@humansignal/ui";
 import { inject } from "mobx-react";
@@ -186,9 +187,9 @@ export const DataView = injector(
         if (store.SDK.type === "DE" && ["canceled", "failed"].includes(datasetStatusID)) {
           return (
             <div className={cn("syncInProgress").toClassName()}>
-              <h3 className={cn("syncInProgress").elem("title").toClassName()}>Failed to sync data</h3>
+              <h3 className={cn("syncInProgress").elem("title").toClassName()}>{t("Failed to sync data")}</h3>
               <div className={cn("syncInProgress").elem("text").toClassName()}>
-                Check your storage settings. You may need to recreate this dataset
+                {t("Check your storage settings. You may need to recreate this dataset")}
               </div>
             </div>
           );
@@ -200,9 +201,9 @@ export const DataView = injector(
         ) {
           return (
             <div className={cn("syncInProgress").toClassName()}>
-              <h3 className={cn("syncInProgress").elem("title").toClassName()}>Nothing found</h3>
+              <h3 className={cn("syncInProgress").elem("title").toClassName()}>{t("Nothing found")}</h3>
               <div className={cn("syncInProgress").elem("text").toClassName()}>
-                Try adjusting the filter or similarity search parameters
+                {t("Try adjusting the filter or similarity search parameters")}
               </div>
             </div>
           );
@@ -211,10 +212,10 @@ export const DataView = injector(
           return (
             <div className={cn("syncInProgress").toClassName()}>
               <h3 className={cn("syncInProgress").elem("title").toClassName()}>
-                Hang tight! Records are syncing in the background
+                {t("Hang tight! Records are syncing in the background")}
               </h3>
               <div className={cn("syncInProgress").elem("text").toClassName()}>
-                Press the button below to see any synced records
+                {t("Press the button below to see any synced records")}
               </div>
               <Button
                 size="small"
@@ -227,7 +228,7 @@ export const DataView = injector(
                   await store.currentView?.reload();
                 }}
               >
-                Refresh
+                {t("Refresh")}
               </Button>
             </div>
           );

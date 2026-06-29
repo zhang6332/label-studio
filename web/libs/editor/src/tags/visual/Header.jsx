@@ -8,6 +8,7 @@ import { guidGenerator } from "../../utils/unique";
 import { clamp } from "../../utils/utilities";
 import "./Header.scss";
 import { Typography } from "@humansignal/ui";
+import { t } from "@humansignal/core";
 
 /**
  * The `Header` tag is used to show a header on the labeling interface.
@@ -59,7 +60,7 @@ const HtxHeader = observer(({ item }) => {
       style={style}
       className={item.underline ? "underline" : ""}
     >
-      {item._value}
+      {t(item._value)}
     </Typography>
   );
 });

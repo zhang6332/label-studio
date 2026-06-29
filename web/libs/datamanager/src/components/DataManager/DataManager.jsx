@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject, observer } from "mobx-react";
 import { useCallback } from "react";
 import { Draggable } from "react-beautiful-dnd";
@@ -47,18 +48,18 @@ const ProjectSummary = summaryInjector((props) => {
     <Space size="large" style={{ paddingRight: "1em", color: "var(--color-neutral-content-subtle)" }}>
       {props.cloudSync && (
         <Space size="small" style={{ fontSize: 12, fontWeight: 400, opacity: 0.8 }}>
-          Storage sync
+          {t("Storage sync")}
           <Spinner size="small" />
         </Space>
       )}
       <span style={{ display: "flex", alignItems: "center", fontSize: 12 }}>
         <Space size="compact">
           <span>
-            Tasks: <span title="Filtered tasks">{props.totalFoundTasks}</span> /{" "}
-            <span title="Total tasks in the project">{props.totalTasks}</span>
+            {t("Tasks:")} <span title={t("Filtered tasks")}>{props.totalFoundTasks}</span> /{" "}
+            <span title={t("Total tasks in the project")}>{props.totalTasks}</span>
           </span>
-          <span>Submitted annotations: {props.totalAnnotations}</span>
-          <span>Predictions: {props.totalPredictions}</span>
+          <span>{t("Submitted annotations:")} {props.totalAnnotations}</span>
+          <span>{t("Predictions:")} {props.totalPredictions}</span>
         </Space>
       </span>
     </Space>

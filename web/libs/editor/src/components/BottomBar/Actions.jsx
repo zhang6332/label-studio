@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { IconInfoOutline, IconSettings } from "@humansignal/icons";
 import { Button } from "@humansignal/ui";
 import { isStarterCloudPlan } from "@humansignal/core";
@@ -24,7 +25,7 @@ export const Actions = ({ store }) => {
         {store.description && store.hasInterface("instruction") && (
           <Button
             type="text"
-            aria-label="Instructions"
+            aria-label={t("Instructions")}
             size="small"
             variant="neutral"
             look="string"
@@ -37,7 +38,7 @@ export const Actions = ({ store }) => {
         )}
         <Button
           type="text"
-          aria-label="Settings"
+          aria-label={t("Settings")}
           size="small"
           look="string"
           variant="neutral"

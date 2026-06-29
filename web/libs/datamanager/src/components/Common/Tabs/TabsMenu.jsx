@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useMemo } from "react";
 import { Menu } from "../Menu/Menu";
 
@@ -19,7 +20,7 @@ export const TabsMenu = ({ onClick, editable = true, closable = true, clonable =
       },
       {
         key: "save",
-        title: "Save",
+        title: t("Save"),
         enabled: virtual,
         action: () => onClick("save"),
         willLeave: true,
@@ -44,7 +45,7 @@ export const TabsMenu = ({ onClick, editable = true, closable = true, clonable =
         <>
           {showDivider && <Menu.Divider />}
           <Menu.Item onClick={() => onClick("close")} data-leave>
-            Close
+            {t("Close")}
           </Menu.Item>
         </>
       ) : null}

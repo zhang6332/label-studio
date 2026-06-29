@@ -1,3 +1,4 @@
+import { t } from "../../../i18n";
 import React from "react";
 import { Spinner } from "../../../components";
 import { useAPI } from "../../../providers/ApiProvider";
@@ -10,7 +11,7 @@ const listClass = cn("templates-list");
 
 const Arrow = () => (
   <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <title>Arrow Icon</title>
+    <title>{t("Arrow Icon")}</title>
     <path opacity="0.9" d="M2 10L6 6L2 2" stroke="currentColor" strokeWidth="2" strokeLinecap="square" />
   </svg>
 );
@@ -34,11 +35,11 @@ const TemplatesInGroup = ({ templates, group, onSelectRecipe, isEdition }) => {
             key={recipe.title}
             onClick={() => !isDisabled && onSelectRecipe(recipe)}
             className={listClass.elem("template").mod({ disabled: isDisabled }).toClassName()}
-            title={isDisabled ? "Enterprise feature - Available in Label Studio Enterprise" : ""}
+            title={isDisabled ? t("Enterprise feature - Available in Label Studio Enterprise") : ""}
           >
             <img src={recipe.image} alt={""} />
             <div className="flex flex-col items-center w-full">
-              <h3 className="flex flex-1 justify-center text-center w-full">{recipe.title}</h3>
+              <h3 className="flex flex-1 justify-center text-center w-full">{t(recipe.title)}</h3>
               {isEnterpriseTemplate && isCommunityEdition && <EnterpriseBadge className="mb-base" />}
             </div>
           </li>
@@ -85,7 +86,7 @@ export const TemplatesList = ({ selectedGroup, selectedRecipe, onCustomTemplate,
                 })
                 .toClassName()}
             >
-              {group}
+              {t(group)}
               <Arrow />
             </li>
           ))}
@@ -97,9 +98,9 @@ export const TemplatesList = ({ selectedGroup, selectedRecipe, onCustomTemplate,
           size="small"
           onClick={onCustomTemplate}
           className="w-full"
-          aria-label="Create custom template"
+          aria-label={t("Create custom template")}
         >
-          Custom template
+          {t("Custom template")}
         </Button>
       </aside>
       <main>
@@ -114,9 +115,9 @@ export const TemplatesList = ({ selectedGroup, selectedRecipe, onCustomTemplate,
       <footer className="flex items-center justify-center gap-1">
         <IconInfo className={listClass.elem("info-icon").toClassName()} width="20" height="20" />
         <span>
-          See the documentation to{" "}
+          {t("See the documentation to")}{" "}
           <a href="https://labelstud.io/guide" target="_blank" rel="noreferrer">
-            contribute a template
+            {t("contribute a template")}
           </a>
           .
         </span>

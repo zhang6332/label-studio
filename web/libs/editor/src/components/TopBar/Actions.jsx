@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Button } from "@humansignal/ui";
 import { IconCopy, IconInfo, IconViewAll, IconTrash, IconSettings } from "@humansignal/icons";
 import { Tooltip } from "@humansignal/ui";
@@ -24,10 +25,10 @@ export const Actions = ({ store }) => {
   return (
     <div className={cn("topbar").elem("section").toClassName()}>
       {store.hasInterface("annotations:view-all") && !isBulkMode && (
-        <Tooltip title="Compare all annotations">
+        <Tooltip title={t("Compare all annotations")}>
           <Button
             icon={<IconViewAll />}
-            aria-label="Compare all annotations"
+            aria-label={t("Compare all annotations")}
             onClick={() => onToggleVisibility()}
             variant={isViewAll ? "primary" : "neutral"}
             look={isViewAll ? "filled" : "string"}
@@ -45,16 +46,16 @@ export const Actions = ({ store }) => {
       {!isPrediction && !isViewAll && store.hasInterface("edit-history") && <EditingHistory entity={entity} />}
 
       {!isViewAll && !isBulkMode && store.hasInterface("annotations:delete") && (
-        <Tooltip title="Delete annotation">
+        <Tooltip title={t("Delete annotation")}>
           <Button
             icon={<IconTrash />}
             variant="negative"
             look="string"
             type="text"
-            aria-label="Delete"
+            aria-label={t("Delete")}
             onClick={() => {
               confirm({
-                title: "Delete annotation",
+                title: t("Delete annotation"),
                 body: "This action cannot be undone",
                 buttonLook: "destructive",
                 okText: "Proceed",
@@ -77,7 +78,7 @@ export const Actions = ({ store }) => {
             variant="neutral"
             look="string"
             type="text"
-            aria-label="Copy Annotation"
+            aria-label={t("Copy Annotation")}
             onClick={(ev) => {
               ev.preventDefault();
 
@@ -102,7 +103,7 @@ export const Actions = ({ store }) => {
         icon={<IconSettings />}
         variant="neutral"
         look="string"
-        aria-label="Settings"
+        aria-label={t("Settings")}
         onClick={() => store.toggleSettings()}
         style={{
           height: 36,
@@ -116,7 +117,7 @@ export const Actions = ({ store }) => {
           icon={<IconInfo style={{ width: 16, height: 16 }} />}
           variant={store.showingDescription ? "primary" : "neutral"}
           look={store.showingDescription ? "filled" : "string"}
-          aria-label="Instructions"
+          aria-label={t("Instructions")}
           onClick={() => store.toggleDescription()}
           style={{
             height: 36,

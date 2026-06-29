@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import React, { useState } from "react";
 import { useParams as useRouterParams } from "react-router";
 import { Redirect } from "react-router-dom";
@@ -163,8 +164,8 @@ ProjectsPage.routes = ({ store }) => [
 ProjectsPage.context = ({ openModal, showButton }) => {
   if (!showButton) return null;
   return (
-    <Button onClick={openModal} size="small" aria-label="Create new project">
-      Create
+    <Button onClick={openModal} size="small" aria-label={t("Create new project")}>
+      {t("Create")}
     </Button>
   );
 };

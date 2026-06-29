@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type React from "react";
 import { type FC, type MouseEvent, useContext, useEffect, useState } from "react";
 import { Toggle } from "@humansignal/ui";
@@ -82,10 +83,10 @@ export const ConfigControl: FC<ConfigControlProps> = ({
     return (
       <div className={cn("audio-config").elem("buttons").toClassName()}>
         <div className={cn("audio-config").elem("menu-button").toClassName()} onClick={handleSetTimeline}>
-          {isTimeline ? "Hide" : "Show"} timeline
+          {isTimeline ? "Hide" : "Show"} {t("timeline")}
         </div>
         <div className={cn("audio-config").elem("menu-button").toClassName()} onClick={handleSetAudioWave}>
-          {isAudioWave ? "Hide" : "Show"} audio wave
+          {isAudioWave ? "Hide" : "Show"} {t("audio wave")}
         </div>
       </div>
     );
@@ -116,14 +117,14 @@ export const ConfigControl: FC<ConfigControlProps> = ({
           <Toggle
             checked={settings?.loopRegion}
             onChange={(e) => changeSetting?.("loopRegion", e.target.checked)}
-            label="Loop Regions"
+            label={t("Loop Regions")}
           />
         </div>
         <div className={cn("audio-config").elem("toggle").toClassName()}>
           <Toggle
             checked={settings?.autoPlayNewSegments}
             onChange={(e) => changeSetting?.("autoPlayNewSegments", e.target.checked)}
-            label="Auto-play New Regions"
+            label={t("Auto-play New Regions")}
           />
         </div>
         {renderLayerToggles()}

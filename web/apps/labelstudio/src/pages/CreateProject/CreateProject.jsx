@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import { EnterpriseBadge, Select, Typography } from "@humansignal/ui";
 import React from "react";
 import { useHistory } from "react-router";
@@ -28,7 +29,7 @@ const ProjectName = ({ name, setName, onSaveName, onSubmit, error, description, 
     >
       <div className="w-full flex flex-col gap-2">
         <label className="w-full" htmlFor="project_name">
-          Project Name
+          {t("Project Name")}
         </label>
         <Input
           name="name"
@@ -42,12 +43,12 @@ const ProjectName = ({ name, setName, onSaveName, onSubmit, error, description, 
       </div>
       <div className="w-full flex flex-col gap-2">
         <label className="w-full" htmlFor="project_description">
-          Description
+          {t("Description")}
         </label>
         <TextArea
           name="description"
           id="project_description"
-          placeholder="Optional description of your project"
+          placeholder={t("Optional description of your project")}
           rows="4"
           style={{ minHeight: 100 }}
           value={description}
@@ -58,12 +59,12 @@ const ProjectName = ({ name, setName, onSaveName, onSubmit, error, description, 
       {isFF(FF_LSDV_E_297) && (
         <div className="w-full flex flex-col gap-2">
           <label>
-            Workspace
+            {t("Workspace")}
             <EnterpriseBadge className="ml-tight" />
           </label>
-          <Select placeholder="Select an option" disabled options={[]} triggerClassName="!flex-1" />
+          <Select placeholder={t("Select an option")} disabled options={[]} triggerClassName="!flex-1" />
           <Typography size="small" className="mt-tight mb-wider">
-            Simplify project management by organizing projects into workspaces.{" "}
+            {t("Simplify project management by organizing projects into workspaces.")}{" "}
             <a
               href={createURL(
                 "https://docs.humansignal.com/guide/manage_projects#Create-workspaces-to-organize-projects",
@@ -76,7 +77,7 @@ const ProjectName = ({ name, setName, onSaveName, onSubmit, error, description, 
               rel="noreferrer"
               className="underline hover:no-underline"
             >
-              Learn more
+              {t("Learn more")}
             </a>
           </Typography>
           <HeidiTips collection="projectCreation" />
@@ -117,8 +118,8 @@ export const CreateProject = ({ onClose }) => {
   const rootClass = cn("create-project");
   const tabClass = rootClass.elem("tab");
   const steps = {
-    name: <span className={tabClass.mod({ disabled: !!error }).toClassName()}>Project Name</span>,
-    import: <span className={tabClass.mod({ disabled: uploadDisabled }).toClassName()}>Data Import</span>,
+    name: <span className={tabClass.mod({ disabled: !!error }).toClassName()}>{t("Project Name")}</span>,
+    import: <span className={tabClass.mod({ disabled: uploadDisabled }).toClassName()}>{t("Data Import")}</span>,
     config: "Labeling Setup",
   };
 
@@ -200,7 +201,7 @@ export const CreateProject = ({ onClose }) => {
     <Modal onHide={onDelete} closeOnClickOutside={false} allowToInterceptEscape fullscreen visible bare>
       <div className={rootClass}>
         <Modal.Header>
-          <h1>Create Project</h1>
+          <h1>{t("Create Project")}</h1>
           <ToggleItems items={steps} active={step} onSelect={setStep} />
 
           <Space>
@@ -209,9 +210,9 @@ export const CreateProject = ({ onClose }) => {
               look="outlined"
               onClick={onDelete}
               waiting={waiting}
-              aria-label="Cancel project creation"
+              aria-label={t("Cancel project creation")}
             >
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button
               look="primary"
@@ -220,7 +221,7 @@ export const CreateProject = ({ onClose }) => {
               waitingClickable={false}
               disabled={!project || uploadDisabled || error}
             >
-              Save
+              {t("Save")}
             </Button>
           </Space>
         </Modal.Header>

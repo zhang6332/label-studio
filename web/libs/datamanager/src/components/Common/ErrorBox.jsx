@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject } from "mobx-react";
 import { Button } from "@humansignal/ui";
 import { Dropdown } from "@humansignal/ui";
@@ -22,7 +23,7 @@ export const ErrorBox = injector(({ errors }) => {
   return errors?.size > 0 ? (
     <Dropdown.Trigger content={<Menu>{Array.from(errors.values()).map(ErrorRenderer)}</Menu>}>
       <Button type="text" leading={<IconInfo />}>
-        Errors occurred
+        {t("Errors occurred")}
       </Button>
     </Dropdown.Trigger>
   ) : null;

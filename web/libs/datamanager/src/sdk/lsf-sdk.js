@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Button } from "@humansignal/ui";
 import {
   FF_DEV_1752,
@@ -484,7 +485,7 @@ export class LSFWrapper {
             size="small"
             look="outlined"
           >
-            Next Task
+            {t("Next Task")}
           </Button>
         </div>
       ),
@@ -813,7 +814,7 @@ export class LSFWrapper {
               style={{ color: "inherit", textDecoration: "underline" }}
               onClick={(e) => e.stopPropagation()}
             >
-              contact our team
+              {t("contact our team")}
             </a>{" "}
             if it doesn't help.
           </span>

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { observer } from "mobx-react";
 import { isAlive } from "mobx-state-tree";
@@ -82,7 +83,7 @@ const HtxTextAreaResultLine = forwardRef(
             className={cn("textarea-tag").elem("action").toClassName()}
             size="small"
             look="string"
-            aria-label="Delete Region"
+            aria-label={t("Delete Region")}
             data-testid="textarea-region-delete"
             leading={<IconTrash />}
             onClick={() => {

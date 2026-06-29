@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import React, { Component } from "react";
 import { IconTimelinePause, IconTimelinePlay } from "@humansignal/icons";
 import { Button } from "./Button/Button";
@@ -78,7 +79,7 @@ export class SharedAudio extends Component {
         </Button>
 
         {this.state.error ? (
-          <div>Unable to play</div>
+          <div>{t("Unable to play")}</div>
         ) : this.audio ? (
           <div style={{ display: "flex", flex: 1, alignItems: "center" }}>
             <PlaybackControl

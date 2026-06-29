@@ -1,3 +1,4 @@
+import { t } from "../../../i18n";
 import { useCallback, useContext } from "react";
 
 import { format, formatDistanceToNow, parseISO } from "date-fns";
@@ -44,7 +45,7 @@ const VersionCard = ({ version, selected, onSelect, editable, onDelete }) => {
   const confirmDelete = useCallback(
     (version) => {
       confirm({
-        title: "Delete Predictions",
+        title: t("Delete Predictions"),
         body: "This action cannot be undone. Are you sure?",
         buttonLook: "destructive",
         onOk() {
@@ -61,7 +62,7 @@ const VersionCard = ({ version, selected, onSelect, editable, onDelete }) => {
         <div className={rootClass.elem("title").toClassName()}>
           {version.model_version}
           {version.model_version === "undefined" && (
-            <Tooltip title="Model version is undefined. Likely means that model_version field was missing when predictions were imported.">
+            <Tooltip title={t("Model version is undefined. Likely means that model_version field was missing when predictions were imported.")}>
               <IconInfoOutline className={cn("help-icon").toClassName()} width="14" height="14" />
             </Tooltip>
           )}
@@ -72,7 +73,7 @@ const VersionCard = ({ version, selected, onSelect, editable, onDelete }) => {
             &nbsp;{version.count}
           </div>
           <div className={rootClass.elem("group").toClassName()}>
-            Last prediction created&nbsp;
+            {t("Last prediction created")} 
             <Tooltip title={format(parseISO(version.latest), "yyyy-MM-dd HH:mm:ss")}>
               <span>
                 {formatDistanceToNow(parseISO(version.latest), {
@@ -89,7 +90,7 @@ const VersionCard = ({ version, selected, onSelect, editable, onDelete }) => {
           content={
             <Menu size="medium" contextual>
               <Menu.Item onClick={() => confirmDelete(version)} isDangerous>
-                Delete
+                {t("Delete")}
               </Menu.Item>
             </Menu>
           }

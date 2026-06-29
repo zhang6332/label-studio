@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import chroma from "chroma-js";
 import { observer } from "mobx-react";
 import { flow, types } from "mobx-state-tree";
@@ -68,7 +69,7 @@ import { Tool } from "../components/Toolbar/Tool";
 const ToolView = observer(({ item }) => {
   return (
     <Tool
-      label="Magic Wand"
+      label={t("Magic Wand")}
       ariaLabel="magicwand"
       shortcut="tool:magic-wand"
       active={item.selected}

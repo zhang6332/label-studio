@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { createRef, useCallback } from "react";
 import { Button, Typography } from "@humansignal/ui";
 import { Form, Input } from "antd";
@@ -415,9 +416,9 @@ const HtxTextArea = observer(({ item }) => {
         >
           <Form.Item style={itemStyle}>
             {rows === 1 ? (
-              <Input {...props} aria-label="TextArea Input" data-testid="textarea-input" />
+              <Input {...props} aria-label={t("TextArea Input")} data-testid="textarea-input" />
             ) : (
-              <TextArea {...props} aria-label="TextArea Input" data-testid="textarea-input" />
+              <TextArea {...props} aria-label={t("TextArea Input")} data-testid="textarea-input" />
             )}
             {showAddButton && (
               <div
@@ -468,7 +469,7 @@ const HtxTextArea = observer(({ item }) => {
                       className="text-neutral-content-subtler italic"
                       data-testid="textarea-instruction"
                     >
-                      Press Shift + Enter to Add
+                      {t("Press Shift + Enter to Add")}
                     </Typography>
                   )}
 
@@ -483,7 +484,7 @@ const HtxTextArea = observer(({ item }) => {
                       htmlType="submit"
                       data-testid="textarea-add-button"
                     >
-                      Add
+                      {t("Add")}
                     </Button>
                   </Form.Item>
                 </div>

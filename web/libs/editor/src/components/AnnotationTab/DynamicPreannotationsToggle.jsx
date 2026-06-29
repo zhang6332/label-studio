@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject, observer } from "mobx-react";
 import { useEffect } from "react";
 import { Space } from "../../common/Space/Space";
@@ -29,7 +30,7 @@ export const DynamicPreannotationsToggle = inject("store")(
                   ToolsManager.allInstances().forEach((inst) => inst.selectDefault());
                 }
               }}
-              label="Auto-Annotation"
+              label={t("Auto-Annotation")}
               data-testid="bottombar-auto-annotation-toggle"
             />
           </Space>

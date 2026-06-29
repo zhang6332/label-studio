@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import { SidebarMenu } from "../../components/SidebarMenu/SidebarMenu";
 import { WebhookPage } from "../WebhookPage/WebhookPage";
 import { DangerZone } from "./DangerZone";
@@ -39,7 +40,7 @@ const pages = {
 };
 
 export const SettingsPage = {
-  title: "Settings",
+  title: t("Settings"),
   path: "/settings",
   exact: true,
   layout: MenuLayout,

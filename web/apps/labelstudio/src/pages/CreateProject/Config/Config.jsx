@@ -1,3 +1,4 @@
+import { t } from "../../../i18n";
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import CM from "codemirror";
 import { Button, cnm } from "@humansignal/ui";
@@ -66,12 +67,12 @@ const AdaptivePreview = React.memo(({ config, hasPendingUpdate, onUpdatePreview,
 
 const EmptyConfigPlaceholder = () => (
   <div className={configClass.elem("empty-config").toClassName()}>
-    <p>Your labeling configuration is empty. It is required to label your data.</p>
+    <p>{t("Your labeling configuration is empty. It is required to label your data.")}</p>
     <p>
       Start from one of our predefined templates or create your own config on the Code panel. The labeling config is
       XML-based and you can{" "}
       <a href="https://labelstud.io/tags/" target="_blank" rel="noreferrer">
-        read about the available tags in our documentation
+        {t("read about the available tags in our documentation")}
       </a>
       .
     </p>
@@ -108,7 +109,7 @@ const Label = ({ label, template, color }) => {
         size="smaller"
         variant="negative"
         onClick={() => template.removeLabel(label)}
-        aria-label="delete label"
+        aria-label={t("delete label")}
         className="hidden !p-0 z-10 absolute right-0 [&_span]:!p-0 group-hover:inline-flex"
         leading={<IconTrash className="w-4 h-4 fill-[currentColor]" />}
       />
@@ -139,7 +140,7 @@ const ConfigureControl = ({ control, template }) => {
     <div className={configClass.elem("labels").toClassName()}>
       <form className={configClass.elem("add-labels").toClassName()} action="">
         <h4>{tagname === "Choices" ? "Add choices" : "Add label names"}</h4>
-        <span>Use new line as a separator to add multiple labels</span>
+        <span>{t("Use new line as a separator to add multiple labels")}</span>
         <textarea
           name="labels"
           id=""
@@ -149,8 +150,8 @@ const ConfigureControl = ({ control, template }) => {
           onKeyPress={onKeyPress}
           className="lsf-textarea-ls p-2 px-3"
         />
-        <Button type="button" size="small" look="outlined" onClick={onAddLabels} aria-label="Add labels">
-          Add
+        <Button type="button" size="small" look="outlined" onClick={onAddLabels} aria-label={t("Add labels")}>
+          {t("Add")}
         </Button>
       </form>
       <div className={configClass.elem("current-labels").toClassName()}>
@@ -261,7 +262,7 @@ const ConfigureSettings = ({ template }) => {
   return (
     <ul className={configClass.elem("settings").toClassName()}>
       <li>
-        <h4>Configure settings</h4>
+        <h4>{t("Configure settings")}</h4>
         <ul className={configClass.elem("object-settings").toClassName()}>{items}</ul>
       </li>
     </ul>
@@ -335,7 +336,7 @@ const ConfigureColumn = ({ template, obj, columns }) => {
 
   return (
     <p>
-      Use {obj.tagName.toLowerCase()}
+      {t("Use")} {obj.tagName.toLowerCase()}
       {template.objects > 1 && ` for ${obj.getAttribute("name")}`}
       {" from "}
       {columns?.length > 0 && columns[0] !== DEFAULT_COLUMN && "field "}
@@ -357,10 +358,10 @@ const ConfigureColumns = ({ columns, template }) => {
 
   return (
     <div className={configClass.elem("object").toClassName()}>
-      <h4>Configure data</h4>
+      <h4>{t("Configure data")}</h4>
       {template.objects.length > 1 && columns?.length > 0 && columns.length < template.objects.length && (
         <p className={configClass.elem("object-error").toClassName()}>
-          This template requires more data then you have for now
+          {t("This template requires more data then you have for now")}
         </p>
       )}
       {columns?.length === 0 && (
@@ -611,9 +612,9 @@ const Configurator = ({
 
   const extra = (
     <p className={configClass.elem("tags-link").toClassName()}>
-      Configure the labeling interface with tags.&nbsp;
+      {t("Configure the labeling interface with tags.")} 
       <a href="https://labelstud.io/tags/" target="_blank" rel="noreferrer">
-        See all tags
+        {t("See all tags")}
       </a>
       .
     </p>
@@ -629,7 +630,7 @@ const Configurator = ({
         }}
       >
         <div className="flex flex-col">
-          <h1>Labeling Interface{hasChanges ? " *" : ""}</h1>
+          <h1>{t("Labeling Interface")}{hasChanges ? " *" : ""}</h1>
           <header>
             <Button
               type="button"
@@ -637,9 +638,9 @@ const Configurator = ({
               onClick={onBrowse}
               size="small"
               look="outlined"
-              aria-label="Browse templates"
+              aria-label={t("Browse templates")}
             >
-              Browse Templates
+              {t("Browse Templates")}
             </Button>
             <ToggleItems items={{ code: "Code", visual: "Visual" }} active={configure} onSelect={onSelect} />
           </header>
@@ -694,11 +695,11 @@ const Configurator = ({
               {saved && (
                 <div className={cn("form-indicator").toClassName()}>
                   <span className={cn("form-indicator").elem("item").mod({ type: "success" }).toClassName()}>
-                    Saved!
+                    {t("Saved!")}
                   </span>
                 </div>
               )}
-              <Button className="w-[120px]" onClick={onSave} waiting={waiting} aria-label="Save configuration">
+              <Button className="w-[120px]" onClick={onSave} waiting={waiting} aria-label={t("Save configuration")}>
                 {waiting ? "Saving..." : "Save"}
               </Button>
               {isFF(FF_UNSAVED_CHANGES) && <UnsavedChanges hasChanges={hasChanges} onSave={onSave} />}

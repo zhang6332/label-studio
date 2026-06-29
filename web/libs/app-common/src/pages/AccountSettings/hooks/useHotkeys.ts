@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { confirm } from "@humansignal/ui/lib/modal";
 import { ToastType, useToast } from "@humansignal/ui/lib/toast/toast";
 // @ts-ignore
@@ -225,9 +226,9 @@ export const useHotkeys = () => {
   // Handle resetting all hotkeys to defaults
   const handleResetToDefaults = useCallback(() => {
     confirm({
-      title: "Reset Hotkeys to Defaults?",
+      title: t("Reset Hotkeys to Defaults?"),
       body: "Are you sure you want to reset all hotkeys and settings to their default values? This action cannot be undone.",
-      okText: "Reset to Defaults",
+      okText: t("Reset to Defaults"),
       buttonLook: "negative",
       style: { width: 500 },
       onOk: async () => {
@@ -240,7 +241,7 @@ export const useHotkeys = () => {
           if (result.ok) {
             if (toast) {
               toast.show({
-                message: "All hotkeys and settings have been reset to defaults and saved",
+                message: t("All hotkeys and settings have been reset to defaults and saved"),
                 type: ToastType.info,
               });
             }
@@ -299,7 +300,7 @@ export const useHotkeys = () => {
 
     if (toast) {
       toast.show({
-        message: "Hotkeys exported successfully",
+        message: t("Hotkeys exported successfully"),
         type: ToastType.info,
       });
     }
@@ -327,7 +328,7 @@ export const useHotkeys = () => {
 
         if (toast) {
           toast.show({
-            message: "Hotkeys imported successfully",
+            message: t("Hotkeys imported successfully"),
             type: ToastType.info,
           });
         }

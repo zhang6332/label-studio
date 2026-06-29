@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Button, cnm } from "@humansignal/ui";
 
 interface FormFooterProps {
@@ -46,7 +47,7 @@ export const FormFooter = ({
   return (
     <div className="flex items-center justify-between p-wide border-t border-neutral-border bg-neutral-background">
       <Button look="outlined" onClick={onPrevious} disabled={currentStep === 0}>
-        Previous
+        {t("Previous")}
       </Button>
 
       <div className="flex gap-tight items-center">
@@ -93,7 +94,7 @@ export const FormFooter = ({
 
         {currentStep === totalSteps - 1 && target !== "export" && onSave && (
           <Button onClick={onSave} waiting={saveStorage?.isLoading}>
-            Save
+            {t("Save")}
           </Button>
         )}
       </div>

@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useAPI } from "../../providers/ApiProvider";
@@ -113,7 +114,7 @@ const Webhook = () => {
 };
 
 export const WebhookPage = {
-  title: "Webhooks",
+  title: t("Webhooks"),
   path: "/webhooks",
   component: Webhook,
 };

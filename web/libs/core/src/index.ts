@@ -1,5 +1,9 @@
 import * as ff from "./lib/utils/feature-flags/ff";
 
+// i18n mechanism (t / getLang / setLang / dictionary registry). Exported so
+// libraries (editor, datamanager) can import t() without depending on the app.
+export * from "./i18n";
+
 export * from "./lib/Tour";
 export * from "./lib/preview";
 export * from "./lib/utils/analytics";

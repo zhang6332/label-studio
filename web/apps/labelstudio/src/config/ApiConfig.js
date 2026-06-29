@@ -19,6 +19,8 @@ export const API_CONFIG = {
     organizations: "/organizations",
     allUsers: "/organizations/all-users",
     createUserWithOrgs: "POST:/organizations/create-user",
+    deleteMembership: "DELETE:/organizations/:pk/memberships/:userPk",
+    deleteUser: "DELETE:/users/:pk",
 
     // Project
     projects: "/projects",

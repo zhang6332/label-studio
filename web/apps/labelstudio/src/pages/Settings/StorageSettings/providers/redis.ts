@@ -1,24 +1,25 @@
+import { t } from "../../../../i18n";
 import { z } from "zod";
 import type { ProviderConfig } from "@humansignal/app-common/blocks/StorageProviderForm/types/provider";
 import { IconCloudProviderRedis } from "@humansignal/icons";
 
 export const redisProvider: ProviderConfig = {
   name: "redis",
-  title: "Redis Storage",
-  description: "Configure your Redis storage connection with all required Label Studio settings",
+  title: t("Redis Storage"),
+  description: t("Configure your Redis storage connection with all required Label Studio settings"),
   icon: IconCloudProviderRedis,
   fields: [
     {
       name: "db",
       type: "text",
-      label: "Database Number (db)",
+      label: t("Database Number (db)"),
       placeholder: "1",
       schema: z.string().default("1"),
     },
     {
       name: "password",
       type: "password",
-      label: "Password",
+      label: t("Password"),
       autoComplete: "new-password",
       placeholder: "Your redis password",
       schema: z.string().optional().default(""),
@@ -26,7 +27,7 @@ export const redisProvider: ProviderConfig = {
     {
       name: "host",
       type: "text",
-      label: "Host",
+      label: t("Host"),
       required: true,
       placeholder: "redis://example.com",
       schema: z.string().min(1, "Host is required"),
@@ -34,14 +35,14 @@ export const redisProvider: ProviderConfig = {
     {
       name: "port",
       type: "text",
-      label: "Port",
+      label: t("Port"),
       placeholder: "6379",
       schema: z.string().default("6379"),
     },
     {
       name: "prefix",
       type: "text",
-      label: "Bucket prefix",
+      label: t("Bucket prefix"),
       placeholder: "path/to/files",
       schema: z.string().optional().default(""),
       target: "export",

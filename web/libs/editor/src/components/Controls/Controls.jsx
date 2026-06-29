@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject, observer } from "mobx-react";
 import { CheckCircleOutlined, CheckOutlined } from "@ant-design/icons";
 
@@ -32,7 +33,7 @@ export default inject("store")(
     const updateButtonClassName = cn("update-btn").toClassName();
 
     if (store.task) {
-      taskInformation = <h4 className={`${styles.task} ${taskInfoClassName}`}>Task ID: {store.task.id}</h4>;
+      taskInformation = <h4 className={`${styles.task} ${taskInfoClassName}`}>{t("Task ID:")} {store.task.id}</h4>;
     }
 
     /**
@@ -73,7 +74,7 @@ export default inject("store")(
         skipButton = (
           <>
             {showInfoIcon && (
-              <Tooltip title="Annotators and Reviewers will not be able to skip this task">
+              <Tooltip title={t("Annotators and Reviewers will not be able to skip this task")}>
                 <IconInfoOutline width={20} height={20} className="text-neutral-content ml-auto cursor-pointer" />
               </Tooltip>
             )}
@@ -84,7 +85,7 @@ export default inject("store")(
               tooltip={skipTooltip}
               className={`${styles.skip} ${skipButtonClassName}`}
             >
-              Skip {buttons.skip}
+              {t("Skip")} {buttons.skip}
             </Button>
           </>
         );
@@ -100,7 +101,7 @@ export default inject("store")(
             tooltip="Save results: [ Ctrl+Enter ]"
             className={`${styles.submit} ${submitButtonClassName}`}
           >
-            Submit {buttons.submit}
+            {t("Submit")} {buttons.submit}
           </Button>
         );
       }

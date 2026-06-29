@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useLayoutEffect, useRef, useState } from "react";
 import { cnm, IconChevronDown, Skeleton } from "@humansignal/ui";
 import type { Header } from "@tanstack/react-table";
@@ -169,12 +170,12 @@ export const AggregationCell = ({
   // Handle rating - average over annotations that have a value (matches backend TaskAgreementAPI)
   if (control.type === "rating") {
     const ratings = allResults.map((r) => resultValue(r)).filter(Boolean);
-    if (!ratings.length) return <span className="text-neutral-content-subtler text-xs italic">No ratings</span>;
+    if (!ratings.length) return <span className="text-neutral-content-subtler text-xs italic">{t("No ratings")}</span>;
 
     const avgRating = ratings.reduce((sum, val) => sum + val, 0) / ratings.length;
     return (
       <span className="text-sm font-medium text-neutral-content-subtle">
-        Avg: <span className="font-bold">{avgRating.toFixed(1)}</span> <span className="text-yellow-500">★</span>
+        {t("Avg:")} <span className="font-bold">{avgRating.toFixed(1)}</span> <span className="text-yellow-500">★</span>
       </span>
     );
   }
@@ -182,12 +183,12 @@ export const AggregationCell = ({
   // Handle number - average over annotations that have a value (matches backend TaskAgreementAPI)
   if (control.type === "number") {
     const numbers = allResults.map((r) => resultValue(r)).filter((v) => v !== null && v !== undefined);
-    if (!numbers.length) return <span className="text-neutral-content-subtler text-xs italic">No data</span>;
+    if (!numbers.length) return <span className="text-neutral-content-subtler text-xs italic">{t("No data")}</span>;
 
     const avg = numbers.reduce((sum, val) => sum + Number(val), 0) / numbers.length;
     return (
       <span className="text-sm font-medium text-neutral-content-subtle">
-        Avg: <span className="font-bold">{avg.toFixed(1)}</span>
+        {t("Avg:")} <span className="font-bold">{avg.toFixed(1)}</span>
       </span>
     );
   }
@@ -219,7 +220,7 @@ const ApiAggregationCell = ({
     if (distribution?.average !== undefined) {
       return (
         <span className="text-sm font-medium text-neutral-content-subtle">
-          Avg: <span className="font-bold">{distribution.average.toFixed(1)}</span>
+          {t("Avg:")} <span className="font-bold">{distribution.average.toFixed(1)}</span>
           {distribution.type === "rating" && <span className="text-yellow-500"> ★</span>}
         </span>
       );
@@ -340,15 +341,15 @@ export const AggregationTableRow = ({
                   className="flex items-center gap-2 font-semibold text-neutral-content hover:text-neutral-content transition-colors cursor-pointer"
                 >
                   <IconChevronDown size={16} className={cnm("transition-transform", isExpanded && "rotate-180")} />
-                  Distribution
+                  {t("Distribution")}
                 </button>
               ) : (
-                <span className="font-semibold text-neutral-content">Distribution</span>
+                <span className="font-semibold text-neutral-content">{t("Distribution")}</span>
               )}
               {/* Show total count from API */}
               {useApiData && distributionData && (
                 <span className="text-xs text-neutral-content-subtle">
-                  {distributionData.total_annotations} annotations
+                  {distributionData.total_annotations} {t("annotations")}
                 </span>
               )}
             </div>
@@ -362,7 +363,7 @@ export const AggregationTableRow = ({
             {useApiData && isLoading ? (
               <DistributionSkeleton />
             ) : useApiData && error ? (
-              <span className="text-neutral-content-subtler text-xs italic">Failed to load</span>
+              <span className="text-neutral-content-subtler text-xs italic">{t("Failed to load")}</span>
             ) : useApiData && distributionData ? (
               <ApiAggregationCell
                 control={controls[index - 1]}

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import deepEqual from "deep-equal";
 import { clone, destroy, flow, getParent, getRoot, getSnapshot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
@@ -19,7 +20,7 @@ export const Tab = types
   .model("View", {
     id: StringOrNumberID,
 
-    title: "Tasks",
+    title: t("Tasks"),
     oldTitle: types.maybeNull(types.string),
 
     key: types.optional(types.string, guidGenerator),

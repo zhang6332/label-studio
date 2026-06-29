@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import { useCallback, useMemo } from "react";
 import { Select } from "@humansignal/ui";
@@ -9,7 +10,7 @@ const AuthorTag = ({ name, selected }) => {
   const itemStyle = { border: `2px solid ${Utils.Colors.convertToRGBA(ColorScheme.make_color({ seed: name })[0])}` };
 
   if (name === "all") {
-    return <>Show all authors</>;
+    return <>{t("Show all authors")}</>;
   }
 
   return (
@@ -35,7 +36,7 @@ const renderMultipleSelected = (selected) => {
 };
 
 export const AuthorFilter = observer(({ item, onChange }) => {
-  const placeholder = useMemo(() => <span className={styles.authorFilter__placeholder}>Show all authors</span>, []);
+  const placeholder = useMemo(() => <span className={styles.authorFilter__placeholder}>{t("Show all authors")}</span>, []);
   const initialValue = "all";
   const options = useMemo(() => {
     const authorOptions = item._value

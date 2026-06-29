@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import { Button } from "@humansignal/ui";
 import { modal } from "../../components/Modal/Modal";
 import { useModalControls } from "../../components/Modal/ModalPopup";
@@ -6,14 +7,14 @@ import { cn } from "../../utils/bem";
 
 export const WebhookDeleteModal = ({ onDelete }) => {
   return modal({
-    title: "Delete",
+    title: t("Delete"),
     body: () => {
       const ctrl = useModalControls();
       const rootClass = cn("webhook-delete-modal");
       return (
         <div className={rootClass}>
           <div className={rootClass.elem("modal-text").toClassName()}>
-            Are you sure you want to delete the webhook? This action cannot be undone.
+            {t("Are you sure you want to delete the webhook? This action cannot be undone.")}
           </div>
         </div>
       );
@@ -28,9 +29,9 @@ export const WebhookDeleteModal = ({ onDelete }) => {
             onClick={() => {
               ctrl.hide();
             }}
-            aria-label="Cancel webhook deletion"
+            aria-label={t("Cancel webhook deletion")}
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button
             variant="negative"
@@ -38,9 +39,9 @@ export const WebhookDeleteModal = ({ onDelete }) => {
               await onDelete();
               ctrl.hide();
             }}
-            aria-label="Confirm webhook deletion"
+            aria-label={t("Confirm webhook deletion")}
           >
-            Delete Webhook
+            {t("Delete Webhook")}
           </Button>
         </Space>
       );

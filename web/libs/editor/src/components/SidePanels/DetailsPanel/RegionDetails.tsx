@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import { type FC, useEffect, useMemo, useRef } from "react";
 import { cn } from "../../../utils/bem";
@@ -62,7 +63,7 @@ export const ResultItem: FC<{ result: any }> = observer(({ result }) => {
     if (type === "rating") {
       return (
         <div className={cn("region-meta").elem("result").toClassName()}>
-          <Typography size="small">Rating: </Typography>
+          <Typography size="small">{t("Rating:")} </Typography>
           <div className={cn("region-meta").elem("value").toClassName()}>
             <RatingResult mainValue={mainValue} />
           </div>
@@ -72,7 +73,7 @@ export const ResultItem: FC<{ result: any }> = observer(({ result }) => {
     if (type === "textarea") {
       return (
         <div className={cn("region-meta").elem("result").toClassName()}>
-          <Typography size="small">Text: </Typography>
+          <Typography size="small">{t("Text:")} </Typography>
           <div className={cn("region-meta").elem("value").toClassName()}>
             <TextResult mainValue={mainValue} />
           </div>
@@ -82,7 +83,7 @@ export const ResultItem: FC<{ result: any }> = observer(({ result }) => {
     if (type === "choices") {
       return (
         <div className={cn("region-meta").elem("result").toClassName()}>
-          <Typography size="small">Choices: </Typography>
+          <Typography size="small">{t("Choices:")} </Typography>
           <div className={cn("region-meta").elem("value").toClassName()}>
             <ChoicesResult mainValue={mainValue} />
           </div>
@@ -92,7 +93,7 @@ export const ResultItem: FC<{ result: any }> = observer(({ result }) => {
     if (type === "taxonomy") {
       return (
         <div className={cn("region-meta").elem("result").toClassName()}>
-          <Typography size="small">Taxonomy: </Typography>
+          <Typography size="small">{t("Taxonomy:")} </Typography>
           <div className={cn("region-meta").elem("value").toClassName()}>
             <ChoicesResult mainValue={mainValue.map((v: string[]) => v.join("/"))} />
           </div>
@@ -169,7 +170,7 @@ export const RegionDetailsMeta: FC<RegionDetailsMetaProps> = observer(
         {editMode ? (
           <textarea
             ref={(el) => (input.current = el)}
-            placeholder="Meta"
+            placeholder={t("Meta")}
             className={cn("detailed-region").elem("meta-text").toClassName()}
             value={region.meta.text}
             onChange={(e) => saveMeta(e.target.value)}

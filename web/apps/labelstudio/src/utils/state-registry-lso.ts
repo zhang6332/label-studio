@@ -19,6 +19,7 @@
  * ```
  */
 
+import { t } from "../i18n";
 import { stateRegistry, StateType } from "@humansignal/app-common";
 
 // ============================================================================
@@ -32,7 +33,7 @@ import { stateRegistry, StateType } from "@humansignal/app-common";
 stateRegistry.registerBatch({
   CREATED: {
     type: StateType.INITIAL,
-    label: "Created",
+    label: t("Created"),
     tooltips: {
       project: "Project has been created and is ready for configuration",
     },
@@ -49,7 +50,7 @@ stateRegistry.registerBatch({
 
   COMPLETED: {
     type: StateType.TERMINAL,
-    label: "Completed",
+    label: t("Completed"),
     tooltips: {
       project: "All work on this project is completed",
       task: "Task has been completed",

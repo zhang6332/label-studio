@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { forwardRef, useCallback, useEffect, useState } from "react";
 import { useModalControls } from "@humansignal/ui/lib/modal";
 import { Stepper, ProviderSelectionStep, ProviderDetailsStep, PreviewStep, ReviewStep } from "./Steps";
@@ -60,23 +61,23 @@ export const StorageProviderForm = forwardRef<unknown, StorageProviderFormProps>
     const steps = isEditMode
       ? [
           {
-            title: "Configure Connection",
+            title: t("Configure Connection"),
             schema: getProviderSchema(type || "s3", isEditMode, effectiveTarget),
           },
           // Only include preview and review steps for import storages
           ...(effectiveTarget === "import"
-            ? [{ title: "Import Settings & Preview" }, { title: "Review & Confirm" }]
+            ? [{ title: t("Import Settings & Preview") }, { title: t("Review & Confirm") }]
             : []),
         ]
       : [
-          { title: "Select Provider", schema: step1Schema },
+          { title: t("Select Provider"), schema: step1Schema },
           {
-            title: "Configure Connection",
+            title: t("Configure Connection"),
             schema: getProviderSchema(type || "s3", isEditMode, effectiveTarget),
           },
           // Only include preview and review steps for import storages
           ...(effectiveTarget === "import"
-            ? [{ title: "Import Settings & Preview" }, { title: "Review & Confirm" }]
+            ? [{ title: t("Import Settings & Preview") }, { title: t("Review & Confirm") }]
             : []),
         ];
 
@@ -116,23 +117,23 @@ export const StorageProviderForm = forwardRef<unknown, StorageProviderFormProps>
       const newSteps = isEditMode
         ? [
             {
-              title: "Configure Connection",
+              title: t("Configure Connection"),
               schema: getProviderSchema(formData.provider || type || "s3", isEditMode, effectiveTarget),
             },
             // Only include preview and review steps for import storages
             ...(effectiveTarget === "import"
-              ? [{ title: "Import Settings & Preview" }, { title: "Review & Confirm" }]
+              ? [{ title: t("Import Settings & Preview") }, { title: t("Review & Confirm") }]
               : []),
           ]
         : [
-            { title: "Select Provider", schema: step1Schema },
+            { title: t("Select Provider"), schema: step1Schema },
             {
-              title: "Configure Connection",
+              title: t("Configure Connection"),
               schema: getProviderSchema(formData.provider || type || "s3", isEditMode, effectiveTarget),
             },
             // Only include preview and review steps for import storages
             ...(effectiveTarget === "import"
-              ? [{ title: "Import Settings & Preview" }, { title: "Review & Confirm" }]
+              ? [{ title: t("Import Settings & Preview") }, { title: t("Review & Confirm") }]
               : []),
           ];
       setCurrentSteps(newSteps);

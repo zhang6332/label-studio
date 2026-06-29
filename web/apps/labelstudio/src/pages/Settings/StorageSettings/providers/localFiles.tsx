@@ -1,3 +1,4 @@
+import { t } from "../../../../i18n";
 import { z } from "zod";
 import type { ProviderConfig } from "@humansignal/app-common/blocks/StorageProviderForm/types/provider";
 import { IconFolderOpen } from "@humansignal/icons";
@@ -23,12 +24,12 @@ const LocalFilesServingWarning = () => {
   return (
     <>
       <Alert variant="destructive">
-        <AlertTitle>Local file serving is disabled</AlertTitle>
+        <AlertTitle>{t("Local file serving is disabled")}</AlertTitle>
         <AlertDescription>
           Set the "LOCAL_FILES_SERVING_ENABLED" environment variable to "true" and restart Label Studio to enable Local
           Files storage. See the documentation for details:{" "}
           <a href="https://labelstud.io/guide/storage.html#Local-storage" target="_blank" rel="noreferrer">
-            Local Storage documentation
+            {t("Local Storage documentation")}
           </a>
           {isCommunityEdition && (
             <Alert variant="info">
@@ -53,8 +54,8 @@ const LocalFilesServingWarning = () => {
 
 export const localFilesProvider: ProviderConfig = {
   name: "localfiles",
-  title: "Local Files",
-  description: "Configure your local file storage connection with all required Label Studio settings",
+  title: t("Local Files"),
+  description: t("Configure your local file storage connection with all required Label Studio settings"),
   icon: () => (
     <IconFolderOpen
       width={40}
@@ -74,7 +75,7 @@ export const localFilesProvider: ProviderConfig = {
     {
       name: "path",
       type: "text",
-      label: "Absolute local path",
+      label: t("Absolute local path"),
       required: true,
       placeholder: defaultPathExample || "/data/my-folder/subdirectory",
       schema: pathSchema,

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type { MouseEventHandler } from "react";
 
 import { IconCommentLinkTo, IconSend } from "@humansignal/icons";
@@ -17,7 +18,7 @@ export const CommentFormButtons = ({
   <div className={cn("comment-form-buttons").toClassName()}>
     <div className={cn("comment-form-buttons").elem("buttons").toClassName()}>
       {onLinkTo && !region && (
-        <Tooltip title="Link to...">
+        <Tooltip title={t("Link to...")}>
           <button
             type="button"
             className={cn("comment-form-buttons").elem("action").mod({ highlight: linking }).toClassName()}

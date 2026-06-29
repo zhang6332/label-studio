@@ -1,3 +1,4 @@
+import { t } from "../../../i18n";
 import { useCallback, useState } from "react";
 import { Button } from "@humansignal/ui";
 import { useAPI } from "../../../providers/ApiProvider";
@@ -37,14 +38,14 @@ export const StartModelTraining = ({ backend }) => {
             onStartTraining(backend);
           }}
         >
-          Start Training
+          {t("Start Training")}
         </Button>
       )}
 
       {!!response && (
         <>
-          <pre>Request Sent!</pre>
-          <pre>Response: {JSON.stringify(response, null, 2)}</pre>
+          <pre>{t("Request Sent!")}</pre>
+          <pre>{t("Response:")} {JSON.stringify(response, null, 2)}</pre>
         </>
       )}
     </div>

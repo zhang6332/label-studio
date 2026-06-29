@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import { SidebarMenu } from "../../components/SidebarMenu/SidebarMenu";
 import { PeoplePage } from "./PeoplePage/PeoplePage";
 import { WebhookPage } from "../WebhookPage/WebhookPage";
@@ -20,7 +21,7 @@ if (ALLOW_ORGANIZATION_WEBHOOKS) {
 }
 
 export const OrganizationPage = {
-  title: "Organization",
+  title: t("Organization"),
   path: "/organization",
   exact: true,
   layout: MenuLayout,

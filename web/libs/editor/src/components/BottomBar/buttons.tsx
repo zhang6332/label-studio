@@ -4,6 +4,7 @@
  * `on*OnComment()` are used for actions with comment attached to them.
  */
 
+import { t } from "@humansignal/core";
 import { inject, observer } from "mobx-react";
 import type React from "react";
 import { memo, type ReactElement } from "react";
@@ -83,11 +84,11 @@ export const AcceptButton = memo(
 export const RejectButtonDefinition = {
   id: "reject",
   name: "reject",
-  title: "Reject",
+  title: t("Reject"),
   variant: "negative",
   look: "outlined",
   ariaLabel: "reject-annotation",
-  tooltip: "Reject annotation: [ Ctrl+Space ]",
+  tooltip: t("Reject annotation: [ Ctrl+Space ]"),
   // @todo we need this for types compatibility, but better to fix CustomButtonType
   disabled: false,
 };
@@ -128,7 +129,7 @@ export const SkipButton = memo(
     return (
       <>
         {showInfoIcon && (
-          <Tooltip title="Annotators and Reviewers will not be able to skip this task">
+          <Tooltip title={t("Annotators and Reviewers will not be able to skip this task")}>
             <IconInfoOutline width={20} height={20} className="text-neutral-content ml-auto cursor-pointer" />
           </Tooltip>
         )}
@@ -152,7 +153,7 @@ export const SkipButton = memo(
           }}
           data-testid="bottombar-skip-button"
         >
-          Skip
+          {t("Skip")}
         </Button>
       </>
     );
@@ -177,7 +178,7 @@ export const UnskipButton = memo(
         }}
         data-testid="bottombar-unskip-button"
       >
-        Cancel skip
+        {t("Cancel skip")}
       </Button>
     );
   }),

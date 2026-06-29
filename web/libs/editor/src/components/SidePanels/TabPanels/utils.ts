@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type { FC, MutableRefObject, ReactNode } from "react";
 import { clamp } from "../../../utils/utilities";
 import {
@@ -176,38 +177,38 @@ export const panelComponents: { [key: string]: FC<PanelProps> } = {
 const panelViews = [
   {
     name: "regions",
-    title: "Regions",
+    title: t("Regions"),
     component: panelComponents.regions as FC<PanelProps>,
     active: true,
   },
   {
     name: "history",
-    title: "History",
+    title: t("History"),
     component: panelComponents.history as FC<PanelProps>,
     active: false,
   },
 
   {
     name: "relations",
-    title: "Relations",
+    title: t("Relations"),
     component: panelComponents.relations as FC<PanelProps>,
     active: false,
   },
   {
     name: "info",
-    title: "Info",
+    title: t("Info"),
     component: panelComponents.info as FC<PanelProps>,
     active: true,
   },
   {
     name: "comments",
-    title: "Comments",
+    title: t("Comments"),
     component: panelComponents.comments as FC<PanelProps>,
     active: false,
   },
   {
     name: "custom",
-    title: "Custom",
+    title: t("Custom"),
     component: panelComponents.custom as FC<PanelProps>,
     active: false,
   },

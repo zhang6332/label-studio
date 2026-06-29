@@ -564,9 +564,11 @@ class CreateUserWithOrgsAPI(APIView):
         # Create the user
         first_name = (request.data.get('first_name') or '').strip()
         last_name = (request.data.get('last_name') or '').strip()
+        phone = (request.data.get('phone') or '').strip()
         user = User.objects.create_user(email=email, password=password)
         user.first_name = first_name
         user.last_name = last_name
+        user.phone = phone
         user.is_staff = True
         user.is_active = True
         user.save()

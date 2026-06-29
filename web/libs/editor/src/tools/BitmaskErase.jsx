@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import { types } from "mobx-state-tree";
 
@@ -30,7 +31,7 @@ const IconDot = ({ size }) => {
 const ToolView = observer(({ item }) => {
   return (
     <Tool
-      label="Eraser"
+      label={t("Eraser")}
       ariaLabel="eraser"
       shortcut="tool:eraser"
       active={item.selected}

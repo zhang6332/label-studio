@@ -1,10 +1,11 @@
+import { t } from "../../../../i18n";
 import { z } from "zod";
 import type { ProviderConfig } from "@humansignal/app-common/blocks/StorageProviderForm/types/provider";
 import { IconCloudCustom } from "@humansignal/ui";
 
 export const ossProvider: ProviderConfig = {
   name: "oss",
-  title: "Aliyun OSS",
+  title: t("Aliyun OSS"),
   description:
     "Configure your Aliyun Object Storage Service (OSS) connection. OSS is S3-compatible, so credentials map to the standard access key pair.",
   icon: IconCloudCustom,
@@ -12,7 +13,7 @@ export const ossProvider: ProviderConfig = {
     {
       name: "bucket",
       type: "text",
-      label: "Bucket Name",
+      label: t("Bucket Name"),
       required: true,
       placeholder: "my-oss-bucket",
       schema: z.string().min(1, "Bucket name is required"),
@@ -20,14 +21,14 @@ export const ossProvider: ProviderConfig = {
     {
       name: "region_name",
       type: "text",
-      label: "Region",
+      label: t("Region"),
       placeholder: "oss-cn-hangzhou",
       schema: z.string().optional().default(""),
     },
     {
       name: "s3_endpoint",
       type: "text",
-      label: "Endpoint",
+      label: t("Endpoint"),
       required: true,
       placeholder: "https://oss-cn-hangzhou.aliyuncs.com",
       schema: z.string().min(1, "Endpoint is required"),
@@ -35,7 +36,7 @@ export const ossProvider: ProviderConfig = {
     {
       name: "prefix",
       type: "text",
-      label: "Bucket prefix",
+      label: t("Bucket prefix"),
       placeholder: "path/to/files",
       schema: z.string().optional().default(""),
       target: "export",
@@ -43,7 +44,7 @@ export const ossProvider: ProviderConfig = {
     {
       name: "aws_access_key_id",
       type: "password",
-      label: "Access Key ID",
+      label: t("Access Key ID"),
       required: true,
       placeholder: "AccessKey ID",
       autoComplete: "off",
@@ -53,7 +54,7 @@ export const ossProvider: ProviderConfig = {
     {
       name: "aws_secret_access_key",
       type: "password",
-      label: "Access Key Secret",
+      label: t("Access Key Secret"),
       required: true,
       placeholder: "AccessKey Secret",
       autoComplete: "new-password",
@@ -63,7 +64,7 @@ export const ossProvider: ProviderConfig = {
     {
       name: "presign",
       type: "toggle",
-      label: "Use pre-signed URLs (On) / Proxy through the platform (Off)",
+      label: t("Use pre-signed URLs (On) / Proxy through the platform (Off)"),
       description:
         "When pre-signed URLs are enabled, all data bypasses the platform and user browsers directly read data from storage",
       schema: z.boolean().default(true),
@@ -73,7 +74,7 @@ export const ossProvider: ProviderConfig = {
     {
       name: "presign_ttl",
       type: "counter",
-      label: "Expire pre-signed URLs (minutes)",
+      label: t("Expire pre-signed URLs (minutes)"),
       min: 1,
       max: 10080,
       step: 1,

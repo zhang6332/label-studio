@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { htmlEscape } from "./html";
 
 const URL_CORS_DOCS = "https://labelstud.io/guide/storage.html#Troubleshoot-CORS-and-access-problems";
@@ -54,10 +55,10 @@ export default {
     return (
       <div data-testid="error:audio">
         <p>
-          Error while loading audio. Check <code>{attr}</code> field in task.
+          {t("Error while loading audio. Check")} <code>{attr}</code> {t("field in task.")}
         </p>
-        <p>Technical description: {error}</p>
-        <p>URL: {htmlEscape(url)}</p>
+        <p>{t("Technical description:")} {error}</p>
+        <p>{t("URL:")} {htmlEscape(url)}</p>
       </div>
     );
   },
@@ -66,11 +67,11 @@ export default {
     return `
     <div>
       <p>
-        There was an issue loading URL from <code>${attr}</code> value.
-        The request parameters are invalid.
-        If you are using S3, make sure you’ve specified the right bucket region name.
+        ${t("There was an issue loading URL from")} <code>${attr}</code> ${t("value.")}
+        ${t("The request parameters are invalid.")}
+        ${t("If you are using S3, make sure you’ve specified the right bucket region name.")}
       </p>
-      <p>URL: <code><a href="${encodeURI(url)}" target="_blank" rel="noreferrer">${htmlEscape(url)}</a></code></p>
+      <p>${t("URL:")} <code><a href="${encodeURI(url)}" target="_blank" rel="noreferrer">${htmlEscape(url)}</a></code></p>
     </div>`;
   },
 
@@ -78,18 +79,18 @@ export default {
     return `
     <div>
       <p>
-        There was an issue loading URL from <code>${attr}</code> value.
-        Most likely that's because static server has wide-open CORS.
-        <a href="${URL_CORS_DOCS}" target="_blank">Read more on that here.</a>
+        ${t("There was an issue loading URL from")} <code>${attr}</code> ${t("value.")}
+        ${t("Most likely that’s because static server has wide-open CORS.")}
+        <a href="${URL_CORS_DOCS}" target="_blank">${t("Read more on that here.")}</a>
       </p>
       <p>
-        Also check that:
+        ${t("Also check that:")}
         <ul>
-          <li>URL is valid</li>
-          <li>Network is reachable</li>
+          <li>${t("URL is valid")}</li>
+          <li>${t("Network is reachable")}</li>
         </ul>
       </p>
-      <p>URL: <code><a href="${encodeURI(url)}" target="_blank" rel="noreferrer">${htmlEscape(url)}</a></code></p>
+      <p>${t("URL:")} <code><a href="${encodeURI(url)}" target="_blank" rel="noreferrer">${htmlEscape(url)}</a></code></p>
     </div>`;
   },
 
@@ -97,23 +98,23 @@ export default {
     return `
     <div data-testid="error:http">
       <p>
-        There was an issue loading URL from <code>${attr}</code> value
+        ${t("There was an issue loading URL from")} <code>${attr}</code> ${t("value")}
       </p>
       <p>
-        Things to look out for:
+        ${t("Things to look out for:")}
         <ul>
-          <li>URL is valid</li>
-          <li>URL scheme matches the service scheme, i.e. https and https</li>
+          <li>${t("URL is valid")}</li>
+          <li>${t("URL scheme matches the service scheme, i.e. https and https")}</li>
           <li>
-            The static server has wide-open CORS,
-            <a href=${URL_CORS_DOCS} target="_blank">more on that here</a>
+            ${t("The static server has wide-open CORS,")}
+            <a href=${URL_CORS_DOCS} target="_blank">${t("more on that here")}</a>
           </li>
         </ul>
       </p>
       <p>
-        Technical description: <code>${error}</code>
+        ${t("Technical description:")} <code>${error}</code>
         <br />
-        URL: <code><a href="${encodeURI(url)}" target="_blank" rel="noreferrer">${htmlEscape(url)}</a></code>
+        ${t("URL:")} <code><a href="${encodeURI(url)}" target="_blank" rel="noreferrer">${htmlEscape(url)}</a></code>
       </p>
     </div>`;
   },

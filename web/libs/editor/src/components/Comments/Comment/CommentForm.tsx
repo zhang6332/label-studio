@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { type FC, type MouseEventHandler, useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { observer } from "mobx-react";
 
@@ -150,7 +151,7 @@ export const CommentForm: FC<CommentFormProps> = observer(({ commentStore, annot
         <TextArea
           actionRef={actionRef}
           name="comment"
-          placeholder="Add a comment"
+          placeholder={t("Add a comment")}
           value={text}
           rows={ROWS}
           maxRows={MAX_ROWS}

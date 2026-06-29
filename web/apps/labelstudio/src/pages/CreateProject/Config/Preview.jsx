@@ -1,3 +1,27 @@
+import { t, getLang } from "../../../i18n";
+
+// Backend errors are dynamic strings with variable tails (e.g.
+// "Created annotations...we found:\n1 with from_name=..."). t() does exact
+// lookup so it can't match these — this helper replaces known fixed prefixes
+// with Chinese, keeping the variable tail. zh-CN only; en returns as-is.
+function translateErrorDetail(s) {
+  if (!s || typeof s !== "string") return s;
+  const exact = t(s);
+  if (exact !== s) return exact;
+  if (getLang() !== "zh-CN") return s;
+  const replacements = [
+    [
+      "Created annotations are incompatible with provided labeling schema, we found:",
+      "创建的标注与当前标注配置不兼容，发现：",
+    ],
+    ["Validation error", "验证错误"],
+  ];
+  let result = s;
+  for (const [en, zh] of replacements) {
+    result = result.split(en).join(zh);
+  }
+  return result;
+}
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Spinner } from "../../../components";
 import { cn } from "../../../utils/bem";
@@ -141,20 +165,22 @@ export const Preview = ({ config, data, error, loading, project }) => {
 
   return (
     <div className={configClass.elem("preview").toClassName()}>
-      <h3>Preview</h3>
+      <h3>{t("Preview")}</h3>
       {error && (
         <div className={configClass.elem("preview-error").toClassName()}>
           <h2>
-            {error.detail} {error.id}
+            {/* error.detail / err are dynamic backend strings — t() looks up
+                the dictionary and falls back to the original if not found. */}
+            {translateErrorDetail(error.detail)} {error.id}
           </h2>
           {error.validation_errors?.non_field_errors?.map?.((err) => (
-            <p key={err}>{err}</p>
+            <p key={err}>{translateErrorDetail(err)}</p>
           ))}
           {error.validation_errors?.label_config?.map?.((err) => (
-            <p key={err}>{err}</p>
+            <p key={err}>{translateErrorDetail(err)}</p>
           ))}
           {error.validation_errors?.map?.((err) => (
-            <p key={err}>{err}</p>
+            <p key={err}>{translateErrorDetail(err)}</p>
           ))}
         </div>
       )}

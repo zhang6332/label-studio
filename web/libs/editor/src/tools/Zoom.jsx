@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Fragment } from "react";
 import { observer } from "mobx-react";
 import { types } from "mobx-state-tree";
@@ -15,7 +16,7 @@ const ToolView = observer(({ item }) => {
         active={item.selected}
         icon={<IconHandTool />}
         ariaLabel="pan"
-        label="Pan Image"
+        label={t("Pan Image")}
         shortcut="tool:pan-image"
         onClick={() => {
           const sel = item.selected;
@@ -26,7 +27,7 @@ const ToolView = observer(({ item }) => {
       <Tool
         icon={<IconZoomIn />}
         ariaLabel="zoom-in"
-        label="Zoom In"
+        label={t("Zoom In")}
         shortcut="tool:zoom-in"
         onClick={() => {
           item.handleZoom(1);
@@ -43,7 +44,7 @@ const ToolView = observer(({ item }) => {
             },
           },
           {
-            label: "Zoom to actual size",
+            label: t("Zoom to actual size"),
             shortcut: "tool:zoom-to-actual",
             onClick: () => {
               item.sizeToOriginal();
@@ -54,7 +55,7 @@ const ToolView = observer(({ item }) => {
       <Tool
         icon={<IconZoomOut />}
         ariaLabel="zoom-out"
-        label="Zoom Out"
+        label={t("Zoom Out")}
         shortcut="tool:zoom-out"
         onClick={() => {
           item.handleZoom(-1);

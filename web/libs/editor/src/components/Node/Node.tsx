@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type { FC } from "react";
 import { getType } from "mobx-state-tree";
 import { observer } from "mobx-react";
@@ -89,7 +90,7 @@ const NodeViews: Record<string, NodeViewProps> = {
     name: "Video Rect",
     icon: IconRectangleTool,
     altIcon: IconRectangleToolSmart,
-    getContent: (node) => <span style={{ color: "#5a5a5a" }}>from {node.sequence[0]?.frame} frame</span>,
+    getContent: (node) => <span style={{ color: "#5a5a5a" }}>{t("from")} {node.sequence[0]?.frame} {t("frame")}</span>,
   },
 
   PolygonRegionModel: {

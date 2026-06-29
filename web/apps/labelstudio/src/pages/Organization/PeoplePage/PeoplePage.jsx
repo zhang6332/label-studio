@@ -16,8 +16,9 @@ import { useToast } from "@humansignal/ui";
 import { InviteLink } from "./InviteLink";
 import { SelectedUser } from "./SelectedUser";
 import { CreateUserModal } from "./CreateUserModal";
+import { EditUserModal } from "./EditUserModal";
 import { useAuth } from "@humansignal/core/providers/AuthProvider";
-import { getLang } from "../../i18n";
+import { t } from "../../../i18n";
 
 export const PeoplePage = () => {
   const apiSettingsModal = useRef();
@@ -27,6 +28,8 @@ export const PeoplePage = () => {
   const [createUserOpen, setCreateUserOpen] = useState(false);
   const [memberListKey, setMemberListKey] = useState(0);
   const [view, setView] = useState("current"); // "current" | "all"
+  const [editUser, setEditUser] = useState(null);
+  const [editUserOpen, setEditUserOpen] = useState(false);
   const auth = useAuth();
   // Owner = creator of the active org → can create manager/annotator.
   // Manager → backend restricts to annotator only.
@@ -43,8 +46,20 @@ export const PeoplePage = () => {
     [setSelectedUser],
   );
 
-  const handleRoleChanged = useCallback((userId, newRole) => {
-    setSelectedUser((prev) => (prev && prev.id === userId ? { ...prev, role: newRole } : prev));
+  const openEdit = useCallback((user) => {
+    setEditUser(user);
+    setEditUserOpen(true);
+  }, []);
+
+  // After a successful edit: refresh the member list.
+  const handleUserSaved = useCallback(() => {
+    setMemberListKey((k) => k + 1);
+  }, []);
+
+  // After delete/remove-from-org: clear the detail panel and refresh.
+  const handleUserDeleted = useCallback(() => {
+    setSelectedUser(null);
+    localStorage.removeItem("selectedUser");
     setMemberListKey((k) => k + 1);
   }, []);
 
@@ -86,7 +101,7 @@ export const PeoplePage = () => {
           color: "var(--color-neutral-content-subtler, #999)",
         }}
       >
-        You don&apos;t have permission to access this page.
+        {t("You don't have permission to access this page.")}
       </div>
     );
   }
@@ -101,30 +116,36 @@ export const PeoplePage = () => {
             <Button
               look="outlined"
               onClick={() => setView((v) => (v === "current" ? "all" : "current"))}
-              aria-label="Toggle user list scope"
+              aria-label={t("Toggle user list scope")}
               data-i18n-skip
             >
-              {(() => {
-                const lang = getLang();
-                if (view === "current") return lang === "zh-CN" ? "所有用户" : "All Users";
-                return lang === "zh-CN" ? "组织用户" : "Organization Users";
-              })()}
+              {view === "current" ? t("All Users") : t("Organization Users")}
             </Button>
             {isFF(FF_AUTH_TOKENS) && (
               <Button
                 look="outlined"
                 onClick={showApiTokenSettingsModal}
-                aria-label="Show API token settings"
+                aria-label={t("Show API token settings")}
                 data-i18n-skip
               >
-                {getLang() === "zh-CN" ? "API 令牌设置" : "API Tokens Settings"}
+                {t("API Tokens Settings")}
               </Button>
             )}
-            <Button look="outlined" onClick={() => setCreateUserOpen(true)} aria-label="Create new user" data-i18n-skip>
-              {getLang() === "zh-CN" ? "创建用户" : "Create User"}
+            <Button
+              look="outlined"
+              onClick={() => setCreateUserOpen(true)}
+              aria-label={t("Create new user")}
+              data-i18n-skip
+            >
+              {t("Create User")}
             </Button>
-            <Button look="outlined" onClick={() => setInvitationOpen(true)} aria-label="Invite users" data-i18n-skip>
-              {getLang() === "zh-CN" ? "邀请用户" : "Invite Users"}
+            <Button
+              look="outlined"
+              onClick={() => setInvitationOpen(true)}
+              aria-label={t("Invite users")}
+              data-i18n-skip
+            >
+              {t("Invite Users")}
             </Button>
           </Space>
         </Space>
@@ -142,7 +163,7 @@ export const PeoplePage = () => {
         )}
 
         {selectedUser ? (
-          <SelectedUser user={selectedUser} onClose={() => selectUser(null)} onRoleChanged={handleRoleChanged} />
+          <SelectedUser user={selectedUser} onClose={() => selectUser(null)} onEdit={openEdit} />
         ) : (
           isFF(FF_LSDV_E_297) && <HeidiTips collection="organizationPage" />
         )}
@@ -150,7 +171,6 @@ export const PeoplePage = () => {
       <InviteLink
         opened={invitationOpen}
         onClosed={() => {
-          console.log("hidden");
           setInvitationOpen(false);
         }}
       />
@@ -160,6 +180,15 @@ export const PeoplePage = () => {
         onClosed={() => setCreateUserOpen(false)}
         onCreated={() => setMemberListKey((k) => k + 1)}
         requesterLevel={isOwner ? 4 : 3}
+      />
+
+      <EditUserModal
+        opened={editUserOpen}
+        user={editUser}
+        requesterLevel={isOwner ? 4 : 3}
+        onClosed={() => setEditUserOpen(false)}
+        onSaved={handleUserSaved}
+        onDeleted={handleUserDeleted}
       />
     </div>
   );

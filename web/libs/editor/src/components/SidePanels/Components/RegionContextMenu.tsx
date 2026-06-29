@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useCopyText } from "@humansignal/core";
 import { IconEllipsis, IconLink } from "@humansignal/icons";
 import { Button, ToastType, useToast } from "@humansignal/ui";
@@ -36,7 +37,7 @@ export const RegionContextMenu: FC<{ item: any }> = observer(({ item }: { item: 
   const actions = useMemo<ContextMenuAction[]>(
     () => [
       {
-        label: "Copy Region Link",
+        label: t("Copy Region Link"),
         onClick: onCopyLink,
         icon: <IconLink />,
       },
@@ -50,7 +51,7 @@ export const RegionContextMenu: FC<{ item: any }> = observer(({ item }: { item: 
       content={<ContextMenu actions={actions} />}
       onToggle={(isOpen) => setOpen(isOpen)}
     >
-      <Button variant="neutral" look="string" size="smaller" aria-label="Region options">
+      <Button variant="neutral" look="string" size="smaller" aria-label={t("Region options")}>
         <IconEllipsis />
       </Button>
     </ContextMenuTrigger>

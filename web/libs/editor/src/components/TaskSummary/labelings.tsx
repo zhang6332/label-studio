@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { JSONPath } from "jsonpath-plus";
 import { capitalize } from "@humansignal/core/lib/utils/string";
 import type { RawResult } from "../../stores/types";
@@ -221,7 +222,7 @@ export const renderers: Record<string, RendererType> = {
               {truncate(key)}
             </Chip>
           ))}
-          {hiddenCount > 0 && <span className="text-neutral-content-subtle text-sm">+{hiddenCount} more</span>}
+          {hiddenCount > 0 && <span className="text-neutral-content-subtle text-sm">+{hiddenCount} {t("more")}</span>}
         </span>
       );
     }
@@ -254,7 +255,7 @@ export const renderers: Record<string, RendererType> = {
             <Chip key={i}>{typeof item === "object" ? JSON.stringify(item) : String(item)}</Chip>
           ))}
           {extracted.length > 5 && (
-            <span className="text-neutral-content-subtle text-sm">+{extracted.length - 5} more</span>
+            <span className="text-neutral-content-subtle text-sm">+{extracted.length - 5} {t("more")}</span>
           )}
         </span>
       );

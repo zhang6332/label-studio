@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Button, IconChevronLeft, IconChevronRight } from "@humansignal/ui";
 import { observer } from "mobx-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -215,7 +216,7 @@ export const AnnotationsCarousel = observer(({ store, annotationStore }: Annotat
           <div className={cn("annotations-carousel").elem("carousel-controls").toClassName()}>
             <Button
               disabled={isLeftDisabled}
-              aria-label="Carousel left"
+              aria-label={t("Carousel left")}
               size="small"
               variant="neutral"
               onClick={scrollLeft}
@@ -224,7 +225,7 @@ export const AnnotationsCarousel = observer(({ store, annotationStore }: Annotat
             </Button>
             <Button
               disabled={isRightDisabled}
-              aria-label="Carousel right"
+              aria-label={t("Carousel right")}
               size="small"
               variant="neutral"
               onClick={scrollRight}
@@ -262,7 +263,7 @@ export const AnnotationsCarousel = observer(({ store, annotationStore }: Annotat
         <div className={cn("annotations-carousel").elem("carousel-controls").toClassName()}>
           <Button
             disabled={isLeftDisabledOriginal}
-            aria-label="Carousel left"
+            aria-label={t("Carousel left")}
             size="small"
             variant="neutral"
             onClick={(e) => !isLeftDisabledOriginal && updatePosition(e, true)}
@@ -271,7 +272,7 @@ export const AnnotationsCarousel = observer(({ store, annotationStore }: Annotat
           </Button>
           <Button
             disabled={isRightDisabledOriginal}
-            aria-label="Carousel right"
+            aria-label={t("Carousel right")}
             size="small"
             variant="neutral"
             onClick={(e) => !isRightDisabledOriginal && updatePosition(e, false)}

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import { forwardRef, useCallback, useMemo } from "react";
 import { cn } from "../../utils/bem";
@@ -59,7 +60,7 @@ export const Image = observer(
         {imageEntity.downloaded ? (
           <ImageRenderer
             // biome-ignore lint/a11y/noRedundantAlt: alt="image" is intentional for accessibility
-            alt="image"
+            alt={t("image")}
             ref={ref}
             src={imageEntity.currentSrc}
             onLoad={onLoad}
@@ -76,7 +77,7 @@ export const Image = observer(
 const ImageProgress = observer(({ downloading, progress, error, src, usedValue }) => {
   return downloading ? (
     <div className={cn("image-progress").toClassName()}>
-      <div className={cn("image-progress").elem("message").toClassName()}>Downloading image</div>
+      <div className={cn("image-progress").elem("message").toClassName()}>{t("Downloading image")}</div>
       <progress
         className={cn("image-progress").elem("bar").toClassName()}
         value={progress}
@@ -115,7 +116,7 @@ const ImageRenderer = observer(
 
     return (
       // biome-ignore lint/a11y/noRedundantAlt: alt="image" is intentional for accessibility
-      <img {...imgDefaultProps} ref={ref} alt="image" src={src} onLoad={onLoad} onError={onError} style={imageStyles} />
+      <img {...imgDefaultProps} ref={ref} alt={t("image")} src={src} onLoad={onLoad} onError={onError} style={imageStyles} />
     );
   }),
 );

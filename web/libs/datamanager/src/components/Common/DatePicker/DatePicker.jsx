@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { format, isMatch, isValid } from "date-fns";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { default as DP } from "react-datepicker";
@@ -128,7 +129,7 @@ export const DatePicker = ({
           />
           {selectRange && (
             <>
-              <div className={cn("datepicker").elem("separator").toClassName()}>and</div>
+              <div className={cn("datepicker").elem("separator").toClassName()}>{t("and")}</div>
               <Input
                 size={size}
                 value={endDate || ""}

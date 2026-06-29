@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import React, { useMemo } from "react";
 import { Modal, Table, Tabs } from "antd";
 import { observer } from "mobx-react";
@@ -16,8 +17,8 @@ import { ff } from "@humansignal/core";
 
 const HotkeysDescription = () => {
   const columns = [
-    { title: "Shortcut", dataIndex: "combo", key: "combo" },
-    { title: "Description", dataIndex: "descr", key: "descr" },
+    { title: t("Shortcut"), dataIndex: "combo", key: "combo" },
+    { title: t("Description"), dataIndex: "descr", key: "descr" },
   ];
 
   const keyNamespaces = Hotkey.namespaces();
@@ -41,7 +42,7 @@ const HotkeysDescription = () => {
             </div>
           );
         }),
-        descr: descr[k],
+        descr: t(descr[k]),
       }));
 
   return (
@@ -52,7 +53,7 @@ const HotkeysDescription = () => {
             return null;
           }
           return (
-            <Tabs.TabPane key={ns} tab={data.description ?? ns}>
+            <Tabs.TabPane key={ns} tab={t(data.description) ?? ns}>
               <Table columns={columns} dataSource={getData(data.descriptions)} size="small" />
             </Tabs.TabPane>
           );
@@ -125,13 +126,13 @@ const LayoutSettings = observer(({ store }) => {
             setTimeout(triggerResizeEvent);
           }}
         >
-          Move sidepanel to the bottom
+          {t("Move sidepanel to the bottom")}
         </Checkbox>
       </div>
 
       <div className={cn("settings").elem("field").toClassName()}>
         <Checkbox checked={store.settings.displayLabelsByDefault} onChange={store.settings.toggleSidepanelModel}>
-          Display Labels by default in Results panel
+          {t("Display Labels by default in Results panel")}
         </Checkbox>
       </div>
 
@@ -143,7 +144,7 @@ const LayoutSettings = observer(({ store }) => {
             store.settings.toggleAnnotationsPanel();
           }}
         >
-          Show Annotations panel
+          {t("Show Annotations panel")}
         </Checkbox>
       </div>
 
@@ -155,7 +156,7 @@ const LayoutSettings = observer(({ store }) => {
             store.settings.togglePredictionsPanel();
           }}
         >
-          Show Predictions panel
+          {t("Show Predictions panel")}
         </Checkbox>
       </div>
 
@@ -184,7 +185,7 @@ const DEFAULT_ACTIVE = Object.keys(Settings)[0];
 
 const DEFAULT_MODAL_SETTINGS = {
   name: "settings-modal",
-  title: "Labeling Interface Settings",
+  title: t("Labeling Interface Settings"),
   closeIcon: <IconClose />,
 };
 

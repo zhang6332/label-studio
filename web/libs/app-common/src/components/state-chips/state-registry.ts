@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 /**
  * State Registry System for Label Studio
  *
@@ -294,7 +295,7 @@ stateRegistry.registerBatch({
 
   COMPLETED: {
     type: StateType.TERMINAL,
-    label: "Done",
+    label: t("Done"),
     tooltips: {
       task: "Task is fully completed and no further work is needed",
       annotation: "Annotation is completed and finalized",

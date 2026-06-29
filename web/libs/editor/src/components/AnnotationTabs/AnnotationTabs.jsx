@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { forwardRef } from "react";
 import { observer } from "mobx-react";
 import { IconBan, IconSparks, IconStar } from "@humansignal/icons";
@@ -36,7 +37,7 @@ export const EntityTab = observer(
 
             {!infoIsHidden && (
               <div className={cn("entity-tab").elem("identifier").toClassName()}>
-                ID {entity.pk ?? entity.id} {isUnsaved && "*"}
+                {t("ID")} {entity.pk ?? entity.id} {isUnsaved && "*"}
               </div>
             )}
 

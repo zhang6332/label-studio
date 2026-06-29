@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useCallback, useRef } from "react";
 import { Form } from "antd";
 import { Button } from "@humansignal/ui";
@@ -56,23 +57,23 @@ const DebugComponent = ({ store }) => {
   return (
     <div style={{ width: "100%" }}>
       <br />
-      <h2>Debug</h2>
+      <h2>{t("Debug")}</h2>
       <div>
-        <Button size="small" onClick={serializeAll} aria-label="Serialize all">
-          Serialize All Annotations
+        <Button size="small" onClick={serializeAll} aria-label={t("Serialize all")}>
+          {t("Serialize All Annotations")}
         </Button>
-        <Button size="small" onClick={serializeCurrent} aria-label="Serialize current">
-          Serialize Current Annotation
+        <Button size="small" onClick={serializeCurrent} aria-label={t("Serialize current")}>
+          {t("Serialize Current Annotation")}
         </Button>
-        <Button size="small" onClick={loadTask} aria-label="Load task">
-          Simulate Loading Task
+        <Button size="small" onClick={loadTask} aria-label={t("Load task")}>
+          {t("Simulate Loading Task")}
         </Button>
       </div>
 
       <Form>
         <div style={{ display: "flex" }}>
           <div style={{ flexBasis: "50%" }}>
-            <p>Data</p>
+            <p>{t("Data")}</p>
             <textarea
               style={{ width: "100%" }}
               ref={refData}
@@ -80,7 +81,7 @@ const DebugComponent = ({ store }) => {
               defaultValue={store.task.data}
               className="is-search"
             />
-            <p>Config</p>
+            <p>{t("Config")}</p>
             <textarea
               style={{ width: "100%" }}
               ref={refConfig}
@@ -90,7 +91,7 @@ const DebugComponent = ({ store }) => {
             />
           </div>
           <div style={{ flexBasis: "50%" }}>
-            <p>Annotations</p>
+            <p>{t("Annotations")}</p>
             <textarea
               style={{ width: "100%" }}
               ref={refAnnotations}

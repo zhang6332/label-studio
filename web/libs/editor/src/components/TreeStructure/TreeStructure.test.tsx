@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import TreeStructure, { type RowItem } from "./TreeStructure";
@@ -99,13 +100,13 @@ const MockRowComponent: React.FC<{
       <>
         <span data-testid="row-name">{item.row.name}</span>
         <button type="button" data-testid="toggle-btn" onClick={() => item.toggle(item.row!.id)}>
-          Toggle
+          {t("Toggle")}
         </button>
         <button type="button" data-testid="add-inside-btn" onClick={() => item.addInside(item.row!.id)}>
-          Add inside
+          {t("Add inside")}
         </button>
         <button type="button" data-testid="add-root-btn" onClick={() => item.addInside()}>
-          Add root
+          {t("Add root")}
         </button>
       </>
     )}

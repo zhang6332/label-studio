@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import sanitizeHtml from "sanitize-html";
 import { IconSlack } from "@humansignal/icons";
@@ -40,7 +41,7 @@ export const ErrorWrapper = ({
           className={cn("error-message").elem("heidi").toClassName()}
           src={absoluteURL("/static/images/opossum_broken.svg")}
           height="111"
-          alt="Heidi's down"
+          alt={t("Heidi's down")}
         />
       )}
 
@@ -98,7 +99,7 @@ export const ErrorWrapper = ({
               icon={<IconSlack />}
               href={SLACK_INVITE_URL}
             >
-              Ask on Slack
+              {t("Ask on Slack")}
             </Button>
 
             <Space size="small">
@@ -107,19 +108,19 @@ export const ErrorWrapper = ({
                   disabled={copied}
                   onClick={copyStacktrace}
                   className="w-[100px]"
-                  aria-label="Copy error stacktrace"
+                  aria-label={t("Copy error stacktrace")}
                 >
                   {copied ? "Copied" : "Copy Stacktrace"}
                 </Button>
               )}
               {onGoBack && (
-                <Button onClick={onGoBack} aria-label="Go back">
-                  Go Back
+                <Button onClick={onGoBack} aria-label={t("Go back")}>
+                  {t("Go Back")}
                 </Button>
               )}
               {onReload && (
-                <Button onClick={onReload} aria-label="Reload page">
-                  Reload
+                <Button onClick={onReload} aria-label={t("Reload page")}>
+                  {t("Reload")}
                 </Button>
               )}
             </Space>

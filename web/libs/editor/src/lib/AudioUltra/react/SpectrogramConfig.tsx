@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type React from "react";
 import { useCallback, useContext } from "react";
 import { TimelineContext } from "../../../components/Timeline/Context";
@@ -98,24 +99,24 @@ export const SpectrogramConfig: React.FC<SpectrogramConfigProps> = ({ waveform }
 
   return (
     <div className="spectrogram-config">
-      <h3>Spectrogram Settings</h3>
+      <h3>{t("Spectrogram Settings")}</h3>
       <div className="control-group">
         <label>
-          Scale
+          {t("Scale")}
           <select onChange={(e) => setScale(e.target.value as SpectrogramScale)}>
-            <option value="linear">Linear</option>
-            <option value="log">Logarithmic</option>
-            <option value="mel">Mel</option>
+            <option value="linear">{t("Linear")}</option>
+            <option value="log">{t("Logarithmic")}</option>
+            <option value="mel">{t("Mel")}</option>
           </select>
         </label>
 
         <label>
-          Mel Bands
+          {t("Mel Bands")}
           <input type="number" min="1" max="512" onChange={(e) => setMelBands(Number.parseInt(e.target.value))} />
         </label>
 
         <label>
-          FFT Size
+          {t("FFT Size")}
           <select onChange={(e) => setFftSamples(Number.parseInt(e.target.value))}>
             <option value="256">256</option>
             <option value="512">512</option>
@@ -126,17 +127,17 @@ export const SpectrogramConfig: React.FC<SpectrogramConfigProps> = ({ waveform }
         </label>
 
         <label>
-          Window Function
+          {t("Window Function")}
           <select onChange={(e) => setWindowingFunction(e.target.value as WindowFunctionType)}>
             <option value="hann">Hann</option>
             <option value="hamming">Hamming</option>
             <option value="blackman">Blackman</option>
-            <option value="rectangular">Rectangular</option>
+            <option value="rectangular">{t("Rectangular")}</option>
           </select>
         </label>
 
         <label>
-          Color Scheme
+          {t("Color Scheme")}
           <select onChange={(e) => setColorScheme(e.target.value as ColorScheme)}>
             <option value="inferno">Inferno</option>
             <option value="magma">Magma</option>
@@ -147,7 +148,7 @@ export const SpectrogramConfig: React.FC<SpectrogramConfigProps> = ({ waveform }
 
         <div className="db-range">
           <label>
-            Min dB
+            {t("Min dB")}
             <input
               type="number"
               step="1"
@@ -163,7 +164,7 @@ export const SpectrogramConfig: React.FC<SpectrogramConfigProps> = ({ waveform }
           </label>
 
           <label>
-            Max dB
+            {t("Max dB")}
             <input
               type="number"
               step="1"

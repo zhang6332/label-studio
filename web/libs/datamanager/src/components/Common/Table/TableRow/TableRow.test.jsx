@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { TableRow } from "./TableRow";
@@ -5,7 +6,7 @@ import { TableContext } from "../TableContext";
 
 // Mock SkeletonLoader
 jest.mock("../../SkeletonLoader", () => ({
-  SkeletonLoader: () => <div data-testid="skeleton-loader">Loading...</div>,
+  SkeletonLoader: () => <div data-testid="skeleton-loader">{t("Loading...")}</div>,
 }));
 
 // Mock feature flags

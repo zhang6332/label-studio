@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { when } from "mobx";
 import { inject, observer } from "mobx-react";
 import { type FC, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -134,8 +135,8 @@ const AnnotationHistoryComponent: FC<any> = ({
   const defaultEmptyState = (
     <EmptyState
       icon={<IconHistoryRewind width={24} height={24} />}
-      header="View annotation activity"
-      description={<>See a log of user actions for this annotation</>}
+      header={t("View annotation activity")}
+      description={<>{t("See a log of user actions for this annotation")}</>}
     />
   );
 

@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import chr from "chroma-js";
 import { format } from "date-fns";
 import { useMemo } from "react";
@@ -22,7 +23,7 @@ export const ProjectsList = ({ projects, currentPage, totalItems, loadNextPage, 
       <div className={cn("projects-page").elem("pages").toClassName()}>
         <Pagination
           name="projects-list"
-          label="Projects"
+          label={t("Projects")}
           page={currentPage}
           totalItems={totalItems}
           urlParamName="page"
@@ -39,14 +40,14 @@ export const EmptyProjectsList = ({ openModal }) => {
   return (
     <div className={cn("empty-projects-page").toClassName()}>
       <img
-        alt="Heidi looking for projects"
+        alt={t("Heidi looking for projects")}
         className={cn("empty-projects-page").elem("heidi").toClassName()}
         src={absoluteURL("/static/images/opossum_looking.png")}
       />
-      <h1 className={cn("empty-projects-page").elem("header").toClassName()}>Heidi doesn't see any projects here!</h1>
-      <p>Create one and start labeling your data.</p>
-      <Button onClick={openModal} className="my-8" aria-label="Create new project">
-        Create Project
+      <h1 className={cn("empty-projects-page").elem("header").toClassName()}>{t("Heidi doesn't see any projects here!")}</h1>
+      <p>{t("Create one and start labeling your data.")}</p>
+      <Button onClick={openModal} className="my-8" aria-label={t("Create new project")}>
+        {t("Create Project")}
       </Button>
     </div>
   );
@@ -99,12 +100,12 @@ const ProjectCard = ({ project }) => {
               <Dropdown.Trigger
                 content={
                   <Menu contextual>
-                    <Menu.Item href={`/projects/${project.id}/settings`}>Settings</Menu.Item>
-                    <Menu.Item href={`/projects/${project.id}/data?labeling=1`}>Label</Menu.Item>
+                    <Menu.Item href={`/projects/${project.id}/settings`}>{t("Settings")}</Menu.Item>
+                    <Menu.Item href={`/projects/${project.id}/data?labeling=1`}>{t("Label")}</Menu.Item>
                   </Menu>
                 }
               >
-                <Button size="smaller" look="string" aria-label="Project options">
+                <Button size="smaller" look="string" aria-label={t("Project options")}>
                   <IconEllipsis />
                 </Button>
               </Dropdown.Trigger>

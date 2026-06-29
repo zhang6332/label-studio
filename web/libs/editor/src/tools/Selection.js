@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import { types } from "mobx-state-tree";
 
@@ -14,7 +15,7 @@ const ToolView = observer(({ item }) => {
       ariaLabel="move-tool"
       active={item.selected}
       icon={<IconMoveTool />}
-      label="Move"
+      label={t("Move")}
       shortcut={item.shortcut}
       extraShortcuts={item.extraShortcuts}
       onClick={() => {

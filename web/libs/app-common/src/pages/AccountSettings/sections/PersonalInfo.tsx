@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { type FormEventHandler, useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { Button, InputFile, ToastType, useToast, Userpic } from "@humansignal/ui";
@@ -44,7 +45,7 @@ export const PersonalInfo = () => {
   const { user, refetch: refetchUser, isLoading: userInProgress, update: updateUser } = useAuth();
   const updateUserAvatar = useAtomValue(updateUserAvatarAtom);
   const [isInProgress, setIsInProgress] = useState(false);
-  const [fname, setFname] = useState(user?.first_name ?? "");
+  const [fname, setFname] = useState([user?.first_name, user?.last_name].filter(Boolean).join(" ").trim());
   const [lname, setLname] = useState(user?.last_name ?? "");
   const [phone, setPhone] = useState(user?.phone ?? "");
   const avatarRef = useRef<HTMLInputElement>();
@@ -82,6 +83,9 @@ export const PersonalInfo = () => {
       if (!user) return;
       const body = new FormData(e.currentTarget as HTMLFormElement);
       const json = Object.fromEntries(body.entries());
+      // Store the full name in first_name and clear last_name (single field),
+      // matching the user list / edit modal — avoids surname doubling on re-save.
+      json.last_name = "";
       const response = await updateUser(json);
 
       refetchUser();
@@ -97,7 +101,7 @@ export const PersonalInfo = () => {
   }, [userInProgress]);
 
   useEffect(() => {
-    setFname(user?.first_name ?? "");
+    setFname([user?.first_name, user?.last_name].filter(Boolean).join(" ").trim());
     setLname(user?.last_name ?? "");
     setPhone(user?.phone ?? "");
   }, [user]);
@@ -117,7 +121,7 @@ export const PersonalInfo = () => {
           </form>
           {user?.avatar && (
             <Button type="submit" variant="negative" look="outlined" size="medium" onClick={deleteUserAvatar}>
-              Delete
+              {t("Delete")}
             </Button>
           )}
         </div>
@@ -125,28 +129,20 @@ export const PersonalInfo = () => {
           <div className={styles.flexRow}>
             <div className={styles.flex1}>
               <Input
-                label="First Name"
+                label={t("Name")}
                 value={fname}
                 onChange={(e: React.KeyboardEvent<HTMLInputElement>) => setFname(e.currentTarget.value)}
                 name="first_name"
               />
             </div>
-            <div className={styles.flex1}>
-              <Input
-                label="Last Name"
-                value={lname}
-                onChange={(e: React.KeyboardEvent<HTMLInputElement>) => setLname(e.currentTarget.value)}
-                name="last_name"
-              />
-            </div>
           </div>
           <div className={styles.flexRow}>
             <div className={styles.flex1}>
-              <Input label="E-mail" type="email" readOnly={true} value={user?.email ?? ""} />
+              <Input label={t("E-mail")} type="email" readOnly={true} value={user?.email ?? ""} />
             </div>
             <div className={styles.flex1}>
               <Input
-                label="Phone"
+                label={t("Phone")}
                 type="phone"
                 onChange={(e: React.KeyboardEvent<HTMLInputElement>) => setPhone(e.currentTarget.value)}
                 value={phone}
@@ -156,7 +152,7 @@ export const PersonalInfo = () => {
           </div>
           <div className={clsx(styles.flexRow, styles.flexEnd)}>
             <Button style={{ width: 125 }} waiting={isInProgress}>
-              Save
+              {t("Save")}
             </Button>
           </div>
         </form>

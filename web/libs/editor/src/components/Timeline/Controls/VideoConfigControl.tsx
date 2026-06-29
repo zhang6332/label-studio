@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type React from "react";
 import { type FC, type MouseEvent, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -159,7 +160,7 @@ export const VideoConfigControl: FC<VideoConfigControlProps> = ({
         style={{ opacity: 0, position: "fixed" }}
       >
         <div className={styles.scrollContent}>
-          <div className={styles.sectionHeader}>Playback Settings</div>
+          <div className={styles.sectionHeader}>{t("Playback Settings")}</div>
           <Slider
             min={minSpeed}
             max={MAX_SPEED}
@@ -173,7 +174,7 @@ export const VideoConfigControl: FC<VideoConfigControlProps> = ({
             <Toggle
               checked={loopTimelineRegion}
               onChange={(e) => onLoopTimelineRegionChange(e.target.checked)}
-              label="Loop Timeline Regions"
+              label={t("Loop Timeline Regions")}
               labelProps={{ size: "small" }}
             />
           </div>
@@ -186,7 +187,7 @@ export const VideoConfigControl: FC<VideoConfigControlProps> = ({
 
   return (
     <div className={styles.videoConfig} ref={buttonRef} onClick={handleContainerClick}>
-      <ControlButton look={configModal ? "filled" : undefined} onClick={handleButtonClick} aria-label="Video settings">
+      <ControlButton look={configModal ? "filled" : undefined} onClick={handleButtonClick} aria-label={t("Video settings")}>
         {<IconConfig />}
       </ControlButton>
       {configModal && renderModal()}

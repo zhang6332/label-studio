@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Label, Toggle, Select, Tooltip, cn } from "@humansignal/ui";
 import { Form, Input } from "apps/labelstudio/src/components/Form";
 import { IconDocument, IconSearch } from "@humansignal/icons";
@@ -23,17 +24,17 @@ interface PreviewStepProps {
 
 const regexFilters = [
   {
-    title: "Images",
+    title: t("Images"),
     regex: ".*.(jpe?g|png|gif)$",
     blob: true,
   },
   {
-    title: "Videos",
+    title: t("Videos"),
     regex: ".*\\.(mp4|avi|mov|wmv|webm)$",
     blob: true,
   },
   {
-    title: "Audio",
+    title: t("Audio"),
     regex: ".*\\.(mp3|wav|ogg|flac)$",
     blob: true,
   },
@@ -83,17 +84,17 @@ export const PreviewStep = ({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold">Configure Import Settings & Preview Data</h2>
-        <p className="text-muted-foreground">Set up filters for your files and preview what will be synchronized</p>
+        <h2 className="text-xl font-semibold">{t("Configure Import Settings & Preview Data")}</h2>
+        <p className="text-muted-foreground">{t("Set up filters for your files and preview what will be synchronized")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left Column Header */}
-        <h4>Import Configuration</h4>
+        <h4>{t("Import Configuration")}</h4>
 
         {/* Right Column Header with Button */}
         <div className="flex justify-between items-center">
-          <h4>Files Preview</h4>
+          <h4>{t("Files Preview")}</h4>
         </div>
 
         {/* Left Column: Configuration */}
@@ -127,7 +128,7 @@ export const PreviewStep = ({
                       // Reset preview when prefix/path changes
                       onImportSettingsChange?.();
                     }}
-                    placeholder="path/to/files/ or leave empty for root"
+                    placeholder={t("path/to/files/ or leave empty for root")}
                     style={{ width: "100%" }}
                     required={false}
                     skip={false}
@@ -140,8 +141,8 @@ export const PreviewStep = ({
 
               {/* Import Method */}
               <div className="space-y-2">
-                <Label text="Import Method (optional)" />
-                <p className="text-sm text-muted-foreground">Choose how to interpret your data from storage</p>
+                <Label text={t("Import Method (optional)")} />
+                <p className="text-sm text-muted-foreground">{t("Choose how to interpret your data from storage")}</p>
                 <Select
                   name="use_blob_urls"
                   value={formData.use_blob_urls ? "Files" : "Tasks"}
@@ -162,7 +163,7 @@ export const PreviewStep = ({
                     [
                       {
                         value: "Files",
-                        label: "Files - Automatically creates a task for each storage object (e.g. JPG, MP3, TXT)",
+                        label: t("Files - Automatically creates a task for each storage object (e.g. JPG, MP3, TXT)"),
                       },
                       {
                         value: "Tasks",
@@ -170,14 +171,14 @@ export const PreviewStep = ({
                       },
                     ] as any
                   }
-                  placeholder="Select import method"
+                  placeholder={t("Select import method")}
                 />
               </div>
 
               {/* File Filter Section */}
               <div className="space-y-2">
-                <Label text="File Name Filter (optional)" />
-                <p className="text-sm text-muted-foreground">Use regex patterns to filter which files are imported</p>
+                <Label text={t("File Name Filter (optional)")} />
+                <p className="text-sm text-muted-foreground">{t("Use regex patterns to filter which files are imported")}</p>
                 <Input
                   id="regex_filter"
                   name="regex_filter"
@@ -207,7 +208,7 @@ export const PreviewStep = ({
                 />
 
                 <div className="flex flex-wrap gap-x-2 items-center text-xs">
-                  <span className="text-muted-foreground">Common filters:</span>
+                  <span className="text-muted-foreground">{t("Common filters:")}</span>
                   {regexFilters
                     .filter((r) => r.blob === formData.use_blob_urls)
                     .map((r) => {
@@ -239,8 +240,8 @@ export const PreviewStep = ({
               {/* Scan All Subfolders */}
               <div className="flex items-center justify-between">
                 <div>
-                  <Label text="Scan all sub-folders" className="block mb-2" />
-                  <p className="text-sm text-muted-foreground">Include files from all nested folders</p>
+                  <Label text={t("Scan all sub-folders")} className="block mb-2" />
+                  <p className="text-sm text-muted-foreground">{t("Include files from all nested folders")}</p>
                 </div>
                 <Toggle
                   checked={formData.recursive_scan ?? false}
@@ -270,7 +271,7 @@ export const PreviewStep = ({
                 <div className="rounded-full bg-muted p-3 mb-4">
                   <IconDocument className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <h3 className="font-medium mb-1">No Preview Available</h3>
+                <h3 className="font-medium mb-1">{t("No Preview Available")}</h3>
                 <p className="text-sm text-muted-foreground max-w-md">
                   Configure your import settings and click "Load Preview" to see a sample of files that will be
                   imported.
@@ -282,7 +283,7 @@ export const PreviewStep = ({
                 <div className="rounded-full bg-muted p-3 mb-4">
                   <IconSearch className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <h3 className="font-medium mb-1">No Files Found</h3>
+                <h3 className="font-medium mb-1">{t("No Files Found")}</h3>
                 <p className="text-sm text-muted-foreground max-w-md">
                   No files matching your current criteria were found. Try adjusting your filter settings and reload the
                   preview.

@@ -3,6 +3,7 @@
  * Added virtualization support for large annotation counts
  */
 
+import { t } from "@humansignal/core";
 import React, { Component, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Spin } from "antd";
 import { Button, Tooltip } from "@humansignal/ui";
@@ -427,7 +428,7 @@ const VirtualizedGrid = observer(({ store, annotations, root }) => {
             look="string"
             onClick={scrollLeft}
             className={styles.left}
-            aria-label="Move left"
+            aria-label={t("Move left")}
             disabled={isLeftDisabled}
           >
             <LeftCircleOutlined />
@@ -437,7 +438,7 @@ const VirtualizedGrid = observer(({ store, annotations, root }) => {
             look="string"
             onClick={scrollRight}
             className={styles.right}
-            aria-label="Move right"
+            aria-label={t("Move right")}
             disabled={isRightDisabled}
           >
             <RightCircleOutlined />
@@ -580,7 +581,7 @@ class GridClassComponent extends Component {
             .filter((c) => !c.hidden)
             .map((c) => (
               <div id={`c-${c.id}`} key={`anno-${c.id}`} style={{ position: "relative" }}>
-                <Tooltip title="Open Annotation Tab">
+                <Tooltip title={t("Open Annotation Tab")}>
                   <div>
                     <EntityTab
                       entity={c}
@@ -625,10 +626,10 @@ class GridClassComponent extends Component {
             </div>
           )}
         </div>
-        <Button size="small" look="string" onClick={this.left} className={styles.left} aria-label="Move left">
+        <Button size="small" look="string" onClick={this.left} className={styles.left} aria-label={t("Move left")}>
           <LeftCircleOutlined />
         </Button>
-        <Button size="small" look="string" onClick={this.right} className={styles.right} aria-label="Move right">
+        <Button size="small" look="string" onClick={this.right} className={styles.right} aria-label={t("Move right")}>
           <RightCircleOutlined />
         </Button>
       </div>

@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { shallowEqualObjects } from "shallow-equal";
 import { ApiProvider } from "../../providers/ApiProvider";
@@ -524,8 +525,8 @@ Form.Builder = React.forwardRef(
         {children}
         {props.autosubmit !== true && withActions === true && (
           <Form.Actions>
-            <Button type="submit" className="w-[120px]" aria-label="Submit form">
-              Save
+            <Button type="submit" className="w-[120px]" aria-label={t("Submit form")}>
+              {t("Save")}
             </Button>
           </Form.Actions>
         )}
@@ -553,7 +554,7 @@ Form.Indicator = () => {
     <div className={cn("form-indicator").toClassName()}>
       <Oneof value={state}>
         <span className={cn("form-indicator").elem("item").mod({ type: state }).toClassName()} case="success">
-          Saved!
+          {t("Saved!")}
         </span>
       </Oneof>
     </div>

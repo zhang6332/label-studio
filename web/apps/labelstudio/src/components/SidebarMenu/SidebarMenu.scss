@@ -6,7 +6,7 @@
   &__navigation {
     width: calc(var(--menu-sidebar-width));
     display: flex;
-    transition: border 400ms ease-out;
+    transition: border 120ms ease-out;
 
     & .main-menu {
       background: var(--color-neutral-background);

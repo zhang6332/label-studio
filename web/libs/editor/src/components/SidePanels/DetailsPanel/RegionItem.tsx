@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { IconEyeClosed, IconEyeOpened, IconPlus, IconRelationLink, IconTrash, IconWarning } from "@humansignal/icons";
 import { Button, type ButtonProps } from "@humansignal/ui";
 import chroma from "chroma-js";
@@ -70,7 +71,7 @@ export const RegionItem: FC<RegionItemProps> = observer(
           <div className={cn("detailed-region").elem("warning").toClassName()}>
             <IconWarning />
             <div className={cn("detailed-region").elem("warning-text").toClassName()}>
-              Incomplete {region.type?.replace("region", "") ?? "region"}
+              {t("Incomplete")} {region.type?.replace("region", "") ?? "region"}
             </div>
           </div>
         )}
@@ -116,7 +117,7 @@ const RegionAction: FC<any> = observer(({ region, annotation, editMode, onEditMo
             annotation.startLinkingMode(CREATE_RELATION_MODE, region);
           }
         }}
-        aria-label="Create Relation"
+        aria-label={t("Create Relation")}
       >
         <IconRelationLink />
       </RegionActionButton>
@@ -130,7 +131,7 @@ const RegionAction: FC<any> = observer(({ region, annotation, editMode, onEditMo
         look={editMode ? "filled" : "string"}
         variant={editMode ? "primary" : "neutral"}
         onClick={() => onEditModeChange(!editMode)}
-        aria-label="Edit region's meta"
+        aria-label={t("Edit region's meta")}
       >
         <IconPlus />
       </RegionActionButton>
@@ -153,7 +154,7 @@ const RegionAction: FC<any> = observer(({ region, annotation, editMode, onEditMo
             displayedHotkey="region:lock"
             variant="neutral"
             look="string"
-            aria-label="Unlock Region"
+            aria-label={t("Unlock Region")}
             tooltip="Unlock Region"
           />
         )}
@@ -171,7 +172,7 @@ const RegionAction: FC<any> = observer(({ region, annotation, editMode, onEditMo
         <RegionActionButton
           variant="negative"
           look="string"
-          aria-label="Delete selected region"
+          aria-label={t("Delete selected region")}
           disabled={region.isReadOnly()}
           tooltip="Delete selected region"
           onClick={() => annotation.deleteRegion(region)}

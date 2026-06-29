@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type React from "react";
 import { Label, Toggle, Select } from "@humansignal/ui";
 import Counter from "apps/labelstudio/src/components/Form/Elements/Counter/Counter";
@@ -208,6 +209,6 @@ export const FieldRenderer: React.FC<FieldRendererProps> = ({
     }
 
     default:
-      return <div className="text-red-500">Unknown field type: {field.type}</div>;
+      return <div className="text-red-500">{t("Unknown field type:")} {field.type}</div>;
   }
 };

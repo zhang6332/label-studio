@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject, observer } from "mobx-react";
 import type { FC } from "react";
 import { cn } from "../../../utils/bem";
@@ -24,7 +25,7 @@ const DetailsPanelComponent: FC<DetailsPanelProps> = ({ currentEntity, regions, 
   const selectedRegions = regions.selection;
 
   return (
-    <PanelBase {...props} currentEntity={currentEntity} name="details" title="Details">
+    <PanelBase {...props} currentEntity={currentEntity} name="details" title={t("Details")}>
       <Content selection={selectedRegions} currentEntity={currentEntity} />
     </PanelBase>
   );
@@ -79,7 +80,7 @@ const RelationsTab: FC<any> = inject("store")(
               <>
                 <div className={cn("relations").elem("view-control").toClassName()}>
                   <div className={cn("relations").elem("section-head").toClassName()}>
-                    Relations ({relationStore.size})
+                    {t("Relations (")}{relationStore.size})
                   </div>
                   <RelationsControls relationStore={relationStore} />
                 </div>
@@ -90,11 +91,11 @@ const RelationsTab: FC<any> = inject("store")(
             ) : (
               <EmptyState
                 icon={<IconRelationLink width={24} height={24} />}
-                header="Create relations between regions"
-                description={<>Link regions to define relationships between them</>}
+                header={t("Create relations between regions")}
+                description={<>{t("Link regions to define relationships between them")}</>}
                 learnMore={{
                   href: getDocsUrl("guide/labeling#Add-relations-between-annotations"),
-                  text: "Learn more",
+                  text: t("Learn more"),
                   testId: "relations-panel-learn-more",
                 }}
               />
@@ -119,7 +120,7 @@ const HistoryTab: FC<any> = inject("store")(
               enabled={showAnnotationHistory}
               sectionHeader={
                 <>
-                  Annotation History
+                  {t("Annotation History")}
                   <span>#{currentEntity.pk ?? currentEntity.id}</span>
                 </>
               }
@@ -141,8 +142,8 @@ const InfoTab: FC<any> = inject("store")(
             {nothingSelected ? (
               <EmptyState
                 icon={<IconCursor width={24} height={24} />}
-                header="View region details"
-                description={<>Select a region to view its properties, metadata and available actions</>}
+                header={t("View region details")}
+                description={<>{t("Select a region to view its properties, metadata and available actions")}</>}
               />
             ) : (
               <>
@@ -180,7 +181,7 @@ const GeneralPanel: FC<any> = inject("store")(
             enabled={showAnnotationHistory}
             sectionHeader={
               <>
-                Annotation History
+                {t("Annotation History")}
                 <span>#{currentEntity.pk ?? currentEntity.id}</span>
               </>
             }
@@ -188,7 +189,7 @@ const GeneralPanel: FC<any> = inject("store")(
         </div>
         <div className={cn("details").elem("section").toClassName()}>
           <div className={cn("details").elem("view-control").toClassName()}>
-            <div className={cn("details").elem("section-head").toClassName()}>Relations ({relationStore.size})</div>
+            <div className={cn("details").elem("section-head").toClassName()}>{t("Relations (")}{relationStore.size})</div>
             <RelationsControls relationStore={relationStore} />
           </div>
           <div className={cn("details").elem("section-content").toClassName()}>
@@ -197,7 +198,7 @@ const GeneralPanel: FC<any> = inject("store")(
         </div>
         {store.hasInterface("annotations:comments") && store.commentStore.isCommentable && (
           <div className={cn("details").elem("section").toClassName()}>
-            <div className={cn("details").elem("section-head").toClassName()}>Comments</div>
+            <div className={cn("details").elem("section-head").toClassName()}>{t("Comments")}</div>
             <div className={cn("details").elem("section-content").toClassName()}>
               <CommentsComponent
                 annotationStore={store.annotationStore}

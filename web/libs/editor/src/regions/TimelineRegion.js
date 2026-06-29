@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { isAlive, types } from "mobx-state-tree";
 
 import Registry from "../core/Registry";
@@ -54,8 +55,8 @@ const Model = types
   .volatile(() => ({
     hideable: true,
     editableFields: [
-      { property: "start", label: "Start frame" },
-      { property: "end", label: "End frame" },
+      { property: "start", label: t("Start frame") },
+      { property: "end", label: t("End frame") },
     ],
   }))
   .views((self) => ({

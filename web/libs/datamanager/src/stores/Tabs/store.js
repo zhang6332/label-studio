@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { applySnapshot, clone, destroy, flow, getRoot, getSnapshot, types } from "mobx-state-tree";
 import { History } from "../../utils/history";
 import { guidGenerator } from "../../utils/random";
@@ -257,7 +258,7 @@ export const TabStore = types
     createDefaultView: flow(function* () {
       self.views.push({
         id: 0,
-        title: "Default",
+        title: t("Default"),
         hiddenColumns: self.defaultHidden,
       });
 

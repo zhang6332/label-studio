@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import {
   IconEyeClosed,
   IconEyeOpened,
@@ -127,7 +128,7 @@ const RelationItem: FC<{ relation: any }> = observer(({ relation }) => {
                 variant="negative"
                 look="string"
                 size="small"
-                aria-label="Delete Relation"
+                aria-label={t("Delete Relation")}
                 tooltip="Delete Relation"
                 onClick={() => {
                   relation.node1.setHighlight(false);
@@ -176,7 +177,7 @@ const RelationMeta: FC<any> = observer(({ relation }) => {
       <Select
         multiple={selectionMode}
         style={{ width: "100%" }}
-        placeholder="Select labels"
+        placeholder={t("Select labels")}
         value={selectedValues}
         onChange={onChange}
         options={options}

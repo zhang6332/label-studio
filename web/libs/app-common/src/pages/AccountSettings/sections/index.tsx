@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { PersonalInfo } from "./PersonalInfo";
 import { EmailPreferences } from "./EmailPreferences";
 import { PersonalAccessToken, PersonalAccessTokenDescription } from "./PersonalAccessToken";
@@ -22,38 +23,38 @@ export const accountSettingsSections = (settings: AuthTokenSettings, permissions
 
   return [
     {
-      title: "Personal Info",
+      title: t("Personal Info"),
       id: "personal-info",
       component: PersonalInfo,
     },
     {
       title: (
         <div className="flex items-center gap-tight">
-          <span>Hotkeys</span>
+          <span>{t("Hotkeys")}</span>
           <Badge variant="beta" style="solid" shape="rounded">
-            Beta
+            {t("Beta")}
           </Badge>
         </div>
       ),
       id: "hotkeys",
       component: HotkeysManager,
       description: () =>
-        "Customize your keyboard shortcuts to speed up your workflow. Click on any hotkey below to assign a new key combination that works best for you.",
+        t("Customize your keyboard shortcuts to speed up your workflow. Click on any hotkey below to assign a new key combination that works best for you."),
     },
     {
-      title: "Email Preferences",
+      title: t("Email Preferences"),
       id: "email-preferences",
       component: EmailPreferences,
     },
     {
-      title: "Membership Info",
+      title: t("Membership Info"),
       id: "membership-info",
       component: MembershipInfo,
     },
     settings.api_tokens_enabled &&
       canCreateTokens &&
       ff.isActive(ff.FF_AUTH_TOKENS) && {
-        title: "Personal Access Token",
+        title: t("Personal Access Token"),
         id: "personal-access-token",
         component: PersonalJWTToken,
         description: PersonalAccessTokenDescription,

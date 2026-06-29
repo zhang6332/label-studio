@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import { IconCross, IconPlus } from "@humansignal/icons";
 import { Button, Typography } from "@humansignal/ui";
 import { useEffect, useState } from "react";
@@ -55,11 +56,11 @@ const WebhookForm = ({
       }}
     >
       <Form.Row columnCount={1}>
-        <Label text="Payload URL" large />
+        <Label text={t("Payload URL")} large />
         <div className="grid grid-cols-[1fr_135px] gap-tight">
           <Input name="url" className="self-stretch w-auto" placeholder="URL" />
           <div className="grid grid-flow-col auto-cols-max items-center justify-end gap-tight self-center">
-            <span className="text-neutral-content">Is Active</span>
+            <span className="text-neutral-content">{t("Is Active")}</span>
             <Toggle
               skip
               checked={isActive}
@@ -74,7 +75,7 @@ const WebhookForm = ({
         <div className="border border-neutral-border p-4 rounded-lg mb-4">
           <div className="flex flex-col gap-tight">
             <div className="flex items-center justify-between">
-              <Label text="Headers" large />
+              <Label text={t("Headers")} large />
               <Button
                 type="button"
                 variant="primary"
@@ -90,13 +91,13 @@ const WebhookForm = ({
                 <div key={header.id} className="grid grid-cols-[1fr_1fr_40px] gap-tight">
                   <Input
                     skip
-                    placeholder="header"
+                    placeholder={t("header")}
                     value={header.key}
                     onChange={(e) => onHeaderChange("key", e, index)}
                   />
                   <Input
                     skip
-                    placeholder="value"
+                    placeholder={t("value")}
                     value={header.value}
                     onChange={(e) => onHeaderChange("value", e, index)}
                   />
@@ -119,7 +120,7 @@ const WebhookForm = ({
       </Form.Row>
       <div className="border border-neutral-border p-4 rounded-lg mb-4">
         <div>
-          <Label text="Payload" large />
+          <Label text={t("Payload")} large />
         </div>
         <div>
           <div className="my-2">
@@ -129,14 +130,14 @@ const WebhookForm = ({
               onChange={(e) => {
                 setSendPayload(e.target.checked);
               }}
-              label="Send payload"
+              label={t("Send payload")}
             />
           </div>
           <div className="my-2">
             <Toggle
               skip
               checked={sendForAllActions}
-              label="Send for all actions"
+              label={t("Send for all actions")}
               onChange={(e) => {
                 setSendForAllActions(e.target.checked);
               }}
@@ -145,7 +146,7 @@ const WebhookForm = ({
           <div>
             {!sendForAllActions ? (
               <div>
-                <h4 className="text-neutral-content">Send Payload for</h4>
+                <h4 className="text-neutral-content">{t("Send Payload for")}</h4>
                 <div>
                   {Object.entries(webhooksInfo).map(([key, value]) => {
                     return (
@@ -175,7 +176,7 @@ const WebhookForm = ({
             type="button"
             variant="negative"
             look="outlined"
-            aria-label="Delete webhook"
+            aria-label={t("Delete webhook")}
             onClick={() =>
               WebhookDeleteModal({
                 onDelete: async () => {
@@ -188,7 +189,7 @@ const WebhookForm = ({
               })
             }
           >
-            Delete Webhook
+            {t("Delete Webhook")}
           </Button>
         )}
         <div className={rootClass.elem("status").toClassName()}>
@@ -200,9 +201,9 @@ const WebhookForm = ({
           type="button"
           className="ml-auto"
           onClick={onBack}
-          aria-label="Cancel webhook edit"
+          aria-label={t("Cancel webhook edit")}
         >
-          Cancel
+          {t("Cancel")}
         </Button>
         <Button
           className={rootClass.elem("save-button").toClassName()}
@@ -318,7 +319,7 @@ const WebhookDetail = ({ webhook, webhooksInfo, fetchWebhooks, onBack, onSelectA
           onClick={() => onSelectActive(null)}
           className="cursor-pointer text-neutral-content-subtler hover:text-neutral-content-subtle"
         >
-          Webhooks
+          {t("Webhooks")}
         </Typography>
         <Typography variant="headline" size="medium" className="text-neutral-content-subtler">
           / {webhook === null ? "New Webhook" : "Edit Webhook"}

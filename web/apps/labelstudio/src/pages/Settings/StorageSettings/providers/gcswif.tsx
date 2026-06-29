@@ -1,3 +1,4 @@
+import { t } from "../../../../i18n";
 import { EnterpriseBadge, IconSpark } from "@humansignal/ui";
 import { Alert, AlertTitle, AlertDescription } from "@humansignal/shad/components/ui/alert";
 import { IconCloudProviderGCS } from "@humansignal/icons";
@@ -18,16 +19,16 @@ const gcsWifProvider: ProviderConfig = {
       content: (
         <Alert variant="gradient">
           <IconSpark />
-          <AlertTitle>Enterprise Feature</AlertTitle>
+          <AlertTitle>{t("Enterprise Feature")}</AlertTitle>
           <AlertDescription>
-            Google Cloud Storage with Workload Identity Federation is available in Label Studio Enterprise.{" "}
+            {t("Google Cloud Storage with Workload Identity Federation is available in Label Studio Enterprise.")}{" "}
             <a
               href="https://docs.humansignal.com/guide/storage.html#Google-Cloud-Storage-with-Workload-Identity-Federation-WIF"
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:no-underline"
             >
-              Learn more
+              {t("Learn more")}
             </a>
           </AlertDescription>
         </Alert>

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useState } from "react";
 import { Button } from "@humansignal/ui";
 import {
@@ -163,7 +164,7 @@ export const ImportDialog = ({ open, onOpenChange, onImport }: ImportDialogProps
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px] bg-neutral-surface">
         <DialogHeader>
-          <DialogTitle>Import Hotkeys</DialogTitle>
+          <DialogTitle>{t("Import Hotkeys")}</DialogTitle>
           <DialogDescription>
             Paste your exported hotkeys JSON below. This will replace your current hotkeys. Make sure the JSON contains
             an array of hotkey objects with the required fields.
@@ -175,7 +176,7 @@ export const ImportDialog = ({ open, onOpenChange, onImport }: ImportDialogProps
             htmlFor="import-json"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Hotkeys JSON
+            {t("Hotkeys JSON")}
           </label>
           <textarea
             id="import-json"
@@ -188,7 +189,7 @@ export const ImportDialog = ({ open, onOpenChange, onImport }: ImportDialogProps
 
           {error && (
             <Alert variant="destructive" id="import-error">
-              <AlertTitle>Import Error</AlertTitle>
+              <AlertTitle>{t("Import Error")}</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -196,10 +197,10 @@ export const ImportDialog = ({ open, onOpenChange, onImport }: ImportDialogProps
 
         <DialogFooter>
           <Button variant="neutral" onClick={handleCancel}>
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button onClick={handleImport} disabled={!importText.trim()}>
-            Import Hotkeys
+            {t("Import Hotkeys")}
           </Button>
         </DialogFooter>
       </DialogContent>

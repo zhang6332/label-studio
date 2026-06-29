@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject } from "mobx-react";
 import React from "react";
 import { cn } from "../../utils/bem";
@@ -100,7 +101,7 @@ export const Filters = injector(({ store, views, currentView, filters, projectId
             />
           ))
         ) : (
-          <div className={cn("filters").elem("empty").toClassName()}>No filters applied</div>
+          <div className={cn("filters").elem("empty").toClassName()}>{t("No filters applied")}</div>
         )}
       </div>
       <div className={cn("filters").elem("actions").toClassName()}>
@@ -110,7 +111,7 @@ export const Filters = injector(({ store, views, currentView, filters, projectId
           onClick={() => currentView.createFilter()}
           leading={<IconPlus className="!h-3 !w-3" />}
         >
-          Add {filters.length ? "Another Filter" : "Filter"}
+          {t("Add")} {filters.length ? "Another Filter" : "Filter"}
         </Button>
 
         <div className={cn("filters").elem("actions-right").toClassName()}>
@@ -120,7 +121,7 @@ export const Filters = injector(({ store, views, currentView, filters, projectId
               look="string"
               tooltip={copyFeedback ? "Copied!" : "Copy filters to clipboard; Tip: Use it in Label Studio SDK"}
               onClick={handleCopyFilters}
-              aria-label="Copy filters"
+              aria-label={t("Copy filters")}
             >
               <IconCopyOutline className="!w-4 !h-4" />
             </Button>
@@ -131,7 +132,7 @@ export const Filters = injector(({ store, views, currentView, filters, projectId
             look="string"
             tooltip={pasteFeedback ? "Pasted!" : "Paste filters from clipboard"}
             onClick={handlePasteFilters}
-            aria-label="Paste filters"
+            aria-label={t("Paste filters")}
           >
             <IconClipboardCheck className="!w-4 !h-4" />
           </Button>
@@ -142,7 +143,7 @@ export const Filters = injector(({ store, views, currentView, filters, projectId
               look="string"
               tooltip="Undo paste — restore previous filters"
               onClick={handleUndoPaste}
-              aria-label="Undo paste"
+              aria-label={t("Undo paste")}
             >
               <IconUndo className="!w-4 !h-4" />
             </Button>
@@ -155,7 +156,7 @@ export const Filters = injector(({ store, views, currentView, filters, projectId
               size="small"
               tooltip="Pin to sidebar"
               onClick={() => views.expandFilters()}
-              aria-label="Pin filters to sidebar"
+              aria-label={t("Pin filters to sidebar")}
             >
               <IconChevronRight className="!w-4 !h-4" />
             </Button>

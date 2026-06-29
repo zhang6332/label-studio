@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import { IconRedo, IconRemove, IconUndo } from "@humansignal/icons";
 import { Button } from "@humansignal/ui";
@@ -12,7 +13,7 @@ export const EditingHistory = observer(({ entity }) => {
       <Button
         variant="neutral"
         look="string"
-        aria-label="Undo"
+        aria-label={t("Undo")}
         className="!p-0"
         tooltip="Undo"
         disabled={!history?.canUndo}
@@ -23,7 +24,7 @@ export const EditingHistory = observer(({ entity }) => {
       <Button
         variant="neutral"
         look="string"
-        aria-label="Redo"
+        aria-label={t("Redo")}
         className="!p-0"
         tooltip="Redo"
         disabled={!history?.canRedo}
@@ -33,7 +34,7 @@ export const EditingHistory = observer(({ entity }) => {
       <Button
         look="string"
         variant="negative"
-        aria-label="Reset"
+        aria-label={t("Reset")}
         tooltip="Reset"
         className="!p-0"
         disabled={!history?.canUndo}

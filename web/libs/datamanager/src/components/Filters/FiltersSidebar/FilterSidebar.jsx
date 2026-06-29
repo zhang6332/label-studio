@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject } from "mobx-react";
 import { IconChevronLeft } from "@humansignal/icons";
 import { cn } from "../../../utils/bem";
@@ -24,11 +25,11 @@ export const FiltersSidebar = sidebarInjector(({ viewsStore, sidebarEnabled, sid
             look="string"
             onClick={() => viewsStore.collapseFilters()}
             tooltip="Unpin filters"
-            aria-label="Unpin filters"
+            aria-label={t("Unpin filters")}
           >
             <IconChevronLeft width={24} height={24} />
           </Button>
-          <div className={cn("filters-sidebar").elem("title").toClassName()}>Filters</div>
+          <div className={cn("filters-sidebar").elem("title").toClassName()}>{t("Filters")}</div>
         </div>
       </div>
       <Filters sidebar={true} />

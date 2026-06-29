@@ -1,20 +1,22 @@
 import { format } from "date-fns";
+import { zhCN } from "date-fns/locale";
 import { NavLink } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { IconCross } from "@humansignal/icons";
-import { Userpic, Button, useToast } from "@humansignal/ui";
+import { Userpic, Button } from "@humansignal/ui";
 import { useAuth } from "@humansignal/core/providers/AuthProvider";
 import { cn } from "../../../utils/bem";
-import { useAPI } from "../../../providers/ApiProvider";
+import { getLang, t } from "../../../i18n";
 import "./SelectedUser.scss";
 
-const ROLE_OPTIONS = [
-  { value: "manager", label: "Manager" },
-  { value: "reviewer", label: "Reviewer" },
-  { value: "annotator", label: "Annotator" },
-];
+const ROLE_BADGE = {
+  owner: t("Owner"),
+  manager: t("Manager"),
+  reviewer: t("Reviewer"),
+  annotator: t("Annotator"),
+};
 
-const ROLE_LABEL = Object.fromEntries(ROLE_OPTIONS.map(({ value, label }) => [value, label]));
+// Role hierarchy: Owner 4 > Manager 3 > Reviewer 2 > Annotator 1.
+const ROLE_LEVEL = { owner: 4, manager: 3, reviewer: 2, annotator: 1 };
 
 const UserProjectsLinks = ({ projects }) => {
   return (
@@ -33,61 +35,20 @@ const UserProjectsLinks = ({ projects }) => {
   );
 };
 
-export const SelectedUser = ({ user, onClose, onRoleChanged }) => {
-  const api = useAPI();
-  const toast = useToast();
+// Read-only user detail panel. Every user — including the Owner — is shown the
+// same way; role changes happen through the Edit modal (onEdit) instead of an
+// inline <select>, so a role change is never accidental.
+export const SelectedUser = ({ user, onClose, onEdit }) => {
   const auth = useAuth();
-  const [role, setRole] = useState(user.role);
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    setRole(user.role);
-  }, [user.id, user.role]);
-
-  const isOwner = role === "owner" || user.role === "owner";
-  // Role hierarchy: Owner 4 > Manager 3 > Reviewer 2 > Annotator 1.
-  // Can only edit users strictly below the requester's level (no peers/superiors).
-  const ROLE_LEVEL = { owner: 4, manager: 3, reviewer: 2, annotator: 1 };
-  const { permissions } = auth;
+  const isOwner = user.role === "owner";
   const requesterIsOwner = Boolean(auth.user) && auth.user.active_organization_meta?.email === auth.user.email;
-  const requesterLevel = requesterIsOwner
-    ? 4
-    : permissions.can("organizations.change")
-      ? 3
-      : permissions.can("annotations.delete")
-        ? 2
-        : 1;
-  const targetLevel = ROLE_LEVEL[role] ?? ROLE_LEVEL[user.role] ?? 1;
-  const canEditRole = !isOwner && requesterLevel > targetLevel;
+  const requesterLevel = requesterIsOwner ? 4 : auth.permissions.can("organizations.change") ? 3 : 1;
+  const targetLevel = ROLE_LEVEL[user.role] ?? 1;
+  // Edit button only when the requester outranks the target and it is not
+  // themselves — mirrors the backend can_manage_user rule.
+  const canEdit = !isOwner && user.id !== auth.user?.id && requesterLevel > targetLevel;
 
-  const commitRole = async (nextRole) => {
-    if (!nextRole || nextRole === user.role || saving) return;
-    setSaving(true);
-    try {
-      const updated = await api.callApi("updateMembership", {
-        params: { pk: auth.user?.active_organization, userPk: user.id },
-        body: { role: nextRole },
-      });
-      setRole(updated?.role ?? nextRole);
-      onRoleChanged?.(user.id, updated?.role ?? nextRole);
-      toast.show({ message: `Role updated to ${ROLE_LABEL[updated?.role ?? nextRole] ?? updated?.role}` });
-    } catch (err) {
-      const status = err?.response?.status;
-      if (status === 403) {
-        toast.show({ message: "You don't have permission to change this role.", type: "error" });
-      } else {
-        toast.show({ message: "Failed to update role.", type: "error" });
-      }
-      setRole(user.role);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const fullName = [user.first_name, user.last_name]
-    .filter((n) => !!n)
-    .join(" ")
-    .trim();
+  const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ").trim();
 
   return (
     <div className={cn("user-info").toClassName()}>
@@ -95,7 +56,7 @@ export const SelectedUser = ({ user, onClose, onRoleChanged }) => {
         look="string"
         onClick={onClose}
         className="absolute top-[20px] right-[24px]"
-        aria-label="Close user details"
+        aria-label={t("Close user details")}
       >
         <IconCross />
       </Button>
@@ -109,24 +70,8 @@ export const SelectedUser = ({ user, onClose, onRoleChanged }) => {
       </div>
 
       <div className={cn("user-info").elem("section").toClassName()}>
-        <div className={cn("user-info").elem("section-title").toClassName()}>Role</div>
-        {canEditRole ? (
-          <select
-            value={role}
-            disabled={saving}
-            onChange={(e) => commitRole(e.target.value)}
-            aria-label="Member role"
-            className={cn("user-info").elem("role-select").toClassName()}
-          >
-            {ROLE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <div className={cn("user-info").elem("role-readonly").toClassName()}>{ROLE_LABEL[role] ?? role}</div>
-        )}
+        <div className={cn("user-info").elem("section-title").toClassName()}>{t("Role")}</div>
+        <div className={cn("user-info").elem("role-badge").toClassName()}>{ROLE_BADGE[user.role] ?? user.role}</div>
       </div>
 
       {user.phone && (
@@ -135,25 +80,40 @@ export const SelectedUser = ({ user, onClose, onRoleChanged }) => {
         </div>
       )}
 
-      {!!user.created_projects.length && (
+      {!!user.created_projects?.length && (
         <div className={cn("user-info").elem("section").toClassName()}>
-          <div className={cn("user-info").elem("section-title").toClassName()}>Created Projects</div>
-
+          <div className={cn("user-info").elem("section-title").toClassName()}>{t("Created Projects")}</div>
           <UserProjectsLinks projects={user.created_projects} />
         </div>
       )}
 
-      {!!user.contributed_to_projects.length && (
+      {!!user.contributed_to_projects?.length && (
         <div className={cn("user-info").elem("section").toClassName()}>
-          <div className={cn("user-info").elem("section-title").toClassName()}>Contributed to</div>
-
+          <div className={cn("user-info").elem("section-title").toClassName()}>{t("Contributed to")}</div>
           <UserProjectsLinks projects={user.contributed_to_projects} />
         </div>
       )}
 
-      <p className={cn("user-info").elem("last-active").toClassName()}>
-        Last activity on: {format(new Date(user.last_activity), "dd MMM yyyy, KK:mm a")}
+      <p className={cn("user-info").elem("last-active").toClassName()} data-i18n-skip>
+        {getLang() === "zh-CN" ? "最近活动于：" : "Last activity on: "}
+        {user.last_activity
+          ? format(
+              new Date(user.last_activity),
+              // zh-CN pattern → "2026 6月 26 07:39 下午" (年月日 上下午)
+              // en pattern    → "26 Jun 2026 07:39 PM"  (日月年, no comma)
+              getLang() === "zh-CN" ? "yyyy MMM d KK:mm a" : "dd MMM yyyy KK:mm a",
+              { locale: getLang() === "zh-CN" ? zhCN : undefined },
+            )
+          : "—"}
       </p>
+
+      {canEdit && (
+        <div className={cn("user-info").elem("actions").toClassName()}>
+          <Button look="primary" onClick={() => onEdit?.(user)}>
+            {t("Edit")}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

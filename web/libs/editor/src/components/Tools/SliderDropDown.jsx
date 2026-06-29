@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Component, Fragment } from "react";
 import { Dropdown, Menu, Slider } from "antd";
 import { Button, IconRefresh } from "@humansignal/ui";
@@ -35,7 +36,7 @@ export default observer(
       return (
         <Fragment>
           <Dropdown overlay={menu}>
-            <Button className={styles.button} aria-label="Slider options">
+            <Button className={styles.button} aria-label={t("Slider options")}>
               {this.props.icon}
             </Button>
           </Dropdown>

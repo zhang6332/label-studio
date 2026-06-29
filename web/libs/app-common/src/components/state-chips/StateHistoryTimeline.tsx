@@ -2,6 +2,7 @@
  * StateHistoryTimeline - Reusable timeline component for displaying state history
  */
 
+import { t } from "@humansignal/core";
 import { Userpic, cn, Typography } from "@humansignal/ui";
 import type { StateHistoryItem } from "../../hooks/useStateHistory";
 import { formatStateName, formatTimestamp, formatUserName } from "./utils";
@@ -107,7 +108,7 @@ export function TimelineItem({ item, index, isLast }: TimelineItemProps) {
           {isSystem && (
             <>
               <Typography variant="body" size="smaller">
-                System
+                {t("System")}
               </Typography>
               {/* Dot separator */}
               <div className="size-[3px] rounded-full bg-neutral-content-subtler shrink-0" />

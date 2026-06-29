@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Button } from "@humansignal/ui";
 import { IconCross } from "@humansignal/icons";
 
@@ -12,7 +13,7 @@ export const FormHeader = ({ title, onClose }: FormHeaderProps) => {
       <div>
         <h2 className="m-0 mb-tight text-headline-large font-medium text-neutral-content">{title}</h2>
         <div className="text-body-medium text-neutral-content-subtle leading-relaxed">
-          Import your data from cloud storage providers
+          {t("Import your data from cloud storage providers")}
         </div>
       </div>
       <Button leading={<IconCross />} look="string" onClick={onClose} />

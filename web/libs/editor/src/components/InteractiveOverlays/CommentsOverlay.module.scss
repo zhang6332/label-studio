@@ -11,7 +11,7 @@
   z-index: 100;
 
   .commentItem {
-    transition: opacity 300ms;
+    transition: opacity 120ms;
     transform: translateY(-100%);
     filter: drop-shadow(0 2px 8px #12110D52) drop-shadow(0 8px 16px #12110D1F);
     pointer-events: all;
@@ -25,12 +25,12 @@
   }
 
   .commentIconBackground {
-    transition: fill 300ms;
+    transition: fill 120ms;
     fill: var(--icon-secondary-color);
   }
 
   .commentIconLines {
-    transition: fill 300ms;
+    transition: fill 120ms;
     fill: var(--icon-primary-color);
   }
 

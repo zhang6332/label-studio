@@ -1,6 +1,7 @@
 /**
  * Libraries
  */
+import { t } from "@humansignal/core";
 import React, { Component } from "react";
 import { Result, Spin } from "antd";
 import { getEnv, getRoot } from "mobx-state-tree";
@@ -109,15 +110,15 @@ class App extends Component {
         }}
       >
         <Result status="success" title={getEnv(this.props.store).messages.NO_NEXT_TASK} />
-        <div className={cn("sub__result").toClassName()}>All tasks in the queue have been completed</div>
+        <div className={cn("sub__result").toClassName()}>{t("All tasks in the queue have been completed")}</div>
         {store.taskHistory.length > 0 && (
           <Button
             onClick={(e) => store.prevTask(e, true)}
             variant="neutral"
             className="mx-0 my-4"
-            aria-label="Previous task"
+            aria-label={t("Previous task")}
           >
-            Go to Previous Task
+            {t("Go to Previous Task")}
           </Button>
         )}
       </div>
@@ -171,7 +172,7 @@ class App extends Component {
 
     return (
       <Space className={cn("main-view").elem("infobar").toClassName()} size="small">
-        <span>Task #{id}</span>
+        <span>{t("Task #")}{id}</span>
 
         {queue && <span>{queue}</span>}
       </Space>

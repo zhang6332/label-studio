@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { filterFieldSearchHandler, findSelectedOption } from "./filter-helpers";
 
 // ─── filterFieldSearchHandler ─────────────────────────────────────────────────
@@ -5,8 +6,8 @@ import { filterFieldSearchHandler, findSelectedOption } from "./filter-helpers";
 describe("filterFieldSearchHandler", () => {
   const headerOption = { original: { _isHeader: true, field: { title: "Recent" } } };
   const separatorOption = { original: { _isSeparator: true, field: { title: "" } } };
-  const recentOption = { _isRecent: true, original: { field: { title: "Updated at" } } };
-  const regularOption = { original: { field: { title: "Created at", parent: { title: "data" } } } };
+  const recentOption = { _isRecent: true, original: { field: { title: t("Updated at") } } };
+  const regularOption = { original: { field: { title: t("Created at"), parent: { title: "data" } } } };
 
   it("shows headers when query is empty", () => {
     expect(filterFieldSearchHandler(headerOption, "")).toBe(true);
@@ -61,10 +62,10 @@ describe("findSelectedOption", () => {
   const groupedItems = [
     {
       id: "data",
-      title: "Data",
+      title: t("Data"),
       options: [
-        { value: "filter:tasks:image", title: "Image" },
-        { value: "filter:tasks:text", title: "Text" },
+        { value: "filter:tasks:image", title: t("Image") },
+        { value: "filter:tasks:text", title: t("Text") },
       ],
     },
     ...flatItems,

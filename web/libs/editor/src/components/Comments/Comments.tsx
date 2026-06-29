@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { type FC, useEffect, useRef } from "react";
 import { observer } from "mobx-react";
 import { Spin } from "antd";
@@ -16,7 +17,7 @@ const CommentsLoadingSkeleton: FC = () => (
   <div className={cn("comments").elem("loading").toClassName()}>
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "40px 0" }}>
       <Spin size="default" />
-      <span style={{ marginLeft: 12, color: "#999" }}>Loading comments...</span>
+      <span style={{ marginLeft: 12, color: "#999" }}>{t("Loading comments...")}</span>
     </div>
   </div>
 );

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useRefCallback } from "@humansignal/core/hooks/useRefCallback";
 import { useValueRef } from "@humansignal/core/hooks/useValueRef";
 import { forwardRef, memo, type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -652,7 +653,7 @@ export const VideoCanvas = memo(
             height={canvasHeight}
           />
           {!isSyncedBuffering && !loading && buffering && (
-            <div className={cn("video-canvas").elem("buffering").toClassName()} aria-label="Buffering Media Source" />
+            <div className={cn("video-canvas").elem("buffering").toClassName()} aria-label={t("Buffering Media Source")} />
           )}
         </div>
 

@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 interface ReviewStepProps {
   formData: any;
   filesPreview?: any;
@@ -57,25 +58,25 @@ export const ReviewStep = ({ formData, filesPreview, formatSize }: ReviewStepPro
   return (
     <div>
       <div className="border-b pb-4 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Ready to Connect</h2>
-        <p className="text-gray-600 mt-1">Review your connection details and confirm to start importing</p>
+        <h2 className="text-2xl font-bold text-gray-900">{t("Ready to Connect")}</h2>
+        <p className="text-gray-600 mt-1">{t("Review your connection details and confirm to start importing")}</p>
       </div>
 
       {/* Connection Details Section */}
       <div className="grid grid-cols-2 gap-y-4 mb-8">
         <div>
-          <p className="text-sm text-gray-500">Provider</p>
+          <p className="text-sm text-gray-500">{t("Provider")}</p>
           <p className="font-medium">{getProviderDisplayName(formData.provider)}</p>
         </div>
 
         <div>
-          <p className="text-sm text-gray-500">Storage Location</p>
+          <p className="text-sm text-gray-500">{t("Storage Location")}</p>
           <p className="font-medium">{getBucketName()}</p>
         </div>
 
         {formData.prefix && (
           <div>
-            <p className="text-sm text-gray-500">Prefix</p>
+            <p className="text-sm text-gray-500">{t("Prefix")}</p>
             <p className="font-medium">{formData.prefix}</p>
           </div>
         )}
@@ -83,12 +84,12 @@ export const ReviewStep = ({ formData, filesPreview, formatSize }: ReviewStepPro
         {filesPreview && (
           <>
             <div>
-              <p className="text-sm text-gray-500">Files to import</p>
+              <p className="text-sm text-gray-500">{t("Files to import")}</p>
               <p className="font-medium">{getFileCount()}</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-500">Total size</p>
+              <p className="text-sm text-gray-500">{t("Total size")}</p>
               <p className="font-medium">{getTotalSize()}</p>
             </div>
           </>
@@ -97,8 +98,8 @@ export const ReviewStep = ({ formData, filesPreview, formatSize }: ReviewStepPro
 
       {/* Import Process Section */}
       <div className="bg-primary-background border border-primary-border-subtler rounded-small p-4 mb-8">
-        <h3 className="text-lg font-semibold mb-2">Import Process</h3>
-        <p>Files will be imported in the background. You can continue working while the import is in progress.</p>
+        <h3 className="text-lg font-semibold mb-2">{t("Import Process")}</h3>
+        <p>{t("Files will be imported in the background. You can continue working while the import is in progress.")}</p>
       </div>
     </div>
   );

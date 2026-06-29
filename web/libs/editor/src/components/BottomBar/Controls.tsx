@@ -4,6 +4,7 @@
  * Only this component should get interface updates, other versions should be removed.
  */
 
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import type React from "react";
 import { useCallback, useState } from "react";
@@ -186,7 +187,7 @@ export const Controls = controlsInjector<{ annotation: MSTAnnotation }>(
     } else if (annotation.skipped) {
       buttons.push(
         <div className={cn("controls").elem("skipped-info").toClassName()} key="skipped">
-          <IconBan /> Was skipped
+          <IconBan /> {t("Was skipped")}
         </div>,
       );
       buttons.push(<UnskipButton key="unskip" disabled={disabled} store={store} />);
@@ -254,7 +255,7 @@ export const Controls = controlsInjector<{ annotation: MSTAnnotation }>(
             <div className={cn("controls").elem("tooltip-wrapper").toClassName()}>
               <ButtonGroup>
                 <Button
-                  aria-label="Submit current annotation"
+                  aria-label={t("Submit current annotation")}
                   name="submit"
                   className="w-[150px]"
                   disabled={isDisabled}
@@ -268,7 +269,7 @@ export const Controls = controlsInjector<{ annotation: MSTAnnotation }>(
                   }}
                   data-testid="bottombar-submit-button"
                 >
-                  Submit
+                  {t("Submit")}
                 </Button>
                 {useExitOption ? (
                   <Dropdown.Trigger
@@ -281,7 +282,7 @@ export const Controls = controlsInjector<{ annotation: MSTAnnotation }>(
                   >
                     <Button
                       disabled={isDisabled}
-                      aria-label="Submit annotation"
+                      aria-label={t("Submit annotation")}
                       data-testid="bottombar-submit-dropdown"
                     >
                       <IconChevronDown />
@@ -309,7 +310,7 @@ export const Controls = controlsInjector<{ annotation: MSTAnnotation }>(
             <div className={cn("controls").elem("tooltip-wrapper").toClassName()}>
               <ButtonGroup>
                 <Button
-                  aria-label="submit"
+                  aria-label={t("submit")}
                   name="submit"
                   className="w-[150px]"
                   disabled={isUpdateDisabled}
@@ -332,7 +333,7 @@ export const Controls = controlsInjector<{ annotation: MSTAnnotation }>(
                   >
                     <Button
                       disabled={isUpdateDisabled}
-                      aria-label="Update annotation"
+                      aria-label={t("Update annotation")}
                       data-testid="bottombar-update-dropdown"
                     >
                       <IconChevronDown />

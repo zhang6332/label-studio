@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { type FC, useCallback, useMemo, useRef } from "react";
 import { getRoot } from "mobx-state-tree";
 import { Dropdown, DropdownContext, IconViewAll, IconCopyOutline, IconBraces, IconUserStats } from "@humansignal/ui";
@@ -247,30 +248,30 @@ export const RowContextMenu: FC<RowContextMenuProps> = ({
             data-testid="menu-item-compare-annotations"
             icon={<IconViewAll />}
           >
-            Compare All Annotations
+            {t("Compare All Annotations")}
           </Menu.Item>
 
           <Menu.Divider />
 
           {canCopyCellContent && (
             <Menu.Item onClick={handleCopyCellContent} data-testid="menu-item-copy-cell" icon={<IconCopyOutline />}>
-              Copy Cell Contents
+              {t("Copy Cell Contents")}
             </Menu.Item>
           )}
 
           <Menu.Item onClick={handleCopyTaskId} data-testid="menu-item-copy-task-id" icon={<IconCopyOutline />}>
-            Copy Task ID
+            {t("Copy Task ID")}
           </Menu.Item>
 
           <Menu.Item onClick={handleViewTaskSource} data-testid="menu-item-view-source" icon={<IconBraces />}>
-            View Task Source
+            {t("View Task Source")}
           </Menu.Item>
 
           {onViewAnalytics && hasAnnotators && (
             <>
               <Menu.Divider />
               <Menu.Item onClick={handleViewAnalytics} data-testid="menu-item-view-analytics" icon={<IconUserStats />}>
-                View {annotatorLabel} Performance
+                {t("View")} {annotatorLabel} {t("Performance")}
               </Menu.Item>
             </>
           )}

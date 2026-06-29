@@ -1,59 +1,32 @@
 /**
- * Lightweight i18n layer for the Label Studio frontend.
+ * App-level i18n wiring.
  *
- * Strategy: a JSON dictionary (locales/<lang>.json) mapping source (English)
- * strings to translated strings, applied by walking the DOM text nodes and
- * replacing exact (whitespace-trimmed) matches. A MutationObserver keeps
- * newly-rendered content translated too, so every page/region updates without
- * a per-component refactor.
- *
- * Adding a new language:
- *   1. drop `locales/<lang>.json` (source-string -> translated-string)
- *   2. add the code to `SUPPORTED` / `langLabels` below
- * That's it — the switcher and translator pick it up automatically.
- *
- * Switching back to "en" reloads (the source strings ARE the original text,
- * so we just stop translating instead of restoring node-by-node).
+ * The translation mechanism (t / getLang / setLang / dictionary registry) lives
+ * in @humansignal/core so libraries (editor, datamanager) can import t() without
+ * depending back on the app. This module:
+ *   - registers the zh-CN dictionary (from core) at load time
+ *   - re-exports t/getLang/setLang so existing app imports keep working
+ *   - keeps the DOM post-processor (applyLang/initI18n) as a fallback for
+ *     strings the app can't render itself (backend-returned text such as
+ *     data_manager column help, and third-party component internals).
+ *     Component-rendered text should use t() directly — no flicker, no perf cost.
  */
 import zhCN from "./locales/zh-CN.json";
+import { t, getLang, setLang, setDictionary, getDictionary } from "@humansignal/core";
+import type { Lang } from "@humansignal/core";
 
-export type Lang = "en" | "zh-CN";
-
-const STORAGE_KEY = "ls-lang";
+export { t, getLang, setLang };
+export type { Lang };
 export const SUPPORTED: Lang[] = ["en", "zh-CN"];
 export const langLabels: Record<Lang, string> = {
   en: "English",
   "zh-CN": "简体中文",
 };
 
-// en is the source language — empty dict means "no replacement".
-const dictionaries: Record<Lang, Record<string, string>> = {
-  en: {},
-  "zh-CN": zhCN as unknown as Record<string, string>,
-};
+// Register the dictionary at module load (before any component renders).
+setDictionary("zh-CN", zhCN as unknown as Record<string, string>);
 
 const SKIP_TAGS = new Set(["SCRIPT", "STYLE", "TEXTAREA", "INPUT", "NOSCRIPT", "CODE"]);
-
-export function getLang(): Lang {
-  try {
-    const s = localStorage.getItem(STORAGE_KEY);
-    if (s && (SUPPORTED as string[]).includes(s)) return s as Lang;
-  } catch {
-    /* localStorage unavailable */
-  }
-  return "en";
-}
-
-export function setLang(lang: Lang): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, lang);
-  } catch {
-    /* ignore */
-  }
-  // Reload so the page re-renders from the source strings and we re-apply
-  // the chosen dictionary cleanly (no node-by-node restore needed).
-  window.location.reload();
-}
 
 function translateRoot(root: Node, dict: Record<string, string>): void {
   if (!dict || Object.keys(dict).length === 0) return;
@@ -64,7 +37,6 @@ function translateRoot(root: Node, dict: Record<string, string>): void {
     const node = walker.currentNode as Text;
     const parent = node.parentElement;
     if (!parent || SKIP_TAGS.has(parent.tagName)) continue;
-    // skip elements that opted out
     if (parent.closest("[data-i18n-skip]")) continue;
     const value = node.nodeValue;
     if (!value) continue;
@@ -83,11 +55,6 @@ function translateRoot(root: Node, dict: Record<string, string>): void {
 
 let observer: MutationObserver | null = null;
 
-// Substring replacements: applied after exact-match dict, to translate
-// fragments that contain dynamic content the dict can't key on — most
-// notably dates rendered by date-fns (English month names + am/pm).
-// Keys are matched case-sensitively as whole words; longest keys first to
-// avoid "May" shadowing nothing in particular but to be deterministic.
 const SUBSTR_REPLACEMENTS: Record<string, string> = {
   January: "1月",
   February: "2月",
@@ -114,7 +81,6 @@ const SUBSTR_REPLACEMENTS: Record<string, string> = {
   Dec: "12月",
   AM: "上午",
   PM: "下午",
-  // Relative time (date-fns formatDistance: "5 minutes ago", "2 hours ago", etc.)
   second: "秒",
   seconds: "秒",
   minute: "分钟",
@@ -133,6 +99,12 @@ const SUBSTR_REPLACEMENTS: Record<string, string> = {
   about: "约",
   almost: "近",
   over: "超过",
+  // Backend validation errors — dynamic API responses with variables (uuid,
+  // counts, tag names) that can't be t()'d at render time. Substring-replace
+  // the fixed prefix; the variable tail stays as-is.
+  "Created annotations are incompatible with provided labeling schema, we found:":
+    "创建的标注与当前标注配置不兼容，发现：",
+  "Validation error": "验证错误",
 };
 const SUBSTR_KEYS = Object.keys(SUBSTR_REPLACEMENTS).sort((a, b) => b.length - a.length);
 const SUBSTR_REGEX = new RegExp(
@@ -150,8 +122,7 @@ function translateSubstrings(root: Node): void {
     if (!parent || SKIP_TAGS.has(parent.tagName)) continue;
     if (parent.closest("[data-i18n-skip]")) continue;
     const value = node.nodeValue;
-    if (!value || !SUBSTR_REGEX.test(value)) continue;
-    SUBSTR_REGEX.lastIndex = 0;
+    if (!value) continue;
     const replaced = value.replace(SUBSTR_REGEX, (m) => SUBSTR_REPLACEMENTS[m] ?? m);
     if (replaced !== value) pending.push([node, replaced]);
   }
@@ -160,10 +131,6 @@ function translateSubstrings(root: Node): void {
   }
 }
 
-// Date localization: runs after substring replacement so month names are
-// already Chinese (e.g. "6月"). Reorders "dd M月 yyyy" -> "yyyy M月dd" and
-// strips commas, so "26 6月 2026, 11:00 上午" becomes "2026 6月26 11:00 上午".
-// Only touches text nodes that contain a month marker (月 or Jan..Dec).
 function translateDates(root: Node): void {
   const ownerDoc = (root as Document).ownerDocument ?? document;
   const walker = ownerDoc.createTreeWalker(root, NodeFilter.SHOW_TEXT);
@@ -177,11 +144,8 @@ function translateDates(root: Node): void {
     const value = node.nodeValue;
     if (!value || !monthRe.test(value)) continue;
     let replaced = value;
-    // "M月 dd yyyy" -> "yyyy M月dd"  (6月 26 2026 -> 2026 6月26)
     replaced = replaced.replace(/(\d{1,2})月\s+(\d{1,2})\s+(\d{4})/g, "$3 $1月$2");
-    // "dd M月 yyyy" -> "yyyy M月dd"  (26 6月 2026 -> 2026 6月26)
     replaced = replaced.replace(/(\d{1,2})\s+(\d{1,2})月\s+(\d{4})/g, "$3 $2月$1");
-    // strip commas inside date text (Jun 26, 2026 -> Jun 26 2026)
     replaced = replaced.replace(/,\s*/g, " ");
     if (replaced !== value) pending.push([node, replaced]);
   }
@@ -190,9 +154,6 @@ function translateDates(root: Node): void {
   }
 }
 
-// Attribute translation: title, aria-label, placeholder, alt. These are not
-// text nodes so translateRoot cannot reach them — without this, tooltips and
-// placeholders stay in the source language even under zh-CN.
 const TRANSLATABLE_ATTRS = ["title", "aria-label", "placeholder", "alt"];
 
 function translateAttributes(root: Node, dict: Record<string, string>): void {
@@ -220,15 +181,13 @@ export function applyLang(lang: Lang): void {
     observer.disconnect();
     observer = null;
   }
-  // Set <html lang="..."> so CSS can drive language-specific styling (e.g.
-  // font-size parity between en/zh) without React state / re-render flicker.
   document.documentElement.lang = lang;
 
   const runAll = (root: Node) => {
     if (lang === "en") {
       translateDates(root);
     } else {
-      const dict = dictionaries[lang];
+      const dict = getDictionary(lang);
       translateRoot(root, dict);
       translateSubstrings(root);
       translateDates(root);
@@ -236,11 +195,8 @@ export function applyLang(lang: Lang): void {
     }
   };
 
-  // Initial pass over the entire body (catches already-rendered content).
   runAll(document.body);
 
-  // MutationObserver: catches dynamically added nodes (React re-renders,
-  // lazy-loaded routes, portal tooltips, etc.).
   observer = new MutationObserver((mutations) => {
     for (const m of mutations) {
       m.addedNodes.forEach((n) => {
@@ -252,14 +208,9 @@ export function applyLang(lang: Lang): void {
   });
   observer.observe(document.body, { childList: true, subtree: true });
 
-  // Safety net: lazy-loaded route chunks (e.g. HomePage via React.lazy) may
-  // render AFTER the initial pass but their DOM mutations can be missed by
-  // the observer if React batches them in a way that the addedNodes don't
-  // contain the text nodes directly. A short-interval re-scan of the full
-  // body for the first few seconds catches these reliably.
   if (lang !== "en") {
     let polls = 0;
-    const maxPolls = 12; // 12 × 500ms = 6 seconds
+    const maxPolls = 12;
     const poll = setInterval(() => {
       runAll(document.body);
       polls++;
@@ -270,12 +221,10 @@ export function applyLang(lang: Lang): void {
 
 export function initI18n(): void {
   const lang = getLang();
-  // Even English runs applyLang (to strip date commas uniformly).
   const run = () => applyLang(lang);
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", run, { once: true });
   } else {
-    // Defer to let the initial React tree render, then translate once.
     setTimeout(run, 0);
   }
 }

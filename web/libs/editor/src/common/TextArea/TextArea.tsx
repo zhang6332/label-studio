@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { type FC, type FocusEvent, type MutableRefObject, type RefObject, useCallback, useEffect, useRef } from "react";
 import { debounce } from "@humansignal/core/lib/utils/debounce";
 import { cn } from "../../utils/bem";
@@ -171,7 +172,7 @@ export const TextArea: FC<TextAreaProps> = ({
       rows={autoGrowRef.current.rows}
       onChange={onChange}
       onInput={onInput}
-      aria-label="TextArea Input"
+      aria-label={t("TextArea Input")}
       data-testid="textarea-input"
       {...props}
     />

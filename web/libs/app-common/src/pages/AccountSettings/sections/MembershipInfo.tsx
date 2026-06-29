@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { format } from "date-fns";
 import styles from "./MembershipInfo.module.scss";
 import { useQuery } from "@tanstack/react-query";
@@ -101,22 +102,22 @@ export const MembershipInfo = () => {
   return (
     <div className={styles.membershipInfo} id="membership-info">
       <div className="flex gap-2 w-full justify-between">
-        <div>User ID</div>
+        <div>{t("User ID")}</div>
         <div>{user?.id}</div>
       </div>
 
       <div className="flex gap-2 w-full justify-between">
-        <div>Registration date</div>
+        <div>{t("Registration date")}</div>
         <div>{dateJoined}</div>
       </div>
 
       <div className="flex gap-2 w-full justify-between">
-        <div>Annotations Submitted</div>
+        <div>{t("Annotations Submitted")}</div>
         <div>{membership.data?.annotationCount}</div>
       </div>
 
       <div className="flex gap-2 w-full justify-between">
-        <div>Projects contributed to</div>
+        <div>{t("Projects contributed to")}</div>
         <div>{membership.data?.contributions}</div>
       </div>
 
@@ -124,33 +125,33 @@ export const MembershipInfo = () => {
 
       {user?.active_organization_meta && (
         <div className="flex gap-2 w-full justify-between">
-          <div>Organization</div>
+          <div>{t("Organization")}</div>
           <div>{user.active_organization_meta.title}</div>
         </div>
       )}
 
       {membership.data?.role && (
         <div className="flex gap-2 w-full justify-between">
-          <div>My role</div>
+          <div>{t("My role")}</div>
           <div>{membership.data.role}</div>
         </div>
       )}
 
       <div className="flex gap-2 w-full justify-between">
-        <div>Organization ID</div>
+        <div>{t("Organization ID")}</div>
         <div>{user?.active_organization}</div>
       </div>
 
       {user?.active_organization_meta && (
         <div className="flex gap-2 w-full justify-between">
-          <div>Owner</div>
+          <div>{t("Owner")}</div>
           <div>{user.active_organization_meta.email}</div>
         </div>
       )}
 
       {organization.data?.createdAt && (
         <div className="flex gap-2 w-full justify-between">
-          <div>Created</div>
+          <div>{t("Created")}</div>
           <div>{organization.data?.createdAt}</div>
         </div>
       )}

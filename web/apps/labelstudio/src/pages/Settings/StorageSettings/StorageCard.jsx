@@ -1,3 +1,4 @@
+import { t } from "../../../i18n";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Card, Menu } from "../../../components";
 import { Button, Dropdown } from "@humansignal/ui";
@@ -45,12 +46,12 @@ export const StorageCard = ({ rootClass, target, storage, onEditStorage, onDelet
           align="right"
           content={
             <Menu size="compact" style={{ width: 110 }}>
-              <Menu.Item onClick={() => onEditStorage(storageData)}>Edit</Menu.Item>
-              <Menu.Item onClick={() => onDeleteStorage(storageData)}>Delete</Menu.Item>
+              <Menu.Item onClick={() => onEditStorage(storageData)}>{t("Edit")}</Menu.Item>
+              <Menu.Item onClick={() => onDeleteStorage(storageData)}>{t("Delete")}</Menu.Item>
             </Menu>
           }
         >
-          <Button look="string" className="-ml-3" aria-label="Storage options">
+          <Button look="string" className="-ml-3" aria-label={t("Storage options")}>
             <IconEllipsisVertical />
           </Button>
         </Dropdown.Trigger>
@@ -69,13 +70,13 @@ export const StorageCard = ({ rootClass, target, storage, onEditStorage, onDelet
             waiting={syncing}
             onClick={startSync}
             disabled={notSyncedYet}
-            aria-label="Sync Storage"
+            aria-label={t("Sync Storage")}
           >
-            Sync Storage
+            {t("Sync Storage")}
           </Button>
           {notSyncedYet && (
             <div className={rootClass.elem("sync-count").toClassName()}>
-              Syncing may take some time, please refresh the page to see the current status.
+              {t("Syncing may take some time, please refresh the page to see the current status.")}
             </div>
           )}
         </div>

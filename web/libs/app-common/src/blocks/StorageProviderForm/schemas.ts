@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { z } from "zod";
 import type { FieldDefinition } from "./types/common";
 import { getProviderConfig } from "./providers";
@@ -20,7 +21,7 @@ export const getProviderSchema = (provider: string, isEditMode = false, target?:
     {
       name: "title",
       type: "text",
-      label: "Storage Title",
+      label: t("Storage Title"),
       required: true,
       schema: z.string().min(1, "Storage title is required"),
     },
@@ -33,8 +34,8 @@ export const getProviderSchema = (provider: string, isEditMode = false, target?:
           {
             name: "can_delete_objects",
             type: "toggle",
-            label: "Can delete objects from storage",
-            description: "If unchecked, annotations will not be deleted from storage",
+            label: t("Can delete objects from storage"),
+            description: t("If unchecked, annotations will not be deleted from storage"),
             schema: z.boolean().default(false),
           },
         ]

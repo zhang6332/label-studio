@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject, observer } from "mobx-react";
 import { RadioGroup } from "../../Common/RadioGroup/RadioGroup";
 import { IconGrid, IconList } from "@humansignal/icons";
@@ -17,16 +18,16 @@ export const ViewToggle = viewInjector(
         {...rest}
         style={{ "--button-padding": "0 var(--spacing-tighter)" }}
       >
-        <Tooltip title="List view">
+        <Tooltip title={t("List view")}>
           <div>
-            <RadioGroup.Button value="list" aria-label="Switch to list view">
+            <RadioGroup.Button value="list" aria-label={t("Switch to list view")}>
               <IconList />
             </RadioGroup.Button>
           </div>
         </Tooltip>
-        <Tooltip title="Grid view">
+        <Tooltip title={t("Grid view")}>
           <div>
-            <RadioGroup.Button value="grid" aria-label="Switch to grid view">
+            <RadioGroup.Button value="grid" aria-label={t("Switch to grid view")}>
               <IconGrid />
             </RadioGroup.Button>
           </div>
@@ -39,9 +40,9 @@ export const ViewToggle = viewInjector(
 export const DataStoreToggle = viewInjector(({ view, size, ...rest }) => {
   return (
     <RadioGroup value={view.target} size={size} onChange={(e) => view.setTarget(e.target.value)} {...rest}>
-      <RadioGroup.Button value="tasks">Tasks</RadioGroup.Button>
+      <RadioGroup.Button value="tasks">{t("Tasks")}</RadioGroup.Button>
       <RadioGroup.Button value="annotations" disabled>
-        Annotations
+        {t("Annotations")}
       </RadioGroup.Button>
     </RadioGroup>
   );

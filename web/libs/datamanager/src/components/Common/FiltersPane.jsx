@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject, observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
 import { IconChevronDown } from "@humansignal/icons";
@@ -28,10 +29,10 @@ export const FiltersButton = buttonInjector(
           look="outlined"
           onClick={() => sidebarEnabled && viewsStore.toggleSidebar()}
           trailing={<Icon icon={IconChevronDown} />}
-          aria-label="Filters"
+          aria-label={t("Filters")}
           {...rest}
         >
-          Filters{" "}
+          {t("Filters")}{" "}
           {hasFilters && (
             <Badge size="small" className="ml-tightest">
               {activeFiltersNumber}

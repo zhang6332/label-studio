@@ -5,7 +5,10 @@
 
   &__content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    // List takes the remaining space (its inner table scrolls horizontally when
+    // columns overflow); the detail panel keeps a fixed width so it is never
+    // squeezed by long columns.
+    grid-template-columns: minmax(0, 1fr) 340px;
     grid-template-rows: min-content;
     align-items: flex-start;
     grid-gap: 20px;

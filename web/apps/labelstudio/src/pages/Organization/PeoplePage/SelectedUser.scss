@@ -50,6 +50,33 @@
     margin-bottom: 0;
   }
 
+  // Read-only role pill. Uses theme tokens so it matches both light and dark
+  // themes (the previous <select> fell back to the browser default white box).
+  &__role-badge {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: capitalize;
+    background: var(--color-primary-emphasis-subtle);
+    color: var(--color-primary-content);
+  }
+
+  &__actions {
+    margin-top: 28px;
+    display: flex;
+    gap: 8px;
+  }
+
+  &__status {
+    font-size: 13px;
+    color: var(--color-neutral-content-subtler);
+    margin-left: 8px;
+  }
+
   &__links-list {
     display: flex;
     flex-direction: column;

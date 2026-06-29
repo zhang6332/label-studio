@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { cn } from "../../utils/bem";
 import { isDefined } from "../../utils/utilities";
 import { Fragment, useEffect, useState } from "react";
@@ -101,7 +102,7 @@ export const FlyoutMenu = ({ items, icon }) => {
           .elem("icon")
           .mix(isClicked ? "isClicked" : "")
           .toClassName()}
-        title="Zoom presets (click to see options)"
+        title={t("Zoom presets (click to see options)")}
       >
         {icon}
       </div>

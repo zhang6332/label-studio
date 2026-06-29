@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 
 import { IconPlus } from "@humansignal/icons";
@@ -34,7 +35,7 @@ export const TopBar = observer(({ store }) => {
           <Button
             className={cn("topbar").elem("button").toClassName()}
             type={isViewAll ? undefined : "text"}
-            aria-label="Create an annotation"
+            aria-label={t("Create an annotation")}
             variant="neutral"
             size="small"
             look="outlined"

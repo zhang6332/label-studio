@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import React from "react";
 import { PropTypes } from "prop-types";
 import { Tag } from "antd";
@@ -23,7 +24,7 @@ export default class DialogView extends React.Component {
       selectedStyle = `${selectedStyle} ${styles.block_selected}`;
       hint = (
         <div>
-          <Tag color="magenta">Selected Message</Tag>
+          <Tag color="magenta">{t("Selected Message")}</Tag>
         </div>
       );
 

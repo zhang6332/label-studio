@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import { types } from "mobx-state-tree";
 
@@ -29,7 +30,7 @@ const IconDot = ({ size }) => {
 const ToolView = observer(({ item }) => {
   return (
     <Tool
-      label="Bitmask"
+      label={t("Bitmask")}
       ariaLabel="bitmask-tool"
       active={item.selected}
       shortcut={item.shortcut}

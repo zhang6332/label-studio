@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useState, useRef, useEffect, type CSSProperties, useCallback } from "react";
 import { observer } from "mobx-react";
 import styles from "./GridPreview.module.scss";
@@ -217,7 +218,7 @@ const ImagePreview = observer(({ task, field }: ImagePreviewProps) => {
         <img
           ref={imageRef}
           src={src}
-          alt="Task Preview"
+          alt={t("Task Preview")}
           style={imageStyle}
           className={styles.image}
           onLoad={handleImageLoad}

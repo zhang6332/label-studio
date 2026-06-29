@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type React from "react";
 import { type FC, type MouseEvent, useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -158,14 +159,14 @@ export const ConfigControl: FC<ConfigControlProps> = ({
     return (
       <div className={cn("audio-config").elem("buttons").toClassName()}>
         <div className={cn("audio-config").elem("menu-button").toClassName()} onClick={handleSetTimeline}>
-          {isTimeline ? "Hide" : "Show"} timeline
+          {isTimeline ? "Hide" : "Show"} {t("timeline")}
         </div>
         <div className={cn("audio-config").elem("menu-button").toClassName()} onClick={handleSetAudioWave}>
-          {isAudioWave ? "Hide" : "Show"} audio wave
+          {isAudioWave ? "Hide" : "Show"} {t("audio wave")}
         </div>
         {isFF(FF_AUDIO_SPECTROGRAMS) && (
           <div className={cn("audio-config").elem("menu-button").toClassName()} onClick={handleSetSpectrogram}>
-            {isSpectrogram ? "Hide" : "Show"} spectrogram
+            {isSpectrogram ? "Hide" : "Show"} {t("spectrogram")}
           </div>
         )}
       </div>
@@ -181,7 +182,7 @@ export const ConfigControl: FC<ConfigControlProps> = ({
         style={{ opacity: 0, position: "fixed" }}
       >
         <div className={cn("audio-config").elem("scroll-content").toClassName()}>
-          <div className={cn("audio-config").elem("section-header").toClassName()}>Playback Settings</div>
+          <div className={cn("audio-config").elem("section-header").toClassName()}>{t("Playback Settings")}</div>
           <Slider
             min={MIN_SPEED}
             max={MAX_SPEED}
@@ -204,7 +205,7 @@ export const ConfigControl: FC<ConfigControlProps> = ({
             <Toggle
               checked={settings?.loopRegion}
               onChange={(e) => changeSetting?.("loopRegion", e.target.checked)}
-              label="Loop Regions"
+              label={t("Loop Regions")}
               labelProps={{ size: "small" }}
             />
           </div>
@@ -212,14 +213,14 @@ export const ConfigControl: FC<ConfigControlProps> = ({
             <Toggle
               checked={settings?.autoPlayNewSegments}
               onChange={(e) => changeSetting?.("autoPlayNewSegments", e.target.checked)}
-              label="Auto-play New Regions"
+              label={t("Auto-play New Regions")}
               labelProps={{ size: "small" }}
             />
           </div>
 
           {isFF(FF_AUDIO_SPECTROGRAMS) && (
             <>
-              <div className={cn("audio-config").elem("section-header").toClassName()}>Spectrogram Settings</div>
+              <div className={cn("audio-config").elem("section-header").toClassName()}>{t("Spectrogram Settings")}</div>
               <SpectrogramControl waveform={waveform} />
             </>
           )}
@@ -237,7 +238,7 @@ export const ConfigControl: FC<ConfigControlProps> = ({
       ref={buttonRef as any}
       onClick={(e: MouseEvent<HTMLButtonElement>) => e.stopPropagation()}
     >
-      <ControlButton look={configModal ? "filled" : undefined} onClick={onSetModal} aria-label="Audio settings">
+      <ControlButton look={configModal ? "filled" : undefined} onClick={onSetModal} aria-label={t("Audio settings")}>
         {<IconConfig />}
       </ControlButton>
       {configModal && renderModal()}

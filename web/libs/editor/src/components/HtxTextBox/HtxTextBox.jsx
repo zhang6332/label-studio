@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import React from "react";
 import { IconPencil, IconTrashAlt, IconCheck } from "@humansignal/icons";
 import { Button, Tooltip, Typography } from "@humansignal/ui";
@@ -152,7 +153,7 @@ export class HtxTextBox extends React.Component {
       <div className={cn("textarea").elem("region").toClassName()} data-testid="htx-textbox-edit">
         {rows > 1 ? <textarea {...inputProps} /> : <input {...inputProps} />}
         {!onlyEdit && (
-          <Tooltip title="Save: [shift+enter]">
+          <Tooltip title={t("Save: [shift+enter]")}>
             <Button
               type="text"
               variant="primary"
@@ -160,7 +161,7 @@ export class HtxTextBox extends React.Component {
               size="small"
               className="absolute right-tight top-tighter"
               icon={<IconCheck />}
-              aria-label="Save"
+              aria-label={t("Save")}
               data-testid="htx-textbox-save"
               onClick={this.save}
             />
@@ -209,7 +210,7 @@ export class HtxTextBox extends React.Component {
               tooltip="Edit"
               tooltipTheme="Dark"
               leading={<IconPencil />}
-              aria-label="Edit Region"
+              aria-label={t("Edit Region")}
               data-testid="htx-textbox-edit-button"
               onClick={this.startEditing}
             />
@@ -223,7 +224,7 @@ export class HtxTextBox extends React.Component {
               tooltip="Delete"
               tooltipTheme="Dark"
               leading={<IconTrashAlt />}
-              aria-label="Delete Region"
+              aria-label={t("Delete Region")}
               data-testid="htx-textbox-delete-button"
               onClick={onDelete}
             />

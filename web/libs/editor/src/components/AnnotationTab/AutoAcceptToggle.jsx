@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { inject, observer } from "mobx-react";
 
 import { IconCheck, IconCross } from "@humansignal/icons";
@@ -34,7 +35,7 @@ export const AutoAcceptToggle = injector(
               {suggestions.size > 0 ? (
                 <Space size="small">
                   <div className={cn("auto-accept").elem("info").toClassName()}>
-                    {suggestions.size} suggestion{suggestions.size > 0 && "s"}
+                    {suggestions.size} {t("suggestion")}{suggestions.size > 0 && "s"}
                   </div>
                   <Button
                     className={cn("auto-accept").elem("action").mod({ type: "reject" }).toClassName()}
@@ -55,7 +56,7 @@ export const AutoAcceptToggle = injector(
                 <Toggle
                   checked={store.autoAcceptSuggestions}
                   onChange={(e) => store.setAutoAcceptSuggestions(e.target.checked)}
-                  label="Auto-Accept Suggestions"
+                  label={t("Auto-Accept Suggestions")}
                   data-testid="bottombar-auto-accept-toggle"
                 />
               )}

@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import { format } from "date-fns";
 import { createContext, useCallback, useContext, useEffect, useReducer } from "react";
 import { Link } from "react-router-dom";
@@ -54,9 +55,9 @@ export const VersionNotifier = ({ showNewVersion, showCurrentVersion }) => {
         </div>
         <div className={cn("version-notifier").elem("content").toClassName()}>
           <div className={cn("version-notifier").elem("title").toClassName()} data-date={updateTime}>
-            {latestVersion} Available
+            {latestVersion} {t("Available")}
           </div>
-          <div className={cn("version-notifier").elem("description").toClassName()}>Current version: {version}</div>
+          <div className={cn("version-notifier").elem("description").toClassName()}>{t("Current version:")} {version}</div>
         </div>
       </a>
     </li>

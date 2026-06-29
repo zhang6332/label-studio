@@ -1,17 +1,19 @@
 import { formatDistance } from "date-fns";
+import { zhCN } from "date-fns/locale";
 import { useCallback, useEffect, useState } from "react";
 import { Spinner } from "../../../components";
 import { Userpic } from "@humansignal/ui";
 import { CopyableTooltip } from "../../../components/CopyableTooltip/CopyableTooltip";
 import { useAPI } from "../../../providers/ApiProvider";
 import { cn } from "../../../utils/bem";
+import { getLang, t } from "../../../i18n";
 import "./PeopleList.scss";
 
 const ROLE_LABELS = {
-  owner: "Owner",
-  manager: "Manager",
-  reviewer: "Reviewer",
-  annotator: "Annotator",
+  owner: t("Owner"),
+  manager: t("Manager"),
+  reviewer: t("Reviewer"),
+  annotator: t("Annotator"),
 };
 
 export const AllUsersList = ({ onSelect, selectedUser }) => {
@@ -41,11 +43,14 @@ export const AllUsersList = ({ onSelect, selectedUser }) => {
         <div className={cn("people-list").elem("users").toClassName()}>
           <div className={cn("people-list").elem("header").toClassName()}>
             <div className={cn("people-list").elem("column").mix("avatar").toClassName()} />
-            <div className={cn("people-list").elem("column").mix("email").toClassName()}>Email</div>
-            <div className={cn("people-list").elem("column").mix("name").toClassName()}>Name</div>
-            <div className={cn("people-list").elem("column").mix("role").toClassName()}>Role</div>
-            <div className={cn("people-list").elem("column").mix("last-activity").toClassName()}>Last Activity</div>
-            <div className={cn("people-list").elem("column").mix("orgs").toClassName()}>Organizations</div>
+            <div className={cn("people-list").elem("column").mix("email").toClassName()}>{t("Email")}</div>
+            <div className={cn("people-list").elem("column").mix("name").toClassName()}>{t("Name")}</div>
+            <div className={cn("people-list").elem("column").mix("phone").toClassName()}>{t("Phone")}</div>
+            <div className={cn("people-list").elem("column").mix("role").toClassName()}>{t("Role")}</div>
+            <div className={cn("people-list").elem("column").mix("last-activity").toClassName()}>
+              {t("Last Activity")}
+            </div>
+            <div className={cn("people-list").elem("column").mix("orgs").toClassName()}>{t("Organizations")}</div>
           </div>
           <div className={cn("people-list").elem("body").toClassName()}>
             {users.map((u) => {
@@ -60,7 +65,7 @@ export const AllUsersList = ({ onSelect, selectedUser }) => {
                 role: primaryRole,
                 memberships: u.memberships,
                 avatar: u.avatar,
-                last_activity: u.last_activity || new Date().toISOString(),
+                last_activity: u.last_activity || null,
                 phone: u.phone || "",
                 created_projects: u.created_projects || [],
                 contributed_to_projects: u.contributed_to_projects || [],
@@ -78,11 +83,17 @@ export const AllUsersList = ({ onSelect, selectedUser }) => {
                   </div>
                   <div className={cn("people-list").elem("field").mix("email").toClassName()}>{u.email}</div>
                   <div className={cn("people-list").elem("field").mix("name").toClassName()}>{fullName || "—"}</div>
+                  <div className={cn("people-list").elem("field").mix("phone").toClassName()}>{u.phone || "—"}</div>
                   <div className={cn("people-list").elem("field").mix("role").toClassName()}>
                     {ROLE_LABELS[primaryRole] ?? primaryRole}
                   </div>
-                  <div className={cn("people-list").elem("field").mix("last-activity").toClassName()}>
-                    {u.last_activity ? formatDistance(new Date(u.last_activity), new Date(), { addSuffix: true }) : "—"}
+                  <div className={cn("people-list").elem("field").mix("last-activity").toClassName()} data-i18n-skip>
+                    {u.last_activity
+                      ? formatDistance(new Date(u.last_activity), new Date(), {
+                          addSuffix: true,
+                          locale: getLang() === "zh-CN" ? zhCN : undefined,
+                        })
+                      : "—"}
                   </div>
                   <div className={cn("people-list").elem("field").mix("orgs").toClassName()}>
                     {u.memberships?.map((m) => m.organization_title).join(", ") || "—"}

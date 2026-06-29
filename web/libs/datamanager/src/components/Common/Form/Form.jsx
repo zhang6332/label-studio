@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Component, createRef, forwardRef, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { shallowEqualObjects } from "shallow-equal";
 import { cn } from "../../../utils/bem";
@@ -538,7 +539,7 @@ Form.Builder = forwardRef(
         {props.autosubmit !== true && withActions === true && (
           <Form.Actions>
             <Button type="submit" style={{ width: 120 }}>
-              Save
+              {t("Save")}
             </Button>
           </Form.Actions>
         )}
@@ -568,7 +569,7 @@ Form.Indicator = () => {
     <div className={cn("form-indicator-dm").toClassName()}>
       <Oneof value={state}>
         <span className={cn("form-indicator-dm").elem("item").mod({ type: state }).toClassName()} case="success">
-          Saved!
+          {t("Saved!")}
         </span>
       </Oneof>
     </div>

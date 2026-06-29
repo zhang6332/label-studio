@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { inject, observer } from "mobx-react";
@@ -252,24 +253,24 @@ function AnnotationButtonTooltip({
 
     // Add Annotation ID first if available
     if (annotationId) {
-      rows.push({ label: "Annotation ID", value: String(annotationId) });
+      rows.push({ label: t("Annotation ID"), value: String(annotationId) });
     }
 
     // Add Type for all annotations/predictions
     if (isPrediction) {
-      rows.push({ label: "Type", value: "Prediction" });
+      rows.push({ label: t("Type"), value: "Prediction" });
       if (isDefined(predictionScore)) {
-        rows.push({ label: "Prediction Score", value: `${(predictionScore * 100).toFixed(2)}%` });
+        rows.push({ label: t("Prediction Score"), value: `${(predictionScore * 100).toFixed(2)}%` });
       }
     } else {
-      rows.push({ label: "Type", value: "Annotation" });
+      rows.push({ label: t("Type"), value: "Annotation" });
     }
 
     // Add Last Updated after Type
     if (lastUpdated) {
       const formattedDate = formatDate(lastUpdated);
       if (formattedDate) {
-        rows.push({ label: "Last Updated", value: formattedDate });
+        rows.push({ label: t("Last Updated"), value: formattedDate });
       }
     }
 
@@ -323,7 +324,7 @@ function AnnotationButtonTooltip({
                 border: "none",
               }}
             >
-              Skipped
+              {t("Skipped")}
             </Badge>
           )}
           {/* Ground Truth badge shown last */}
@@ -335,7 +336,7 @@ function AnnotationButtonTooltip({
                 border: "none",
               }}
             >
-              Ground Truth
+              {t("Ground Truth")}
             </Badge>
           )}
         </div>
@@ -467,16 +468,16 @@ const AnnotationButtonContextMenu = injector(
       const deleteAnnotation = useCallback(() => {
         clickHandler();
         confirm({
-          title: "Delete annotation?",
+          title: t("Delete annotation?"),
           body: (
             <>
-              This will <strong>delete all existing regions</strong>. Are you sure you want to delete them?
+              {t("This will")} <strong>{t("delete all existing regions")}</strong>{t(". Are you sure you want to delete them?")}
               <br />
-              This action cannot be undone.
+              {t("This action cannot be undone.")}
             </>
           ),
           buttonLook: "negative",
-          okText: "Delete",
+          okText: t("Delete"),
           onOk: () => {
             entity.list.deleteAnnotation(entity);
           },
@@ -494,7 +495,7 @@ const AnnotationButtonContextMenu = injector(
       const actions = useMemo<ContextMenuAction[]>(
         () => [
           {
-            label: "Copy Annotation ID",
+            label: t("Copy Annotation ID"),
             onClick: copyAnnotationIdHandler,
             icon: <IconClipboardCheck width={20} height={20} />,
             enabled: !isDraft,
@@ -510,13 +511,13 @@ const AnnotationButtonContextMenu = injector(
             enabled: showGroundTruth,
           },
           {
-            label: "Duplicate Annotation",
+            label: t("Duplicate Annotation"),
             onClick: duplicateAnnotation,
             icon: <IconDuplicate width={20} height={20} />,
             enabled: showDuplicateAnnotation,
           },
           {
-            label: "Copy Annotation Link",
+            label: t("Copy Annotation Link"),
             onClick: linkAnnotation,
             icon: <IconLink />,
             enabled: !isDraft && store.hasInterface("annotations:copy-link"),
@@ -528,13 +529,13 @@ const AnnotationButtonContextMenu = injector(
             enabled: isLSE && hasProjectId && !isDraft && !isPrediction,
           },
           {
-            label: "Show Other Annotations",
+            label: t("Show Other Annotations"),
             onClick: showOtherAnnotations,
             icon: <IconViewAll width={20} height={20} />,
             enabled: true,
           },
           {
-            label: "Delete Annotation",
+            label: t("Delete Annotation"),
             onClick: deleteAnnotation,
             icon: <IconTrashRect />,
             separator: true,
@@ -1014,21 +1015,21 @@ export const AnnotationButton = observer(
           {!isPrediction && (
             <div className={cn("annotation-button").elem("icons").toClassName()}>
               {(entity.draftId > 0 || isDraft) && (
-                <Tooltip title="Draft">
+                <Tooltip title={t("Draft")}>
                   <div className={cn("annotation-button").elem("icon").mod({ draft: true }).toClassName()}>
                     <IconDraftCreated2 color="#617ADA" />
                   </div>
                 </Tooltip>
               )}
               {entity.skipped && (
-                <Tooltip title="Skipped">
+                <Tooltip title={t("Skipped")}>
                   <div className={cn("annotation-button").elem("icon").mod({ skipped: true }).toClassName()}>
                     <IconAnnotationSkipped2 color="#DD0000" />
                   </div>
                 </Tooltip>
               )}
               {isGroundTruth && (
-                <Tooltip title="Ground-truth">
+                <Tooltip title={t("Ground-truth")}>
                   <div className={cn("annotation-button").elem("icon").mod({ groundTruth: true }).toClassName()}>
                     <IconAnnotationGroundTruth />
                   </div>

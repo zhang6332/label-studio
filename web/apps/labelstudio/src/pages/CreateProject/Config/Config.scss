@@ -103,7 +103,7 @@ $scroll-width: 5px;
     line-height: 24px;
     display: flex;
     align-items: center;
-    transition: all 150ms ease-out;
+    transition: all 80ms ease-out;
 
     &:not(&_active):hover {
       background-color: var(--color-primary-emphasis-subtle);
@@ -162,10 +162,10 @@ $scroll-width: 5px;
 
     // Smooth transitions for hover/focus interactions
     transition:
-      transform 0.2s ease-in-out,
-      border-color 0.15s ease-in-out,
-      background-color 0.15s ease-in-out,
-      box-shadow 0.15s ease-in-out;
+      transform 0.08s ease-in-out,
+      border-color 0.08s ease-in-out,
+      background-color 0.08s ease-in-out,
+      box-shadow 0.08s ease-in-out;
 
     &_disabled {
       cursor: not-allowed;
@@ -515,7 +515,7 @@ $scroll-width: 5px;
       height: 100%;
       color: var(--color-negative-icon);
       opacity: 0.8;
-      transition: all 150ms ease-out;
+      transition: all 80ms ease-out;
 
       &:hover {
         background: var(--color-negative-emphasis-subtle);
@@ -678,7 +678,7 @@ div[class^="App_menu"]>div {
   border: 1px solid var(--color-primary-border);
   color: var(--color-primary-content);
   background: var(--color-neutral-background);
-  transition: all 150ms ease-out;
+  transition: all 80ms ease-out;
 }
 
 :global(input.lsf-configure__add:hover) {

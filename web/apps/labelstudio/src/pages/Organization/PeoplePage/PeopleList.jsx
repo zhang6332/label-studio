@@ -1,4 +1,5 @@
 import { formatDistance } from "date-fns";
+import { zhCN } from "date-fns/locale";
 import { useCallback, useEffect, useState } from "react";
 import { Userpic } from "@humansignal/ui";
 import { Pagination, Spinner } from "../../../components";
@@ -6,15 +7,16 @@ import { usePage, usePageSize } from "../../../components/Pagination/Pagination"
 import { useAuth } from "@humansignal/core/providers/AuthProvider";
 import { useAPI } from "../../../providers/ApiProvider";
 import { cn } from "../../../utils/bem";
+import { getLang, t } from "../../../i18n";
 import { isDefined } from "../../../utils/helpers";
 import "./PeopleList.scss";
 import { CopyableTooltip } from "../../../components/CopyableTooltip/CopyableTooltip";
 
 const ROLE_LABELS = {
-  owner: "Owner",
-  manager: "Manager",
-  reviewer: "Reviewer",
-  annotator: "Annotator",
+  owner: t("Owner"),
+  manager: t("Manager"),
+  reviewer: t("Reviewer"),
+  annotator: t("Annotator"),
 };
 
 export const PeopleList = ({ onSelect, selectedUser, defaultSelected }) => {
@@ -77,11 +79,14 @@ export const PeopleList = ({ onSelect, selectedUser, defaultSelected }) => {
             <div className={cn("people-list").elem("users").toClassName()}>
               <div className={cn("people-list").elem("header").toClassName()}>
                 <div className={cn("people-list").elem("column").mix("avatar").toClassName()} />
-                <div className={cn("people-list").elem("column").mix("email").toClassName()}>Email</div>
-                <div className={cn("people-list").elem("column").mix("name").toClassName()}>Name</div>
-                <div className={cn("people-list").elem("column").mix("role").toClassName()}>Role</div>
-                <div className={cn("people-list").elem("column").mix("last-activity").toClassName()}>Last Activity</div>
-                <div className={cn("people-list").elem("column").mix("orgs").toClassName()}>Organizations</div>
+                <div className={cn("people-list").elem("column").mix("email").toClassName()}>{t("Email")}</div>
+                <div className={cn("people-list").elem("column").mix("name").toClassName()}>{t("Name")}</div>
+                <div className={cn("people-list").elem("column").mix("phone").toClassName()}>{t("Phone")}</div>
+                <div className={cn("people-list").elem("column").mix("role").toClassName()}>{t("Role")}</div>
+                <div className={cn("people-list").elem("column").mix("last-activity").toClassName()}>
+                  {t("Last Activity")}
+                </div>
+                <div className={cn("people-list").elem("column").mix("orgs").toClassName()}>{t("Organizations")}</div>
               </div>
               <div className={cn("people-list").elem("body").toClassName()}>
                 {usersList.map(({ user, role }) => {
@@ -102,11 +107,22 @@ export const PeopleList = ({ onSelect, selectedUser, defaultSelected }) => {
                       <div className={cn("people-list").elem("field").mix("name").toClassName()}>
                         {[user.first_name, user.last_name].filter(Boolean).join(" ").trim() || "—"}
                       </div>
+                      <div className={cn("people-list").elem("field").mix("phone").toClassName()}>
+                        {user.phone || "—"}
+                      </div>
                       <div className={cn("people-list").elem("field").mix("role").toClassName()}>
                         {ROLE_LABELS[role] ?? role}
                       </div>
-                      <div className={cn("people-list").elem("field").mix("last-activity").toClassName()}>
-                        {formatDistance(new Date(user.last_activity), new Date(), { addSuffix: true })}
+                      <div
+                        className={cn("people-list").elem("field").mix("last-activity").toClassName()}
+                        data-i18n-skip
+                      >
+                        {user.last_activity
+                          ? formatDistance(new Date(user.last_activity), new Date(), {
+                              addSuffix: true,
+                              locale: getLang() === "zh-CN" ? zhCN : undefined,
+                            })
+                          : "—"}
                       </div>
                       <div className={cn("people-list").elem("field").mix("orgs").toClassName()}>
                         {auth.user?.active_organization_meta?.title || "—"}

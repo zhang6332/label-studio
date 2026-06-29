@@ -1,3 +1,4 @@
+import { t } from "../../i18n";
 import { useMemo, useState } from "react";
 import { useHistory } from "react-router";
 import { Button, Typography, useToast } from "@humansignal/ui";
@@ -61,7 +62,7 @@ export const DangerZone = () => {
               onClick={() => ctrl?.hide()}
               data-testid="danger-zone-cancel-button"
             >
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button
               variant="negative"
@@ -83,34 +84,37 @@ export const DangerZone = () => {
   const handleOnClick = (type) => () => {
     const actionConfig = {
       reset_cache: {
-        title: "Reset Cache",
+        title: t("Reset Cache"),
         message: (
           <>
-            You are about to reset the cache for <strong>{project.title}</strong>. This action cannot be undone.
+            {t("You are about to reset the cache for")} <strong>{project.title}</strong>
+            {t(". This action cannot be undone.")}
           </>
         ),
         requiredWord: "cache",
-        buttonText: "Reset Cache",
+        buttonText: t("Reset Cache"),
       },
       tabs: {
-        title: "Drop All Tabs",
+        title: t("Drop All Tabs"),
         message: (
           <>
-            You are about to drop all tabs for <strong>{project.title}</strong>. This action cannot be undone.
+            {t("You are about to drop all tabs for")} <strong>{project.title}</strong>
+            {t(". This action cannot be undone.")}
           </>
         ),
         requiredWord: "tabs",
-        buttonText: "Drop All Tabs",
+        buttonText: t("Drop All Tabs"),
       },
       project: {
-        title: "Delete Project",
+        title: t("Delete Project"),
         message: (
           <>
-            You are about to delete the project <strong>{project.title}</strong>. This action cannot be undone.
+            {t("You are about to delete the project")} <strong>{project.title}</strong>
+            {t(". This action cannot be undone.")}
           </>
         ),
         requiredWord: "delete",
-        buttonText: "Delete Project",
+        buttonText: t("Delete Project"),
       },
     };
 
@@ -131,21 +135,21 @@ export const DangerZone = () => {
                 pk: project.id,
               },
             });
-            toast.show({ message: "Cache reset successfully" });
+            toast.show({ message: t("Cache reset successfully") });
           } else if (type === "tabs") {
             await api.callApi("deleteTabs", {
               body: {
                 project: project.id,
               },
             });
-            toast.show({ message: "All tabs dropped successfully" });
+            toast.show({ message: t("All tabs dropped successfully") });
           } else if (type === "project") {
             await api.callApi("deleteProject", {
               params: {
                 pk: project.id,
               },
             });
-            toast.show({ message: "Project deleted successfully" });
+            toast.show({ message: t("Project deleted successfully") });
             history.replace("/projects");
           }
         } catch (error) {
@@ -176,21 +180,20 @@ export const DangerZone = () => {
       },
       {
         type: "reset_cache",
-        help:
-          "Reset Cache may help in cases like if you are unable to modify the labeling configuration due " +
-          "to validation errors concerning existing labels, but you are confident that the labels don't exist. You can " +
-          "use this action to reset the cache and try again.",
-        label: "Reset Cache",
+        help: t(
+          "Reset Cache may help in cases like if you are unable to modify the labeling configuration due to validation errors concerning existing labels, but you are confident that the labels don't exist. You can use this action to reset the cache and try again.",
+        ),
+        label: t("Reset Cache"),
       },
       {
         type: "tabs",
-        help: "If the Data Manager is not loading, dropping all Data Manager tabs can help.",
-        label: "Drop All Tabs",
+        help: t("If the Data Manager is not loading, dropping all Data Manager tabs can help."),
+        label: t("Drop All Tabs"),
       },
       {
         type: "project",
-        help: "Deleting a project removes all tasks, annotations, and project data from the database.",
-        label: "Delete Project",
+        help: t("Deleting a project removes all tasks, annotations, and project data from the database."),
+        label: t("Delete Project"),
       },
     ],
     [project],
@@ -199,11 +202,12 @@ export const DangerZone = () => {
   return (
     <div className={cn("simple-settings").toClassName()}>
       <Typography variant="headline" size="medium" className="mb-tighter">
-        Danger Zone
+        {t("Danger Zone")}
       </Typography>
       <Typography variant="body" size="medium" className="text-neutral-content-subtler !mb-base">
-        Perform these actions at your own risk. Actions you take on this page can't be reverted. Make sure your data is
-        backed up.
+        {t(
+          "Perform these actions at your own risk. Actions you take on this page can't be reverted. Make sure your data is backed up.",
+        )}
       </Typography>
 
       {project.id ? (

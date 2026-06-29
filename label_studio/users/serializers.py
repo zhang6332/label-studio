@@ -97,7 +97,13 @@ class BaseUserSerializer(FlexFieldsModelSerializer):
 
 
 class BaseUserSerializerUpdate(BaseUserSerializer):
+    # Allow managers/owners to freeze (deactivate) a user via PATCH /users/:pk.
+    # Layered on top of UserAPI.update()'s can_manage_user hierarchy check, so
+    # only users below the requester's role can be frozen this way.
+    is_active = serializers.BooleanField(required=False)
+
     class Meta(BaseUserSerializer.Meta):
+        fields = BaseUserSerializer.Meta.fields + ('is_active',)
         read_only_fields = ('email',)
 
 

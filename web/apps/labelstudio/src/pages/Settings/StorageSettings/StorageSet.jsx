@@ -1,3 +1,4 @@
+import { t } from "../../../i18n";
 import { StorageProviderForm } from "@humansignal/app-common/blocks/StorageProviderForm";
 import { ff } from "@humansignal/core";
 import { Button } from "@humansignal/ui";
@@ -110,7 +111,7 @@ export const StorageSet = forwardRef(
     const onDeleteStorage = useCallback(
       async (storage) => {
         confirm({
-          title: "Deleting storage",
+          title: t("Deleting storage"),
           body: "This action cannot be undone. Are you sure?",
           buttonLook: "negative",
           onOk: async () => {

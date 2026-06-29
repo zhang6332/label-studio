@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { type ChangeEvent, type FC, useEffect, useMemo, useState, useCallback } from "react";
 import { JsonViewer, type FilterConfig, Toggle } from "@humansignal/ui";
 import { FF_LOPS_E_3, FF_INTERACTIVE_JSON_VIEWER, isFF } from "../../../utils/feature-flags";
@@ -39,7 +40,7 @@ export interface TaskSourceViewerProps {
 const TASK_SOURCE_FILTERS: FilterConfig[] = [
   {
     id: "annotations",
-    label: "Annotations",
+    label: t("Annotations"),
     filterFn: (nodeData) => {
       const path = nodeData.path;
       return path && path.includes("annotations");
@@ -47,7 +48,7 @@ const TASK_SOURCE_FILTERS: FilterConfig[] = [
   },
   {
     id: "predictions",
-    label: "Predictions",
+    label: t("Predictions"),
     filterFn: (nodeData) => {
       const path = nodeData.path;
       return path && path.includes("predictions");
@@ -55,7 +56,7 @@ const TASK_SOURCE_FILTERS: FilterConfig[] = [
   },
   {
     id: "data",
-    label: "Data",
+    label: t("Data"),
     filterFn: (nodeData) => {
       const path = nodeData.path;
       return path && path.includes("data");
@@ -170,7 +171,7 @@ export const TaskSourceViewer: FC<TaskSourceViewerProps> = ({
             storageKey={storageKey}
             toolbarExtra={
               <div style={{ marginLeft: "auto" }}>
-                <Toggle label="Resolve URIs" checked={resolveUrls} onChange={handleResolveUrlsChange} />
+                <Toggle label={t("Resolve URIs")} checked={resolveUrls} onChange={handleResolveUrlsChange} />
               </div>
             }
           />

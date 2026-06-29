@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 import { useEffect } from "react";
 import { ToastType, useToast } from "@humansignal/ui";
 
@@ -13,7 +14,7 @@ export const useOrgValidation = (): void => {
     toast.show({
       message: (
         <>
-          Data will be persisted on the node running this container, but all data will be lost if this node goes away.
+          {t("Data will be persisted on the node running this container, but all data will be lost if this node goes away.")}
         </>
       ),
       type: ToastType.alertError,

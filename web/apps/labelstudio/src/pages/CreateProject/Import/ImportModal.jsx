@@ -1,3 +1,4 @@
+import { t } from "../../../i18n";
 import { useCallback, useRef, useState } from "react";
 import { useHistory } from "react-router";
 import { Button } from "@humansignal/ui";
@@ -63,7 +64,7 @@ export const Inner = () => {
 
   return (
     <Modal
-      title="Import data"
+      title={t("Import data")}
       ref={modal}
       onHide={() => backToDM()}
       closeOnClickOutside={false}
@@ -72,7 +73,7 @@ export const Inner = () => {
       bare
     >
       <Modal.Header divided>
-        <div className={cn("modal").elem("title").toClassName()}>Import Data</div>
+        <div className={cn("modal").elem("title").toClassName()}>{t("Import Data")}</div>
 
         <Space>
           <Button
@@ -81,18 +82,18 @@ export const Inner = () => {
             look="outlined"
             waiting={waiting}
             onClick={onCancel}
-            aria-label="Cancel import"
+            aria-label={t("Cancel import")}
           >
-            Cancel
+            {t("Cancel")}
           </Button>
           <Button
             size="small"
             onClick={onFinish}
             waiting={waiting || uploading}
             disabled={uploadDisabled}
-            aria-label="Finish import"
+            aria-label={t("Finish import")}
           >
-            Import
+            {t("Import")}
           </Button>
         </Space>
       </Modal.Header>

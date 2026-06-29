@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import type { MSTAnnotation, MSTControlTag, MSTStore } from "../../stores/types";
 import { DataSummary } from "./DataSummary";
 import { LabelingSummary } from "./LabelingSummary";
@@ -86,7 +87,7 @@ const TaskSummary = ({ annotations: all, store: annotationStore }: TaskSummaryPr
     ...(typeof task?.agreement === "number"
       ? [
           {
-            title: "Agreement",
+            title: t("Agreement"),
             // 2 decimals but without trailing zeros
             value: `${Math.round(task.agreement * 100) / 100}%`,
             info: "Overall agreement over all submitted annotations",
@@ -94,12 +95,12 @@ const TaskSummary = ({ annotations: all, store: annotationStore }: TaskSummaryPr
         ]
       : []),
     {
-      title: "Annotations",
+      title: t("Annotations"),
       value: annotations.filter((a) => a.type === "annotation").length,
       info: "Number of submitted annotations. Table shows only submitted results, not current drafts.",
     },
     {
-      title: "Predictions",
+      title: t("Predictions"),
       value: annotations.filter((a) => a.type === "prediction").length,
       info: "Number of predictions. They are not included in the agreement calculation.",
     },
@@ -108,7 +109,7 @@ const TaskSummary = ({ annotations: all, store: annotationStore }: TaskSummaryPr
   return (
     <div>
       <div className="mb-base">
-        <h2 className="mt-base text-headline-small font-semibold text-neutral-content">Task Summary</h2>
+        <h2 className="mt-base text-headline-small font-semibold text-neutral-content">{t("Task Summary")}</h2>
         <NumbersSummary values={values} />
       </div>
       <div className="mb-relaxed">
@@ -121,7 +122,7 @@ const TaskSummary = ({ annotations: all, store: annotationStore }: TaskSummaryPr
         />
       </div>
       <div className="mb-relaxed">
-        <h2 className="mb-base text-headline-small font-semibold text-neutral-content">Task Data</h2>
+        <h2 className="mb-base text-headline-small font-semibold text-neutral-content">{t("Task Data")}</h2>
         <DataSummary data_types={dataTypes} />
       </div>
     </div>

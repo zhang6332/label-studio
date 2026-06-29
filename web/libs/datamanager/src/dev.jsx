@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { Button } from "./components/Common/Button/Button";
 
 const API_GATEWAY = process.env.API_GATEWAY || process.env.NX_API_GATEWAY;
@@ -47,7 +48,7 @@ export const initDevApp = async (DataManager) => {
     },
     instruments: {
       "review-button": () => {
-        return () => <Button style={{ width: 105 }}>Review</Button>;
+        return () => <Button style={{ width: 105 }}>{t("Review")}</Button>;
       },
     },
     type: "dm",

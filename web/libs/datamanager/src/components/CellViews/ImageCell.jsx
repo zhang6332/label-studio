@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { getRoot } from "mobx-state-tree";
 import { AnnotationPreview } from "../Common/AnnotationPreview/AnnotationPreview";
 
@@ -21,7 +22,7 @@ export const ImageCell = (column) => {
       {...imgDefaultProps}
       key={imgSrc}
       src={imgSrc}
-      alt="Data"
+      alt={t("Data")}
       style={{
         maxHeight: "100%",
         maxWidth: "100px",

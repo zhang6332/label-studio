@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import React from "react";
 import { observer } from "mobx-react";
 import { cn } from "../../../utils/bem";
@@ -150,7 +151,7 @@ export const FilterLine = observer(
 
           <div className={cn("filterLine").elem("column").mix("field").toClassName()}>
             <FilterDropdown
-              placeholder="Column"
+              placeholder={t("Column")}
               defaultValue={filter.filter.id}
               items={availableFilters}
               dropdownClassName={dropdownClassName}
@@ -194,7 +195,7 @@ export const FilterLine = observer(
             <>
               {/* Conjunction */}
               <div className={cn("filterLine").elem("column").mix("conjunction").toClassName()}>
-                <span style={{ fontSize: 12, paddingRight: 5 }}>and</span>
+                <span style={{ fontSize: 12, paddingRight: 5 }}>{t("and")}</span>
               </div>
 
               {/* Field */}
@@ -249,7 +250,7 @@ export const FilterLine = observer(
 
         <div className={cn("filterLine").elem("column").mix("field").toClassName()}>
           <FilterDropdown
-            placeholder="Column"
+            placeholder={t("Column")}
             defaultValue={filter.filter.id}
             items={availableFilters}
             width={80}
@@ -295,7 +296,7 @@ export const FilterLine = observer(
             <div className={cn("filterLine").elem("remove").toClassName()} />
 
             <div className={cn("filterLine").elem("column").mix("conjunction").toClassName()}>
-              <span style={{ fontSize: 12, paddingRight: 5 }}>and</span>
+              <span style={{ fontSize: 12, paddingRight: 5 }}>{t("and")}</span>
             </div>
 
             <div className={cn("filterLine").elem("column").mix("field child-field").toClassName()}>

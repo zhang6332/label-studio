@@ -1,3 +1,4 @@
+import { t } from "../../../../i18n";
 import { Button } from "@humansignal/ui";
 import { cn } from "apps/labelstudio/src/utils/bem";
 import type { FC } from "react";
@@ -11,11 +12,11 @@ export const EmptyList: FC = () => {
         <div className={cn("empty-models-list").elem("heidy").toClassName()}>
           <HeidiAi />
         </div>
-        <div className={cn("empty-models-list").elem("title").toClassName()}>Create a Model</div>
+        <div className={cn("empty-models-list").elem("title").toClassName()}>{t("Create a Model")}</div>
         <div className={cn("empty-models-list").elem("caption").toClassName()}>
-          Build a high quality model to auto-label your data using LLMs
+          {t("Build a high quality model to auto-label your data using LLMs")}
         </div>
-        <Button aria-label="Create new model">Create a Model</Button>
+        <Button aria-label={t("Create new model")}>{t("Create a Model")}</Button>
       </div>
     </div>
   );

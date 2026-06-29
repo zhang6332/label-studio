@@ -1,17 +1,18 @@
+import { t } from "../../../../i18n";
 import { z } from "zod";
 import type { ProviderConfig } from "@humansignal/app-common/blocks/StorageProviderForm/types/provider";
 import { IconCloudProviderS3 } from "@humansignal/icons";
 
 export const s3Provider: ProviderConfig = {
   name: "s3",
-  title: "Amazon S3",
-  description: "Configure your AWS S3 connection with all required Label Studio settings",
+  title: t("Amazon S3"),
+  description: t("Configure your AWS S3 connection with all required Label Studio settings"),
   icon: IconCloudProviderS3,
   fields: [
     {
       name: "bucket",
       type: "text",
-      label: "Bucket Name",
+      label: t("Bucket Name"),
       required: true,
       placeholder: "my-storage-bucket",
       schema: z.string().min(1, "Bucket name is required"),
@@ -19,21 +20,21 @@ export const s3Provider: ProviderConfig = {
     {
       name: "region_name",
       type: "text",
-      label: "Region Name",
+      label: t("Region Name"),
       placeholder: "us-east-1 (default)",
       schema: z.string().optional().default(""),
     },
     {
       name: "s3_endpoint",
       type: "text",
-      label: "S3 Endpoint",
+      label: t("S3 Endpoint"),
       placeholder: "https://s3.amazonaws.com (default)",
       schema: z.string().optional().default(""),
     },
     {
       name: "prefix",
       type: "text",
-      label: "Bucket prefix",
+      label: t("Bucket prefix"),
       placeholder: "path/to/files",
       schema: z.string().optional().default(""),
       target: "export",
@@ -41,7 +42,7 @@ export const s3Provider: ProviderConfig = {
     {
       name: "aws_access_key_id",
       type: "password",
-      label: "Access Key ID",
+      label: t("Access Key ID"),
       required: true,
       placeholder: "AKIAIOSFODNN7EXAMPLE",
       autoComplete: "off",
@@ -51,7 +52,7 @@ export const s3Provider: ProviderConfig = {
     {
       name: "aws_secret_access_key",
       type: "password",
-      label: "Secret Access Key",
+      label: t("Secret Access Key"),
       required: true,
       placeholder: "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
       autoComplete: "new-password",
@@ -61,15 +62,15 @@ export const s3Provider: ProviderConfig = {
     {
       name: "aws_session_token",
       type: "password",
-      label: "Session Token",
-      placeholder: "Session token (optional)",
+      label: t("Session Token"),
+      placeholder: t("Session token (optional)"),
       autoComplete: "new-password",
       schema: z.string().optional().default(""),
     },
     {
       name: "presign",
       type: "toggle",
-      label: "Use pre-signed URLs (On) / Proxy through the platform (Off)",
+      label: t("Use pre-signed URLs (On) / Proxy through the platform (Off)"),
       description:
         "When pre-signed URLs are enabled, all data bypasses the platform and user browsers directly read data from storage",
       schema: z.boolean().default(true),
@@ -79,7 +80,7 @@ export const s3Provider: ProviderConfig = {
     {
       name: "presign_ttl",
       type: "counter",
-      label: "Expire pre-signed URLs (minutes)",
+      label: t("Expire pre-signed URLs (minutes)"),
       min: 1,
       max: 10080,
       step: 1,

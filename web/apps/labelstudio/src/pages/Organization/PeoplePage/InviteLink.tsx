@@ -1,3 +1,4 @@
+import { t } from "../../../i18n";
 import { Button, Typography } from "@humansignal/ui";
 import { Space } from "@humansignal/ui/lib/space/space";
 import { cn } from "apps/labelstudio/src/utils/bem";
@@ -39,7 +40,7 @@ export function InviteLink({
   return (
     <Modal
       ref={modalRef}
-      title="Invite Users"
+      title={t("Invite Users")}
       opened={opened}
       bareFooter={true}
       body={<InvitationModal />}
@@ -70,7 +71,7 @@ const InvitationModal = () => {
             })
           }
         >
-          Learn more
+          {t("Learn more")}
         </a>
         .
       </Typography>
@@ -90,9 +91,9 @@ const InvitationFooter = () => {
           look="outlined"
           style={{ width: 170 }}
           onClick={() => refetch()}
-          aria-label="Refresh invite link"
+          aria-label={t("Refresh invite link")}
         >
-          Reset Link
+          {t("Reset Link")}
         </Button>
       </Space>
       <Space>
@@ -100,7 +101,7 @@ const InvitationFooter = () => {
           variant={copied ? "positive" : "primary"}
           className="w-[170px]"
           onClick={() => copyText(link!)}
-          aria-label="Copy invite link"
+          aria-label={t("Copy invite link")}
         >
           {copied ? "Copied!" : "Copy link"}
         </Button>

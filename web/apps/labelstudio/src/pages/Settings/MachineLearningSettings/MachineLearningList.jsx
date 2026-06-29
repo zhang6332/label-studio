@@ -1,3 +1,4 @@
+import { t } from "../../../i18n";
 import { formatDistanceToNow, format, parseISO } from "date-fns";
 import { useCallback, useContext } from "react";
 
@@ -48,7 +49,7 @@ const BackendCard = ({ backend, onStartTrain, onEdit, onDelete, onTestRequest })
   const confirmDelete = useCallback(
     (backend) => {
       confirm({
-        title: "Delete ML Backend",
+        title: t("Delete ML Backend"),
         body: "This action cannot be undone. Are you sure?",
         buttonLook: "destructive",
         onOk() {
@@ -74,17 +75,17 @@ const BackendCard = ({ backend, onStartTrain, onEdit, onDelete, onTestRequest })
             align="right"
             content={
               <Menu size="medium" contextual>
-                <Menu.Item onClick={() => onEdit(backend)}>Edit</Menu.Item>
-                <Menu.Item onClick={() => onTestRequest(backend)}>Send Test Request</Menu.Item>
-                <Menu.Item onClick={() => onStartTrain(backend)}>Start Training</Menu.Item>
+                <Menu.Item onClick={() => onEdit(backend)}>{t("Edit")}</Menu.Item>
+                <Menu.Item onClick={() => onTestRequest(backend)}>{t("Send Test Request")}</Menu.Item>
+                <Menu.Item onClick={() => onStartTrain(backend)}>{t("Start Training")}</Menu.Item>
                 <Menu.Divider />
                 <Menu.Item onClick={() => confirmDelete(backend)} isDangerous>
-                  Delete
+                  {t("Delete")}
                 </Menu.Item>
               </Menu>
             }
           >
-            <Button look="string" size="small" className="!p-0" aria-label="Machine learning model options">
+            <Button look="string" size="small" className="!p-0" aria-label={t("Machine learning model options")}>
               <IconEllipsis />
             </Button>
           </Dropdown.Trigger>
@@ -96,7 +97,7 @@ const BackendCard = ({ backend, onStartTrain, onEdit, onDelete, onTestRequest })
         <div className={rootClass.elem("group").toClassName()}>
           <Tooltip title={format(parseISO(backend.created_at), "yyyy-MM-dd HH:mm:ss")}>
             <span>
-              Created&nbsp;
+              {t("Created")} 
               {formatDistanceToNow(parseISO(backend.created_at), {
                 addSuffix: true,
               })}
@@ -115,11 +116,11 @@ const BackendState = ({ backend }) => {
     <div className={cn("ml").elem("status").toClassName()}>
       <span className={cn("ml").elem("indicator").mod({ state }).toClassName()} />
       <Oneof value={state} className={cn("ml").elem("status-label").toClassName()}>
-        <span case="DI">Disconnected</span>
-        <span case="CO">Connected</span>
-        <span case="ER">Error</span>
-        <span case="TR">Training</span>
-        <span case="PR">Predicting</span>
+        <span case="DI">{t("Disconnected")}</span>
+        <span case="CO">{t("Connected")}</span>
+        <span case="ER">{t("Error")}</span>
+        <span case="TR">{t("Training")}</span>
+        <span case="PR">{t("Predicting")}</span>
       </Oneof>
     </div>
   );
