@@ -4,7 +4,7 @@ import { isDefined } from "../../utils/utilities";
 import { Fragment, useEffect, useState } from "react";
 import { Hotkey } from "../../core/Hotkey";
 
-const hotkeys = Hotkey("SegmentationToolbar", "Segmentation Tools");
+const hotkeys = Hotkey("SegmentationToolbar", t("Segmentation Tools"));
 
 const keysDictionary = {
   plus: "+",

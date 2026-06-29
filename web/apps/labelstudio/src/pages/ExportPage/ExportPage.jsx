@@ -287,7 +287,8 @@ const ExportLargeProjectWarning = ({ taskCount }) => {
   return (
     <div className={cn("export-page").elem("warning").toClassName()}>
       <div className={cn("export-page").elem("warning-title").toClassName()}>
-        {t("Large project detected (")}{taskCount.toLocaleString()} {t("tasks)")}
+        {t("Large project detected (")}
+        {taskCount.toLocaleString()} {t("tasks)")}
       </div>
       <div className={cn("export-page").elem("warning-body").toClassName()}>
         {t("To avoid potential timeouts during large dataset exports in the Community Edition, use the")}{" "}
@@ -321,7 +322,9 @@ const ExportTimeoutGuidance = ({ projectId, exportType }) => {
         <div className={cn("export-page").elem("timeout-title").toClassName()}>{t("Export timed out")}</div>
       </div>
       <div className={cn("export-page").elem("timeout-body").toClassName()}>
-        {t("This export is processed synchronously in the Community Edition UI and can exceed typical reverse-proxy timeouts (often around 90 seconds) for large datasets.")}
+        {t(
+          "This export is processed synchronously in the Community Edition UI and can exceed typical reverse-proxy timeouts (often around 90 seconds) for large datasets.",
+        )}
       </div>
 
       <div className={cn("export-page").elem("timeout-actions").toClassName()}>

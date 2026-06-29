@@ -2,10 +2,11 @@ import { cn } from "../../utils/bem";
 import { isDefined } from "../../utils/utilities";
 import { useContext, useEffect, useMemo, useState } from "react";
 import { Fragment } from "react";
+import { t } from "@humansignal/core";
 import { Hotkey } from "../../core/Hotkey";
 import { ToolbarContext } from "./ToolbarContext";
 
-const hotkeys = Hotkey("SegmentationToolbar", "Segmentation Tools");
+const hotkeys = Hotkey("SegmentationToolbar", t("Segmentation Tools"));
 
 const keysDictionary = {
   plus: "+",

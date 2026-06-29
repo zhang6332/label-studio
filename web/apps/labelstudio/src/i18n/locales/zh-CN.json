@@ -1411,5 +1411,15 @@
   "Undo paste — restore previous filters": "撤销粘贴 — 恢复之前的筛选",
   "Unset this result as a ground truth": "取消此结果作为真值",
   "View all annotations": "查看所有标注",
-  "see the documentation": "查看文档"
+  "see the documentation": "查看文档",
+  "Region Management": "区域管理",
+  "Tools": "工具",
+  "Audio Controls": "音频控制",
+  "Video Controls": "视频控制",
+  "Time Series Controls": "时间序列控制",
+  "Image Gallery Navigation": "图像库导航",
+  "Paragraph Navigation": "段落导航",
+  "Shortcuts for navigating and managing tasks in Project's Data Manager": "在项目数据管理器中导航和管理任务的快捷键",
+  "Segmentation Tools": "分割工具",
+  "Perform these actions at your own risk. Actions you take on this page can't be reverted. Make sure your data is backed up.": "执行这些操作的风险由您自行承担。在此页面执行的操作无法撤销。请确保已备份数据。"
 }
