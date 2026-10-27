@@ -1585,5 +1585,8 @@
   "Hyper Text": "超文本",
   "Time Series": "时间序列",
   "Submission": "提交文件",
-  "Date Time": "日期时间"
+  "Date Time": "日期时间",
+  "objects": "对象",
+  "content": "内容",
+  "data": "数据"
 }
