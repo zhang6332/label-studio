@@ -59,13 +59,19 @@ class OssClientMixin:
         auth = oss2.Auth(self.aws_access_key_id, self.aws_secret_access_key)
         return oss2.Bucket(auth, endpoint, self.bucket)
 
+    def _normalized_prefix(self) -> str:
+        # OSS object keys never start with '/'; users habitually type a leading
+        # slash, which would silently list nothing. Normalize for them.
+        prefix = (self.prefix or '').lstrip('/').rstrip('/')
+        return prefix + '/' if prefix else ''
+
     def validate_connection(self, client=None):
         """Probe the bucket with ListObjects (max_keys=1) — the operation RAM
         users granting object-read access reliably have (GetBucketInfo, used by
         the S3 head_bucket probe, is frequently not granted)."""
         logger.debug('validate_connection (oss2 native)')
         client = client or self._oss_client()
-        prefix = self.prefix.rstrip('/') + '/' if self.prefix else ''
+        prefix = self._normalized_prefix()
         client.list_objects(prefix=prefix, max_keys=1)
         logger.debug(f'[Class {self.__class__.__name__}]: OSS connection OK for bucket {self.bucket}')
 
@@ -86,7 +92,7 @@ class OssImportStorageBase(OssClientMixin, S3ImportStorageBase):
     @catch_and_reraise_from_none
     def iter_objects(self):
         client = self._oss_client()
-        prefix = self.prefix.rstrip('/') + '/' if self.prefix else ''
+        prefix = self._normalized_prefix()
         delimiter = None if self.recursive_scan else '/'
         regex = re.compile(str(self.regex_filter)) if self.regex_filter else None
 
@@ -105,9 +111,9 @@ class OssImportStorageBase(OssClientMixin, S3ImportStorageBase):
                     logger.debug(key + ' is skipped by regex filter')
                     continue
                 logger.debug(f'oss {key} has passed the regex filter')
-                # S3 base yields botocore objects whose `.key` the scan pipeline
-                # consumes; a namespace keeps that contract intact.
-                yield SimpleNamespace(key=key)
+                # Consumers: the scan pipeline reads `.key`; the files-preview API
+                # reads `.key/.last_modified/.size` via get_unified_metadata.
+                yield SimpleNamespace(key=key, last_modified=obj.last_modified, size=obj.size)
             if res.is_truncated:
                 marker = res.next_marker
             else:
