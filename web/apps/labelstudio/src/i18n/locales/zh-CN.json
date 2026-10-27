@@ -1577,5 +1577,8 @@
   ".*\\.(json|jsonl|parquet)$ - imports task definitions": ".*\\.(json|jsonl|parquet)$ —— 导入任务定义",
   "Your redis password": "你的 Redis 密码",
   "Configure your import settings and click \"Load Preview\" to see a sample of files that will be imported.": "配置导入设置并点击\"加载预览\"，预览将要导入的文件样例。",
-  "No files matching your current criteria were found. Try adjusting your filter settings and reload the preview.": "没有符合当前条件的文件。请调整筛选设置后重新加载预览。"
+  "No files matching your current criteria were found. Try adjusting your filter settings and reload the preview.": "没有符合当前条件的文件。请调整筛选设置后重新加载预览。",
+  "You're almost there!": "就差一步了！",
+  "Before you can annotate the data, set up labeling configuration": "在标注数据之前，请先设置标注配置",
+  "Go to setup": "前往设置"
 }

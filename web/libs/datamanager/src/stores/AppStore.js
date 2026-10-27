@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { destroy, flow, types } from "mobx-state-tree";
 import { runInAction } from "mobx";
 import { emitDatamanagerEvent, labelingDisplayViewFromLsf } from "../utils/datamanagerTelemetry";
@@ -426,12 +427,12 @@ export const AppStore = types
     confirmLabelingConfigured() {
       if (!self.labelingIsConfigured) {
         Modal.confirm({
-          title: "You're almost there!",
-          body: "Before you can annotate the data, set up labeling configuration",
+          title: t("You're almost there!"),
+          body: t("Before you can annotate the data, set up labeling configuration"),
           onOk() {
             self.SDK.invoke("settingsClicked");
           },
-          okText: "Go to setup",
+          okText: t("Go to setup"),
         });
         return false;
       }
