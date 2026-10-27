@@ -164,10 +164,10 @@
   "Drag & drop files here": "将文件拖放到这里",
   "click to browse": "或点击浏览",
   "Images": "图像",
-  "Audio": "Audio",
-  "Video": "Video",
+  "Audio": "音频",
+  "Video": "视频",
   "HTML / HyperText": "HTML / 超文本",
-  "Text": "Text",
+  "Text": "文本",
   "Structured data": "结构化数据",
   "PDF": "PDF",
   "Important": "重要",
@@ -1580,5 +1580,10 @@
   "No files matching your current criteria were found. Try adjusting your filter settings and reload the preview.": "没有符合当前条件的文件。请调整筛选设置后重新加载预览。",
   "You're almost there!": "就差一步了！",
   "Before you can annotate the data, set up labeling configuration": "在标注数据之前，请先设置标注配置",
-  "Go to setup": "前往设置"
+  "Go to setup": "前往设置",
+  "Number": "数字",
+  "Hyper Text": "超文本",
+  "Time Series": "时间序列",
+  "Submission": "提交文件",
+  "Date Time": "日期时间"
 }
