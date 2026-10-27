@@ -82,8 +82,13 @@ class S3StorageSerializerMixin:
                 or e.response.get('ResponseMetadata').get('HTTPStatusCode') == 403
             ):
                 raise ValidationError(
-                    'Cannot connect to {_label} {bucket_name} with the specified credentials'.format(_label=_storage_label(storage), 
-                        bucket_name=storage.bucket
+                    # zjh: surface the provider's own error code — the generic text alone
+                    # made OSS/S3 connect failures undiagnosable (AccessDenied vs bad key).
+                    'Cannot connect to {_label} {bucket_name} with the specified credentials (provider error: {code} {msg})'.format(
+                        _label=_storage_label(storage),
+                        bucket_name=storage.bucket,
+                        code=e.response.get('Error', {}).get('Code'),
+                        msg=e.response.get('Error', {}).get('Message'),
                     )
                 )
             if (
