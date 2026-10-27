@@ -221,7 +221,7 @@ def load_tasks_json_lso(blob: bytes, key: str) -> Iterator[StorageObject]:
         raise ValueError(
             (
                 f"Can't import JSON-formatted tasks from {key}. If you're trying to import binary objects, "
-                f'perhaps you forgot to enable "Tasks" import method?'
+                f'perhaps you forgot to enable "Files" import method?'
             )
         ) from exc
 

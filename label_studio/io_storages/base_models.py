@@ -788,7 +788,7 @@ class ImportStorage(Storage):
                         raise UnsupportedFileFormatError(
                             f'File "{key}" is not a JSON/JSONL/Parquet file. Only .json, .jsonl, and .parquet files can be processed.\n'
                             f"If you're trying to import non-JSON data (images, audio, text, etc.), "
-                            f'edit storage settings and enable "Tasks" import method'
+                            f'edit storage settings and enable "Files" import method'
                         )
 
                 try:
@@ -798,7 +798,7 @@ class ImportStorage(Storage):
                     raise ValueError(
                         f'Error loading JSON from file "{key}".\nIf you\'re trying to import non-JSON data '
                         f'(images, audio, text, etc.), edit storage settings and enable '
-                        f'"Tasks" import method'
+                        f'"Files" import method'
                     )
 
                 for link_object in link_objects:
