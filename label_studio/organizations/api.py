@@ -433,8 +433,16 @@ class OrganizationInviteAPI(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         org = request.user.active_organization
         invite_url = '{}?token={}'.format(reverse('user-signup'), org.token)
-        serializer = OrganizationInviteSerializer(data={'invite_url': invite_url, 'token': org.token})
-        serializer.is_valid()
+        if hasattr(settings, 'FORCE_SCRIPT_NAME') and settings.FORCE_SCRIPT_NAME:
+            invite_url = invite_url.replace(settings.FORCE_SCRIPT_NAME, '', 1)
+        serializer = OrganizationInviteSerializer(
+            {
+                'invite_url': invite_url,
+                'token': org.token,
+                'expires_at': org.token_expires_at,
+                'expired': org.is_invite_token_expired,
+            }
+        )
         return Response(serializer.data, status=200)
 
 

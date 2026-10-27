@@ -111,6 +111,9 @@ _MANAGER_PERMS = _ALL - {
 _REVIEWER_PERMS = {
     all_permissions.organizations_view,
     all_permissions.projects_view,
+    # Self-service: every role manages its own avatar and personal API tokens.
+    all_permissions.avatar_any,
+    all_permissions.users_token_any,
     all_permissions.projects_reset_cache,
     all_permissions.tasks_view,
     all_permissions.views_view,
@@ -134,6 +137,9 @@ _ANNOTATOR_PERMS = {
     all_permissions.organizations_view,
     all_permissions.projects_view,
     all_permissions.tasks_view,
+    # Self-service: every role manages its own avatar and personal API tokens.
+    all_permissions.avatar_any,
+    all_permissions.users_token_any,
     all_permissions.views_view,
     all_permissions.annotations_create,
     all_permissions.annotations_view,
