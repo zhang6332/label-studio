@@ -2,20 +2,29 @@
 """
 """Aliyun Object Storage Service (OSS) storages.
 
-OSS is wire-compatible with the Amazon S3 API (SigV4), so this module reuses the
-boto3-based S3 implementation (``S3StorageMixin`` / ``S3ImportStorageBase``) and
-only specializes the URL scheme and display name. To point a storage at an OSS
-bucket, configure:
+zjh: OSS endpoints reject AWS-style signatures (SigV2/SigV4) outright with a
+generic 403 Forbidden — only the Aliyun-native signature scheme is accepted.
+The boto3/S3 inheritance therefore cannot be used for any wire call, so this
+module implements the storage surface on the official ``oss2`` SDK (native
+signing) while keeping the S3 model fields, sync machinery and DB schema.
+
+Configured via the same fields as before:
 
   * ``s3_endpoint``           e.g. ``https://oss-cn-hangzhou.aliyuncs.com``
-  * ``region_name``           e.g. ``oss-cn-hangzhou``
+  * ``region_name``           optional; e.g. ``oss-cn-hangzhou`` (fallback to build an endpoint)
   * ``aws_access_key_id``     Aliyun AccessKey ID
   * ``aws_secret_access_key`` Aliyun AccessKey Secret
 """
 import json
 import logging
+import re
+from types import SimpleNamespace
+from urllib.parse import urlparse
+
+import oss2
 
 from core.redis import start_job_async_or_sync
+from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
@@ -28,18 +37,44 @@ from io_storages.base_models import (
 )
 from io_storages.s3.models import S3ImportStorageBase, S3StorageMixin
 from io_storages.s3.utils import catch_and_reraise_from_none
+from io_storages.utils import StorageObject, is_collection_submission_key, load_tasks_json
 from tasks.models import Annotation
 
 logger = logging.getLogger(__name__)
 
 
-class OssImportStorageBase(S3ImportStorageBase):
+class OssClientMixin:
+    """Aliyun-native client access via the oss2 SDK (native signing).
+
+    Shared by import and export storages; overrides every boto3 touchpoint
+    inherited from the S3 bases (validate/scan/presign/read/write/delete).
+    """
+
+    def _oss_client(self) -> oss2.Bucket:
+        endpoint = self.s3_endpoint or (
+            f'https://{self.region_name}.aliyuncs.com' if self.region_name else None
+        )
+        if not endpoint:
+            raise ValueError('OSS storage requires an endpoint URL (or a region like oss-cn-beijing)')
+        auth = oss2.Auth(self.aws_access_key_id, self.aws_secret_access_key)
+        return oss2.Bucket(auth, endpoint, self.bucket)
+
+    def validate_connection(self, client=None):
+        """Probe the bucket with ListObjects (max_keys=1) — the operation RAM
+        users granting object-read access reliably have (GetBucketInfo, used by
+        the S3 head_bucket probe, is frequently not granted)."""
+        logger.debug('validate_connection (oss2 native)')
+        client = client or self._oss_client()
+        prefix = self.prefix.rstrip('/') + '/' if self.prefix else ''
+        client.list_objects(prefix=prefix, max_keys=1)
+        logger.debug(f'[Class {self.__class__.__name__}]: OSS connection OK for bucket {self.bucket}')
+
+
+class OssImportStorageBase(OssClientMixin, S3ImportStorageBase):
     """OSS import storage.
 
-    Inherits all boto3 listing / reading / presigning logic from the S3
-    implementation. Only the URL scheme, display name and the link model used
-    for scan bookkeeping are specialized so OSS objects (``oss://...``) resolve
-    through this storage instead of being mixed up with S3 ones.
+    The S3 base still provides the model fields, sync bookkeeping and scan
+    pipeline; every wire call is overridden below to go through oss2.
     """
 
     url_scheme = 'oss'
@@ -47,6 +82,61 @@ class OssImportStorageBase(S3ImportStorageBase):
     @property
     def type_full(self):
         return 'Aliyun OSS'
+
+    @catch_and_reraise_from_none
+    def iter_objects(self):
+        client = self._oss_client()
+        prefix = self.prefix.rstrip('/') + '/' if self.prefix else ''
+        delimiter = None if self.recursive_scan else '/'
+        regex = re.compile(str(self.regex_filter)) if self.regex_filter else None
+
+        marker = ''
+        while True:
+            res = client.list_objects(prefix=prefix, delimiter=delimiter, marker=marker, max_keys=1000)
+            for obj in res.object_list:
+                key = obj.key
+                if key.endswith('/'):
+                    logger.debug(key + ' is skipped because it is a folder')
+                    continue
+                if is_collection_submission_key(key):
+                    logger.debug(key + ' is skipped: reserved collection submission object')
+                    continue
+                if regex and not regex.match(key):
+                    logger.debug(key + ' is skipped by regex filter')
+                    continue
+                logger.debug(f'oss {key} has passed the regex filter')
+                # S3 base yields botocore objects whose `.key` the scan pipeline
+                # consumes; a namespace keeps that contract intact.
+                yield SimpleNamespace(key=key)
+            if res.is_truncated:
+                marker = res.next_marker
+            else:
+                return
+
+    @catch_and_reraise_from_none
+    def get_data(self, key) -> list[StorageObject]:
+        uri = f'{self.url_scheme}://{self.bucket}/{key}'
+        if self.use_blob_urls:
+            data_key = settings.DATA_UNDEFINED_NAME
+            task = {data_key: uri}
+            return [StorageObject(key=key, task_data=task)]
+
+        # read task json from bucket and validate it
+        content = self._oss_client().get_object(key).read()
+        return load_tasks_json(content, key)
+
+    @catch_and_reraise_from_none
+    def generate_http_url(self, url):
+        key = urlparse(url, allow_fragments=False).path.lstrip('/')
+        if self.presign:
+            # Native presigned URL; slash_safe keeps object paths intact
+            return self._oss_client().sign_url('GET', key, self.presign_ttl * 60, slash_safe=True)
+        # Proxy through the platform: return the blob as a base64 data URI
+        res = self._oss_client().get_object(key)
+        content_type = res.headers.get('Content-Type', 'application/octet-stream')
+        import base64
+
+        return 'data:' + content_type + ';base64,' + base64.b64encode(res.read()).decode('utf-8')
 
     @catch_and_reraise_from_none
     def scan_and_create_links(self):
@@ -61,7 +151,7 @@ class OssImportStorage(ProjectStorageMixin, OssImportStorageBase):
         abstract = False
 
 
-class OssExportStorage(S3StorageMixin, ExportStorage):
+class OssExportStorage(OssClientMixin, S3StorageMixin, ExportStorage):
     url_scheme = 'oss'
 
     @property
@@ -70,7 +160,7 @@ class OssExportStorage(S3StorageMixin, ExportStorage):
 
     @catch_and_reraise_from_none
     def save_annotation(self, annotation):
-        _, s3 = self.get_client_and_resource()
+        client = self._oss_client()
         logger.debug(f'Creating new object on {self.__class__.__name__} Storage {self} for annotation {annotation}')
         ser_annotation = self._get_serialized_data(annotation)
 
@@ -79,14 +169,14 @@ class OssExportStorage(S3StorageMixin, ExportStorage):
         key = str(self.prefix) + '/' + key if self.prefix else key
 
         # put object into storage
-        s3.Object(self.bucket, key).put(Body=json.dumps(ser_annotation))
+        client.put_object(key, json.dumps(ser_annotation).encode('utf-8'))
 
         # create link if everything ok
         OssExportStorageLink.create(annotation, self)
 
     @catch_and_reraise_from_none
     def delete_annotation(self, annotation):
-        _, s3 = self.get_client_and_resource()
+        client = self._oss_client()
         logger.debug(f'Deleting object on {self.__class__.__name__} Storage {self} for annotation {annotation}')
 
         # get key that identifies this object in storage
@@ -94,7 +184,7 @@ class OssExportStorage(S3StorageMixin, ExportStorage):
         key = str(self.prefix) + '/' + key if self.prefix else key
 
         # delete object from storage
-        s3.Object(self.bucket, key).delete()
+        client.delete_object(key)
 
         # delete link if everything ok
         OssExportStorageLink.objects.filter(storage=self, annotation=annotation).delete()
