@@ -22,7 +22,11 @@ const CellRenderer = observer(({ col: colInput, data, decoration, cellViews }) =
   }
 
   const valuePath = id.split(":")[1] ?? id;
-  const altType = normalizeCellAlias(valuePath);
+  // zjh: nested data columns have ids like `tasks:data.image` — the cell view
+  // registry is keyed by the leaf field type name ("Image"), so match on the
+  // last path segment; the full path pascal-cases to "DataImage" and misses,
+  // falling back to StringCell which renders objects as "{}".
+  const altType = normalizeCellAlias(valuePath.split(".").pop());
   const value = getProperty(data, valuePath);
 
   const Renderer = cellViews[altType] ?? cellViews[col.original.currentType] ?? cellViews.String;
