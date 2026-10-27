@@ -2,6 +2,7 @@
 
 import copy
 import os
+from core.label_config import replace_task_data_undefined_with_config_field
 from typing import Any
 
 import ujson as json
@@ -774,6 +775,13 @@ class DataManagerTaskSerializer(TaskSerializer):
         # Restrict task.data to visible DM columns before URI resolve (FIT-2416).
         visible_data_keys = self.context.get('dm_visible_data_keys')
         if visible_data_keys is not None and isinstance(getattr(obj, 'data', None), dict):
+            # zjh: rename $undefined$ BEFORE filtering. Blob-synced tasks store the
+            # media URI under $undefined$, which is never in the visible-column list
+            # (derived from config fields); filtering first dropped the media URI
+            # entirely — blank grid/table cells for cloud-mounted tasks.
+            project = self.context.get('project')
+            if project:
+                replace_task_data_undefined_with_config_field(obj.data, project)
             obj.data = {key: value for key, value in obj.data.items() if key in visible_data_keys}
 
         ret = super(DataManagerTaskSerializer, self).to_representation(obj)
