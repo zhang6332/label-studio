@@ -472,6 +472,16 @@ def replace_task_data_undefined_with_config_field(data, project, first_key=None)
     # assign undefined key name from data to the first key from config, e.g. for txt loading
     if settings.DATA_UNDEFINED_NAME in data and (first_key or project.data_types.keys()):
         key = first_key or list(project.data_types.keys())[0]
+        # zjh: prefer an object-type field. data_types also contains control-tag
+        # value refs (e.g. <PolygonLabels value="$objects"> registers 'objects'),
+        # and blind first-key selection renames the media URI into a label-values
+        # field — breaking image display (inventory-tracking template hit this).
+        if first_key is None:
+            object_types = {'Image', 'Audio', 'Text', 'HyperText', 'TimeSeries', 'Video'}
+            for data_key, tag_type in project.data_types.items():
+                if tag_type in object_types:
+                    key = data_key
+                    break
         data[key] = data[settings.DATA_UNDEFINED_NAME]
         del data[settings.DATA_UNDEFINED_NAME]
 
