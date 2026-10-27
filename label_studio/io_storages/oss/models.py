@@ -43,6 +43,27 @@ from tasks.models import Annotation
 logger = logging.getLogger(__name__)
 
 
+class _OssStreamAdapter:
+    """Adapts oss2's GetObjectResult to the botocore StreamingBody surface
+    (``iter_chunks``) consumed by the storage proxy API."""
+
+    def __init__(self, result):
+        self._result = result
+
+    def iter_chunks(self, chunk_size=64 * 1024):
+        while True:
+            chunk = self._result.read(chunk_size)
+            if not chunk:
+                return
+            yield chunk
+
+    def read(self, amt=None):
+        return self._result.read(amt)
+
+    def close(self):
+        self._result.close()
+
+
 class OssClientMixin:
     """Aliyun-native client access via the oss2 SDK (native signing).
 
@@ -74,6 +95,29 @@ class OssClientMixin:
         prefix = self._normalized_prefix()
         client.list_objects(prefix=prefix, max_keys=1)
         logger.debug(f'[Class {self.__class__.__name__}]: OSS connection OK for bucket {self.bucket}')
+
+    def get_bytes_stream(self, uri, range_header=None):
+        """oss2 equivalent of the S3 direct stream, used by the storage proxy
+        API. Range forwarding keeps audio/video seeking working in proxy mode
+        (presign off). Returns (stream, content_type, metadata) or (None, None, {})."""
+        key = urlparse(uri, allow_fragments=False).path.lstrip('/')
+        try:
+            client = self._oss_client()
+            headers = {'Range': range_header} if range_header else None
+            res = client.get_object(key, headers=headers)
+            metadata = {
+                'ETag': res.etag,
+                'ContentLength': res.content_length,
+                'ContentRange': res.content_range,
+                'LastModified': res.headers.get('Last-Modified'),
+                'StatusCode': res.status,
+            }
+            return _OssStreamAdapter(res), res.headers.get('Content-Type'), metadata
+        except oss2.exceptions.NotFound:
+            return None, None, {}
+        except Exception as e:
+            logger.error(f'Error getting direct stream from OSS for uri {uri}: {e}', exc_info=True)
+            return None, None, {}
 
 
 class OssImportStorageBase(OssClientMixin, S3ImportStorageBase):
