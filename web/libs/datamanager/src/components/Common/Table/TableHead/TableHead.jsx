@@ -193,7 +193,14 @@ const ColumnRenderer = observer(
     const canOrder = sortingEnabled && column.original?.canOrder;
     const Decoration = decoration?.get?.(column);
     const extra = !isDE && columnHeaderExtra ? columnHeaderExtra(column, Decoration) : null;
-    const content = Decoration?.content ? Decoration.content(column) : column.title;
+    // zjh: when the column has a display-type override, the snapshotted title
+    // (e.g. "Image") no longer matches the active renderer (e.g. Audio) —
+    // derive the title from the current type instead.
+    const content = Decoration?.content
+      ? Decoration.content(column)
+      : column.original?.currentType && column.original?.type && column.original.currentType !== column.original.type
+        ? t(ViewColumnTypeName(column.original.currentType))
+        : column.title;
     const style = getStyle(cellViews, column, Decoration);
     const isAgreementV2Enabled =
       root.project?.is_dimensions_enabled ?? isActive(FF_UTC_428_CONSENSUS_CONTROL_TAG_AGREEMENT);
