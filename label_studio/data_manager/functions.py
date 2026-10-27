@@ -57,10 +57,19 @@ def get_all_columns(project, *_):
 
     # add data types from config again
     project_data_types = {}
+    # zjh: control tags can also register $refs in data_types (e.g.
+    # <PolygonLabels value="$objects"> registers 'objects': 'PolygonLabels').
+    # Those are label definitions, not data fields — emitting them as data
+    # columns produces ghost columns full of "{}". Only object tags are data.
+    object_tag_types = {
+        'Image', 'Audio', 'AudioPlus', 'Video', 'Text', 'HyperText',
+        'TimeSeries', 'Paragraphs', 'PDF', 'Pdf', 'RichText', 'Table',
+        'List', 'PagedView',
+    }
     for key, value in project.data_types.items():
         # skip keys from Repeater tag, because we already have its base data,
         # e.g.: skip 'image[{{idx}}]' because we have 'image' list already
-        if '[' not in key:
+        if '[' not in key and value in object_tag_types:
             project_data_types[key] = value
     data_types.update(project_data_types.items())
 
