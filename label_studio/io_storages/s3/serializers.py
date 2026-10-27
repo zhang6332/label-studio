@@ -60,6 +60,15 @@ class S3StorageSerializerMixin:
         except ParamValidationError:
             raise ValidationError('Wrong credentials for S3 {bucket_name}'.format(bucket_name=storage.bucket))
         except ClientError as e:
+            # zjh: log the raw provider error so connect failures are diagnosable
+            # (the user-facing message below is intentionally generic).
+            logger.info(
+                'S3/OSS validate_connection failed: code=%s message=%s endpoint=%s region=%s',
+                e.response.get('Error', {}).get('Code'),
+                e.response.get('Error', {}).get('Message'),
+                getattr(storage, 's3_endpoint', None),
+                getattr(storage, 'region_name', None),
+            )
             if (
                 e.response.get('Error').get('Code') in ['SignatureDoesNotMatch', '403']
                 or e.response.get('ResponseMetadata').get('HTTPStatusCode') == 403
