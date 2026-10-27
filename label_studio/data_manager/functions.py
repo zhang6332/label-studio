@@ -1,9 +1,10 @@
 """This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license."""
 
 import logging
+import os
 from collections import OrderedDict
 from typing import Any, Iterable, Tuple
-from urllib.parse import unquote
+from urllib.parse import unquote, urlparse
 
 import ujson as json
 from core.utils.common import int_from_request, load_func
@@ -86,6 +87,41 @@ def get_all_columns(project, *_):
     # remove $undefined$ if there is one type at least in labeling config, because it will be resolved automatically
     if len(project_data_types) > 0:
         data_types.pop(settings.DATA_UNDEFINED_NAME, None)
+
+    # zjh: auto-detect the content type of undeclared data keys from the actual
+    # task values (file extension), so list columns render as Image/Video/Audio
+    # with the matching type badge/title instead of a generic String column.
+    # Keys explicitly declared as object tags in the labeling config are
+    # respected as-is; only 'Unknown' (import-observed) keys get sniffed.
+    undeclared_keys = [key for key, data_type in data_types.items() if data_type == 'Unknown']
+    if undeclared_keys:
+        _ext_to_type = {
+            '.jpg': 'Image', '.jpeg': 'Image', '.png': 'Image', '.gif': 'Image',
+            '.bmp': 'Image', '.webp': 'Image',
+            '.mp4': 'Video', '.avi': 'Video', '.mov': 'Video', '.mkv': 'Video', '.webm': 'Video',
+            '.mp3': 'Audio', '.wav': 'Audio', '.ogg': 'Audio', '.flac': 'Audio',
+            '.m4a': 'Audio', '.aac': 'Audio',
+        }
+        detected = {}
+        for key in undeclared_keys[:10]:
+            try:
+                sample = (
+                    Task.objects.filter(project=project)
+                    .exclude(**{f'data__{key}': None})
+                    .values_list('data', flat=True)
+                    .first()
+                )
+                value = (sample or {}).get(key)
+                if not isinstance(value, str):
+                    continue
+                ext = os.path.splitext(urlparse(value).path)[1].lower()
+                if ext in _ext_to_type:
+                    detected[key] = _ext_to_type[ext]
+                    logger.debug('get_all_columns: key %s content detected as %s', key, detected[key])
+            except Exception:
+                logger.debug('get_all_columns: content type detection failed for key %s', key, exc_info=True)
+        if detected:
+            data_types.update(detected)
     logger.debug(
         'get_all_columns: project_id=%s data_types=%s project_data_types=%s',
         project.id,
