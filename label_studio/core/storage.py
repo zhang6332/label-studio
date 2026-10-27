@@ -3,14 +3,21 @@
 import logging
 import os
 import threading
+from datetime import datetime, timezone as dt_timezone
 from urllib.parse import unquote, urlsplit, urlunsplit
 
 import google.auth
+import oss2
 from django.conf import settings
 from django.contrib.staticfiles.storage import ManifestStaticFilesStorage
+from django.core.exceptions import ImproperlyConfigured
+from django.core.files.base import File
+from django.core.files.storage import Storage
 from storages.backends.azure_storage import AzureStorage
 from storages.backends.gcloud import GoogleCloudStorage, _quote, clean_name
 from storages.backends.s3boto3 import S3Boto3Storage
+
+from core.utils.params import get_env
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +74,81 @@ class StorageProxyMixin:
 
 class CustomS3Boto3Storage(StorageProxyMixin, S3Boto3Storage):
     pass
+
+
+class OssStorage(Storage):
+    """Aliyun OSS upload backend (oss2 SDK, native signing).
+
+    OSS endpoints reject AWS-style signatures (SigV2/V4), so S3Boto3Storage
+    cannot talk to them; this backend goes through the official oss2 SDK with
+    Aliyun-native signing. Files are served to the editor via presigned URLs
+    (consistent with presign-enabled cloud mounts).
+
+    Environment:
+      STORAGE_TYPE=oss
+      STORAGE_OSS_ENDPOINT=https://oss-cn-beijing.aliyuncs.com
+      STORAGE_OSS_BUCKET_NAME=<bucket>
+      STORAGE_OSS_ACCESS_KEY_ID=<ak>     (fallback: STORAGE_AWS_ACCESS_KEY_ID)
+      STORAGE_OSS_SECRET_KEY=<sk>        (fallback: STORAGE_AWS_SECRET_ACCESS_KEY)
+      STORAGE_OSS_URL_EXPIRE_SECONDS=3600 (optional presigned URL TTL)
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        access_key = get_env('STORAGE_OSS_ACCESS_KEY_ID') or get_env('STORAGE_AWS_ACCESS_KEY_ID')
+        secret_key = get_env('STORAGE_OSS_SECRET_KEY') or get_env('STORAGE_AWS_SECRET_ACCESS_KEY')
+        endpoint = get_env('STORAGE_OSS_ENDPOINT')
+        bucket_name = get_env('STORAGE_OSS_BUCKET_NAME') or get_env('STORAGE_AWS_S3_BUCKET')
+        if not all([access_key, secret_key, endpoint, bucket_name]):
+            raise ImproperlyConfigured(
+                'OSS upload storage requires STORAGE_OSS_ENDPOINT, STORAGE_OSS_BUCKET_NAME, '
+                'STORAGE_OSS_ACCESS_KEY_ID and STORAGE_OSS_SECRET_KEY.'
+            )
+        self._bucket = oss2.Bucket(oss2.Auth(access_key, secret_key), endpoint, bucket_name)
+        self._url_expire = int(get_env('STORAGE_OSS_URL_EXPIRE_SECONDS', 3600))
+
+    def _open(self, name, mode='rb'):
+        if mode != 'rb':
+            raise ValueError('OssStorage supports read mode only')
+        return File(self._bucket.get_object(name), name)
+
+    def _save(self, name, content):
+        self._bucket.put_object(name, content.read())
+        return name
+
+    def exists(self, name):
+        return self._bucket.object_exists(name)
+
+    def delete(self, name):
+        try:
+            self._bucket.delete_object(name)
+        except oss2.exceptions.NoSuchKey:
+            pass
+
+    def size(self, name):
+        return self._bucket.head_object(name).content_length
+
+    def url(self, name, parameters=None, expire=None, method=None):
+        # Presigned GET; slash_safe keeps object paths intact
+        return self._bucket.sign_url('GET', name, expire or self._url_expire, slash_safe=True)
+
+    def listdir(self, path):
+        prefix = path.rstrip('/') + '/' if path else ''
+        res = self._bucket.list_objects(prefix=prefix, delimiter='/')
+        directories = [p.rstrip('/') for p in res.prefix_list]
+        files = [o.key for o in res.object_list]
+        return directories, files
+
+    def get_modified_time(self, name):
+        last_modified = self._bucket.head_object(name).last_modified
+        return datetime.fromtimestamp(last_modified, tz=dt_timezone.utc)
+
+    def get_created_time(self, name):
+        # OSS exposes only Last-Modified; use it for both
+        return self.get_modified_time(name)
+
+    def get_accessed_time(self, name):
+        raise NotImplementedError('OSS does not provide access time.')
 
 
 class CustomAzureStorage(StorageProxyMixin, AzureStorage):

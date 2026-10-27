@@ -990,6 +990,11 @@ if get_env('STORAGE_TYPE') == 'azure':
     AZURE_URL_EXPIRATION_SECS = int(get_env('STORAGE_AZURE_URL_EXPIRATION_SECS', '86400'))
     AZURE_LOCATION = get_env('STORAGE_AZURE_FOLDER', default='')
 
+# zjh: Aliyun OSS upload backend (oss2 native signing; OSS rejects AWS signatures)
+if get_env('STORAGE_TYPE') == 'oss':
+    CLOUD_FILE_STORAGE_ENABLED = True
+    STORAGES['default']['BACKEND'] = 'core.storage.OssStorage'
+
 if get_env('STORAGE_TYPE') == 'gcs':
     CLOUD_FILE_STORAGE_ENABLED = True
     STORAGES['default']['BACKEND'] = 'core.storage.AlternativeGoogleCloudStorage'
