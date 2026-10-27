@@ -75,8 +75,15 @@ const ObservableCell = observer(
             return { ...json, from_name: json.from_name.replace(/@.*$/, "") };
           }) ?? [];
       } else {
-        // Regular annotations - read from versions.result (this is MobX tracked)
-        allResults = mstAnnotation.versions?.result ?? [];
+        // zjh: count from LIVE results (MobX-tracked) so the summary tracks
+        // unsaved edits — versions.result only refreshes on history reload,
+        // so the chips went stale right after clicking "Update". Fall back
+        // to the saved version for lazily-loaded stubs (live not fetched).
+        const live = mstAnnotation.results?.map((r: MSTResult) => {
+          const json = r.toJSON() as RawResult;
+          return { ...json, from_name: json.from_name.replace(/@.*$/, "") };
+        });
+        allResults = live && live.length > 0 ? live : (mstAnnotation.versions?.result ?? []);
       }
     } else {
       allResults = annotation.results ?? [];
