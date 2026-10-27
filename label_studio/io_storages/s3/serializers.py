@@ -15,6 +15,14 @@ from rest_framework.exceptions import ValidationError
 logger = logging.getLogger(__name__)
 
 
+def _storage_label(storage) -> str:
+    # OSS models inherit from the S3 ones (S3-compatible implementation); label
+    # user-facing validation errors with the actual storage type, not always "S3".
+    if storage is not None and type(storage).__name__.lower().startswith('oss'):
+        return 'OSS'
+    return 'S3'
+
+
 class S3StorageSerializerMixin:
     secure_fields = ['aws_access_key_id', 'aws_secret_access_key', 'aws_session_token']
 
@@ -58,7 +66,7 @@ class S3StorageSerializerMixin:
         try:
             storage.validate_connection()
         except ParamValidationError:
-            raise ValidationError('Wrong credentials for S3 {bucket_name}'.format(bucket_name=storage.bucket))
+            raise ValidationError('Wrong credentials for {_label} {bucket_name}'.format(_label=_storage_label(storage), bucket_name=storage.bucket))
         except ClientError as e:
             # zjh: log the raw provider error so connect failures are diagnosable
             # (the user-facing message below is intentionally generic).
@@ -74,7 +82,7 @@ class S3StorageSerializerMixin:
                 or e.response.get('ResponseMetadata').get('HTTPStatusCode') == 403
             ):
                 raise ValidationError(
-                    'Cannot connect to S3 {bucket_name} with specified AWS credentials'.format(
+                    'Cannot connect to {_label} {bucket_name} with the specified credentials'.format(_label=_storage_label(storage), 
                         bucket_name=storage.bucket
                     )
                 )
@@ -82,7 +90,7 @@ class S3StorageSerializerMixin:
                 e.response.get('Error').get('Code') in ['NoSuchBucket', '404']
                 or e.response.get('ResponseMetadata').get('HTTPStatusCode') == 404
             ):
-                raise ValidationError('Cannot find bucket {bucket_name} in S3'.format(bucket_name=storage.bucket))
+                raise ValidationError('Cannot find bucket {bucket_name} in {_label}'.format(_label=_storage_label(storage), bucket_name=storage.bucket))
         except TypeError as e:
             logger.info(f'It seems access keys are incorrect: {e}', exc_info=True)
             raise ValidationError('It seems access keys are incorrect')
