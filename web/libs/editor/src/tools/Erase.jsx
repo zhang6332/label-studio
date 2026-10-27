@@ -154,6 +154,7 @@ const _Tool = types
         if (!brush) return;
 
         if (brush && brush.type === "brushregion") {
+          if (brush.isReadOnly() || brush.hidden) return;
           self.mode = "drawing";
           brush.beginPath({
             type: "eraser",

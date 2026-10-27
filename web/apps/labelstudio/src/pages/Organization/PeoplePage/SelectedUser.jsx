@@ -6,7 +6,7 @@ import { Userpic, Button } from "@humansignal/ui";
 import { useAuth } from "@humansignal/core/providers/AuthProvider";
 import { cn } from "../../../utils/bem";
 import { getLang, t } from "../../../i18n";
-import "./SelectedUser.scss";
+import "./SelectedUser.prefix.css";
 
 const ROLE_BADGE = {
   owner: t("Owner"),

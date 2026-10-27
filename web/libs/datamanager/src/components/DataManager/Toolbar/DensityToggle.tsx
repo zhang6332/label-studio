@@ -64,14 +64,14 @@ export const DensityToggle = densityInjector(
               aria-label={t("Comfortable density")}
               data-testid="density-comfortable"
             >
-              <IconRows3 />
+              <IconRows3 width={20} height={20} />
             </RadioGroup.Button>
           </div>
         </Tooltip>
         <Tooltip title={t("Compact density")}>
           <div>
-            <RadioGroup.Button value={DENSITY_COMPACT} aria-label={t("Compact density")} data-testid="density-compact">
-              <IconRows4 />
+            <RadioGroup.Button value={DENSITY_COMPACT} aria-label="Compact density" data-testid="density-compact">
+              <IconRows4 width={20} height={20} />
             </RadioGroup.Button>
           </div>
         </Tooltip>

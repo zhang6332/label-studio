@@ -1,7 +1,9 @@
 import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
+import { Typography } from "@humansignal/ui";
 import { isDefined } from "../../../utils/utils";
 import { FilterInput } from "../FilterInput";
+import { ListInput } from "./ListInput";
 
 const valueFilter = (value) => {
   if (isDefined(value)) {
@@ -22,7 +24,7 @@ const NumberInput = observer(({ onChange, ...rest }) => {
   return <FilterInput {...rest} type="number" onChange={(value) => onChange(valueFilter(value))} />;
 });
 
-const RangeInput = observer(({ schema, value, onChange }) => {
+export const RangeInput = observer(({ schema, value, onChange, disabled, readOnly }) => {
   const min = value?.min ?? null;
   const max = value?.max ?? null;
 
@@ -39,10 +41,28 @@ const RangeInput = observer(({ schema, value, onChange }) => {
   };
 
   return (
-    <div className="flex w-full min-w-[100px]">
-      <NumberInput placeholder={t("Min")} value={min} onChange={onChangeMin} schema={schema} style={{ flex: 1 }} />
-      <span style={{ padding: "0 10px" }}>{t("and")}</span>
-      <NumberInput placeholder={t("Max")} value={max} onChange={onChangeMax} schema={schema} style={{ flex: 1 }} />
+    <div className="flex w-full min-w-0 items-center gap-tighter">
+      <NumberInput
+        placeholder="Min"
+        value={min}
+        onChange={onChangeMin}
+        schema={schema}
+        style={{ flex: 1, minWidth: 0 }}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
+      <Typography as="span" variant="body" size="smallest" className="shrink-0 text-neutral-content-subtler">
+        and
+      </Typography>
+      <NumberInput
+        placeholder="Max"
+        value={max}
+        onChange={onChangeMax}
+        schema={schema}
+        style={{ flex: 1, minWidth: 0 }}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
     </div>
   );
 });
@@ -95,5 +115,18 @@ export const NumberFilter = [
     label: "not between",
     valueType: "range",
     input: (props) => <RangeInput {...props} />,
+  },
+  // BROS-1203 — list membership. Gated per-column in FilterOperation.jsx.
+  {
+    key: "in_list",
+    label: "is any of",
+    valueType: "list",
+    input: (props) => <ListInput {...props} type="number" />,
+  },
+  {
+    key: "not_in_list",
+    label: "is none of",
+    valueType: "list",
+    input: (props) => <ListInput {...props} type="number" />,
   },
 ];

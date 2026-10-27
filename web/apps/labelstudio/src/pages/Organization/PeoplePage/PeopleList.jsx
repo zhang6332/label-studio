@@ -9,7 +9,7 @@ import { useAPI } from "../../../providers/ApiProvider";
 import { cn } from "../../../utils/bem";
 import { getLang, t } from "../../../i18n";
 import { isDefined } from "../../../utils/helpers";
-import "./PeopleList.scss";
+import "./PeopleList.prefix.css";
 import { CopyableTooltip } from "../../../components/CopyableTooltip/CopyableTooltip";
 
 const ROLE_LABELS = {

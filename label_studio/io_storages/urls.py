@@ -1,5 +1,5 @@
-"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license.
-"""
+"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license."""
+
 from django.conf import settings
 from django.urls import include, path, re_path
 from io_storages import proxy_api
@@ -63,6 +63,7 @@ from io_storages.oss.api import (
     OssImportStorageSyncAPI,
     OssImportStorageValidateAPI,
 )
+from io_storages.react_code_proxy import ReactCodeResolveView, ReactCodeTokenView
 from io_storages.redis.api import (
     RedisExportStorageDetailAPI,
     RedisExportStorageFormLayoutAPI,
@@ -236,6 +237,12 @@ urlpatterns += [
         proxy_api.ProjectResolveStorageUri.as_view(),
         name='project-storage-data-presign',
     ),
+]
+
+# ReactCode token-authenticated proxy for sandboxed iframe storage URL resolution
+urlpatterns += [
+    path('api/react-code/token/', ReactCodeTokenView.as_view(), name='react-code-token'),
+    path('api/react-code/resolve/<str:token>/', ReactCodeResolveView.as_view(), name='react-code-resolve'),
 ]
 
 urlpatterns += [

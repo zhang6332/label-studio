@@ -1,5 +1,5 @@
 import { isDefined, isEmptyString } from "../../../utils/helpers";
-import "./Validation.scss";
+import "./Validation.prefix.css";
 
 export const required = (fieldName, value) => {
   if (!isDefined(value) || isEmptyString(value)) {
@@ -26,7 +26,7 @@ export const json = (fieldName, value) => {
 
   try {
     JSON.parse(value);
-  } catch (e) {
+  } catch (_e) {
     return err;
   }
 };
@@ -34,7 +34,7 @@ export const json = (fieldName, value) => {
 export const regexp = (fieldName, value) => {
   try {
     new RegExp(value);
-  } catch (err) {
+  } catch (_err) {
     return `${fieldName} must be a valid regular expression`;
   }
 };

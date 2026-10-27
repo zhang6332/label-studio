@@ -1,6 +1,7 @@
 import { t } from "@humansignal/core";
 import { CloseOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { Button, Checkbox, IconChevronLeft, IconChevronRight } from "@humansignal/ui";
+import { Button, Checkbox } from "@humansignal/ui";
+import { IconChevronLeft, IconChevronRight } from "@humansignal/icons";
 import { observer } from "mobx-react";
 import type { PropsWithChildren } from "react";
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
@@ -9,7 +10,7 @@ import { Icon } from "../../Common/Icon/Icon";
 import { Tooltip } from "@humansignal/ui";
 import { ImagePreview } from "./ImagePreview";
 
-import styles from "./GridPreview.module.scss";
+import styles from "./GridPreview.module.css";
 
 type Task = {
   id: number;

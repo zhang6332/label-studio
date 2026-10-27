@@ -25,7 +25,7 @@ function translateErrorDetail(s) {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Spinner } from "../../../components";
 import { cn } from "../../../utils/bem";
-import "./Config.scss";
+import "./Config.prefix.css";
 import { EMPTY_CONFIG } from "./Template";
 import { API_CONFIG } from "../../../config/ApiConfig";
 import { useAPI } from "../../../providers/ApiProvider";
@@ -42,6 +42,16 @@ const loadDependencies = async () => {
   return dependencies;
 };
 
+const isCodeMirrorFocused = (el) => el?.closest?.(".CodeMirror");
+
+const withFocusGuard = (fn) => {
+  const prev = document.activeElement;
+  fn();
+  if (prev && prev !== document.activeElement && isCodeMirrorFocused(prev)) {
+    prev.focus();
+  }
+};
+
 export const Preview = ({ config, data, error, loading, project }) => {
   // @see comment about dependencies above
   loadDependencies();
@@ -49,6 +59,7 @@ export const Preview = ({ config, data, error, loading, project }) => {
   const [storeReady, setStoreReady] = useState(false);
   const lsf = useRef(null);
   const rootRef = useRef();
+  const mountedRef = useRef(true);
   const api = useAPI();
   const projectRef = useRef(project);
   projectRef.current = project;
@@ -92,27 +103,33 @@ export const Preview = ({ config, data, error, loading, project }) => {
   }, [config]);
 
   const initLabelStudio = useCallback(async (config, task) => {
-    // wait for dependencies to load, the promise is resolved only once
-    // and is started when the component is mounted for the first time
     await loadDependencies();
 
     if (lsf.current || !task.data) return;
 
+    // Resolve root by id so we don't pass null after remounts; getElementById finds the current DOM node
+    const rootEl = document.getElementById("label-studio") ?? rootRef.current;
+    if (!rootEl) return;
+
     try {
-      lsf.current = new window.LabelStudio(rootRef.current, {
+      lsf.current = new window.LabelStudio(rootEl, {
         config,
         task,
         interfaces: ["side-column"],
         // with SharedStore we should use more late event
         onStorageInitialized(LS) {
-          LS.settings.bottomSidePanel = true;
+          if (!LS.settings.bottomSidePanel) {
+            LS.settings.toggleBottomSP();
+          }
 
           const initAnnotation = () => {
-            const as = LS.annotationStore;
-            const c = as.createAnnotation();
+            withFocusGuard(() => {
+              const as = LS.annotationStore;
+              const c = as.createAnnotation();
 
-            as.selectAnnotation(c.id);
-            setStoreReady(true);
+              as.selectAnnotation(c.id);
+              setStoreReady(true);
+            });
           };
 
           // and even then we need to wait a little even after the store is initialized
@@ -128,14 +145,15 @@ export const Preview = ({ config, data, error, loading, project }) => {
 
   useEffect(() => {
     const opacity = loading || error ? 0.6 : 1;
-    // to avoid rerenders and data loss we do it this way
-
-    document.getElementById("label-studio").style.opacity = opacity;
+    const el = document.getElementById("label-studio");
+    if (el) el.style.opacity = opacity;
   }, [loading, error]);
 
   useEffect(() => {
+    mountedRef.current = true;
     initLabelStudio(currentConfig, currentTask).then(() => {
-      if (storeReady && lsf.current?.store) {
+      if (!mountedRef.current || !lsf.current?.store) return;
+      withFocusGuard(() => {
         const store = lsf.current.store;
 
         store.resetState();
@@ -148,15 +166,17 @@ export const Preview = ({ config, data, error, loading, project }) => {
         });
 
         store.annotationStore.selectAnnotation(c.id);
-        console.log("LSF updated");
-      }
+      });
     });
+    return () => {
+      mountedRef.current = false;
+    };
   }, [currentConfig, currentTask, storeReady]);
 
   useEffect(() => {
     return () => {
+      mountedRef.current = false;
       if (lsf.current) {
-        console.info("Destroying LSF");
         lsf.current.destroy();
         lsf.current = null;
       }
@@ -165,13 +185,11 @@ export const Preview = ({ config, data, error, loading, project }) => {
 
   return (
     <div className={configClass.elem("preview").toClassName()}>
-      <h3>{t("Preview")}</h3>
+      <h3 className={configClass.elem("preview-header").toClassName()}>Preview</h3>
       {error && (
         <div className={configClass.elem("preview-error").toClassName()}>
-          <h2>
-            {/* error.detail / err are dynamic backend strings — t() looks up
-                the dictionary and falls back to the original if not found. */}
-            {translateErrorDetail(error.detail)} {error.id}
+          <h2 className={configClass.elem("preview-error-header").toClassName()}>
+            {error.detail} {error.id}
           </h2>
           {error.validation_errors?.non_field_errors?.map?.((err) => (
             <p key={err}>{translateErrorDetail(err)}</p>

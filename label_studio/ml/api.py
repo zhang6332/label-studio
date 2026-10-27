@@ -1,5 +1,5 @@
-"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license.
-"""
+"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license."""
+
 import logging
 
 from core.feature_flags import flag_set
@@ -10,7 +10,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from ml.models import MLBackend
-from ml.serializers import MLBackendSerializer, MLInteractiveAnnotatingRequest
+from ml.serializers import (
+    MLBackendRequestSerializer,
+    MLBackendSerializer,
+    MLBackendTrainRequestSerializer,
+    MLInteractiveAnnotatingRequest,
+)
 from projects.models import Project, Task
 from rest_framework import generics, status
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -18,54 +23,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 logger = logging.getLogger(__name__)
-
-_ml_backend_schema = {
-    'type': 'object',
-    'properties': {
-        'url': {
-            'type': 'string',
-            'description': 'ML backend URL',
-        },
-        'project': {
-            'type': 'integer',
-            'description': 'Project ID',
-        },
-        'is_interactive': {
-            'type': 'boolean',
-            'description': 'Is interactive',
-        },
-        'title': {
-            'type': 'string',
-            'description': 'Title',
-        },
-        'description': {
-            'type': 'string',
-            'description': 'Description',
-        },
-        'auth_method': {
-            'type': 'string',
-            'description': 'Auth method',
-            'enum': ['NONE', 'BASIC_AUTH'],
-        },
-        'basic_auth_user': {
-            'type': 'string',
-            'description': 'Basic auth user',
-        },
-        'basic_auth_pass': {
-            'type': 'string',
-            'description': 'Basic auth password',
-        },
-        'extra_params': {
-            'type': 'object',
-            'description': 'Extra parameters',
-        },
-        'timeout': {
-            'type': 'integer',
-            'description': 'Response model timeout',
-        },
-    },
-    'required': [],
-}
 
 
 @method_decorator(
@@ -79,12 +36,8 @@ _ml_backend_schema = {
     ```bash
     curl -X POST -H 'Content-type: application/json' {host}/api/ml -H 'Authorization: Token abc123'\\
     --data '{{"url": "http://localhost:9090", "project": {{project_id}}}}' 
-    """.format(
-            host=(settings.HOSTNAME or 'https://localhost:8080')
-        ),
-        request={
-            'application/json': _ml_backend_schema,
-        },
+    """.format(host=(settings.HOSTNAME or 'https://localhost:8080')),
+        request=MLBackendRequestSerializer,
         extensions={
             'x-fern-sdk-group-name': 'ml',
             'x-fern-sdk-method-name': 'create',
@@ -102,9 +55,7 @@ _ml_backend_schema = {
     Use the following cURL command:
     ```bash
     curl {host}/api/ml?project={{project_id}} -H 'Authorization: Token abc123'
-    """.format(
-            host=(settings.HOSTNAME or 'https://localhost:8080')
-        ),
+    """.format(host=(settings.HOSTNAME or 'https://localhost:8080')),
         parameters=[
             OpenApiParameter(name='project', type=OpenApiTypes.INT, location='query', description='Project ID'),
         ],
@@ -126,6 +77,9 @@ class MLBackendListAPI(generics.ListCreateAPIView):
     filterset_fields = ['is_interactive']
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return MLBackend.objects.none()
+
         project_pk = self.request.query_params.get('project')
         project = generics.get_object_or_404(Project, pk=project_pk)
 
@@ -134,6 +88,17 @@ class MLBackendListAPI(generics.ListCreateAPIView):
         ml_backends = project.update_ml_backends_state()
 
         return ml_backends
+
+    def create(self, request, *args, **kwargs):
+        # MLBackendSerializer.validate() calls setup() on the submitted URL, handing it the
+        # project creator's API token, so authorize the target project before that runs.
+        try:
+            project = Project.objects.filter(pk=request.data.get('project')).first()
+        except (AttributeError, TypeError, ValueError):
+            project = None  # malformed payload: let the serializer reject it
+        if project is not None:
+            self.check_object_permissions(request, project)
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         ml_backend = serializer.save()
@@ -159,12 +124,8 @@ class MLBackendListAPI(generics.ListCreateAPIView):
     ```bash
     curl -X PATCH -H 'Content-type: application/json' {host}/api/ml/{{ml_backend_ID}} -H 'Authorization: Token abc123'\\
     --data '{{"url": "http://localhost:9091"}}' 
-    """.format(
-            host=(settings.HOSTNAME or 'https://localhost:8080')
-        ),
-        request={
-            'application/json': _ml_backend_schema,
-        },
+    """.format(host=(settings.HOSTNAME or 'https://localhost:8080')),
+        request=MLBackendRequestSerializer,
         extensions={
             'x-fern-sdk-group-name': 'ml',
             'x-fern-sdk-method-name': 'update',
@@ -182,9 +143,7 @@ class MLBackendListAPI(generics.ListCreateAPIView):
     following cURL command:
     ```bash
     curl {host}/api/ml/{{ml_backend_ID}} -H 'Authorization: Token abc123'
-    """.format(
-            host=(settings.HOSTNAME or 'https://localhost:8080')
-        ),
+    """.format(host=(settings.HOSTNAME or 'https://localhost:8080')),
         request=None,
         extensions={
             'x-fern-sdk-group-name': 'ml',
@@ -203,9 +162,7 @@ class MLBackendListAPI(generics.ListCreateAPIView):
     following cURL command:
     ```bash
     curl -X DELETE {host}/api/ml/{{ml_backend_ID}} -H 'Authorization: Token abc123'
-    """.format(
-            host=(settings.HOSTNAME or 'https://localhost:8080')
-        ),
+    """.format(host=(settings.HOSTNAME or 'https://localhost:8080')),
         request=None,
         extensions={
             'x-fern-sdk-group-name': 'ml',
@@ -240,7 +197,7 @@ class MLBackendDetailAPI(generics.RetrieveUpdateDestroyAPIView):
         After you add an ML backend, call this API with the ML backend ID to start training with 
         already-labeled tasks. 
         
-        Get the ML backend ID by [listing the ML backends for a project](https://labelstud.io/api/#operation/api_ml_list).
+        Get the ML backend ID by [listing the ML backends for a project](api:GET/api/ml/).
         """,
         parameters=[
             OpenApiParameter(
@@ -250,17 +207,7 @@ class MLBackendDetailAPI(generics.RetrieveUpdateDestroyAPIView):
                 description='A unique integer value identifying this ML backend.',
             ),
         ],
-        request={
-            'application/json': {
-                'type': 'object',
-                'properties': {
-                    'use_ground_truth': {
-                        'type': 'boolean',
-                        'description': 'Whether to include ground truth annotations in training',
-                    },
-                },
-            },
-        },
+        request=MLBackendTrainRequestSerializer,
         responses={
             200: OpenApiResponse(description='Training has successfully started.'),
             500: OpenApiResponse(
@@ -280,7 +227,6 @@ class MLBackendDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     ),
 )
 class MLBackendTrainAPI(APIView):
-
     permission_required = all_permissions.projects_change
 
     def post(self, request, *args, **kwargs):

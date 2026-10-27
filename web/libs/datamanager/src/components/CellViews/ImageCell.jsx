@@ -22,7 +22,8 @@ export const ImageCell = (column) => {
       {...imgDefaultProps}
       key={imgSrc}
       src={imgSrc}
-      alt={t("Data")}
+      alt="Data"
+      loading="lazy"
       style={{
         maxHeight: "100%",
         maxWidth: "100px",

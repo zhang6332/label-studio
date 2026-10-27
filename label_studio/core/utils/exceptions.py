@@ -1,5 +1,5 @@
-"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license.
-"""
+"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license."""
+
 from rest_framework import status
 from rest_framework.exceptions import APIException
 
@@ -18,8 +18,10 @@ class LabelStudioDatabaseException(LabelStudioAPIException):
 
 
 class LabelStudioDatabaseLockedException(LabelStudioAPIException):
-    default_detail = "Sqlite <a href='https://docs.djangoproject.com/en/3.1/ref/databases/#database-is-locked-errors'>doesn't operate well</a> on multiple transactions. \
+    default_detail = (
+        "Sqlite <a href='https://docs.djangoproject.com/en/3.1/ref/databases/#database-is-locked-errors'>doesn't operate well</a> on multiple transactions. \
     Please be patient and try update your pages, or ping us on Slack to  get more about production-ready db"
+    )
 
 
 class ProjectExistException(LabelStudioAPIException):
@@ -27,9 +29,12 @@ class ProjectExistException(LabelStudioAPIException):
     default_detail = 'Project with the same title already exists'
 
 
-class InvalidUploadUrlError(LabelStudioAPIException):
+class SsrfBlockedUrlError(LabelStudioAPIException):
+    """Raised when a URL is rejected by SSRF checks (scheme, host resolution, or reserved IP ranges)."""
+
     default_detail = (
-        'The provided URL was not valid. URLs must begin with http:// or https://, and cannot be local IPs.'
+        'The provided URL was not allowed. URLs must use http:// or https://, and must not resolve to '
+        'local or private network addresses when SSRF protection applies.'
     )
     status_code = status.HTTP_403_FORBIDDEN
 

@@ -15,6 +15,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from core import views
 from core.utils.static_serve import serve
 from django.conf import settings
@@ -55,10 +56,6 @@ _inner_patterns = [
             'show_indexes': True,
             'manifest_asset_prefix': 'react-app',
         },
-    ),
-    re_path(
-        r'^static/fonts/roboto/roboto.css$',
-        views.static_file_with_host_resolver('fonts/roboto/roboto.css', content_type='text/css'),
     ),
     re_path(r'^static/(?P<path>.*)$', serve, kwargs={'document_root': settings.STATIC_ROOT, 'show_indexes': True}),
     re_path(r'^', include('organizations.urls')),

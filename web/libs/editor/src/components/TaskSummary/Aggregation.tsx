@@ -1,6 +1,7 @@
 import { t } from "@humansignal/core";
 import { useLayoutEffect, useRef, useState } from "react";
-import { cnm, IconChevronDown, Skeleton } from "@humansignal/ui";
+import { cnm, Skeleton } from "@humansignal/ui";
+import { IconChevronDown } from "@humansignal/icons";
 import type { Header } from "@tanstack/react-table";
 import { useQuery } from "@tanstack/react-query";
 import type { RawResult } from "../../stores/types";
@@ -9,10 +10,12 @@ import type { AnnotationSummary, ControlTag } from "./types";
 import { getLabelCounts } from "./utils";
 import { isActive, FF_FIT_720_LAZY_LOAD_ANNOTATIONS } from "@humansignal/core/lib/utils/feature-flags";
 
-import styles from "./TaskSummary.module.scss";
+import styles from "./TaskSummary.module.css";
 
-type DistributionData = {
+export type DistributionData = {
   total_annotations: number;
+  /** Overall task agreement in percent (0–100), when the backend provides it (e.g. precomputed_agreement). */
+  agreement?: number | null;
   distributions: Record<
     string,
     {
@@ -24,12 +27,18 @@ type DistributionData = {
   >;
 };
 
-const fetchDistribution = async (taskId: number | string): Promise<DistributionData> => {
+/** Shared with Task Summary headline so React Query dedupes with the distribution row. */
+export async function fetchTaskAgreementDistribution(taskId: number | string): Promise<DistributionData> {
   const response = await fetch(`/api/tasks/${taskId}/agreement/`);
   if (!response.ok) {
     throw new Error("Failed to load distribution");
   }
   return response.json();
+}
+
+/** Wrapper to prevent caching lexical scopes in React Query */
+const fetchTaskAgreement = async ({ queryKey }: any): Promise<DistributionData> => {
+  return fetchTaskAgreementDistribution(queryKey[1] as string | number);
 };
 
 const resultValue = (result: RawResult) => {
@@ -283,11 +292,14 @@ export const AggregationTableRow = ({
   headers,
   controls,
   annotations,
+  aggregationContentKey,
   taskId,
 }: {
   headers: Header<AnnotationSummary, unknown>[];
   controls: ControlTag[];
   annotations: AnnotationSummary[];
+  /** Content signature from parent — avoids layout effect on every new `annotations` array reference. */
+  aggregationContentKey: string;
   taskId?: number | string;
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -299,27 +311,30 @@ export const AggregationTableRow = ({
 
   const {
     data: distributionData,
-    isLoading,
+    isFetching,
     error,
   } = useQuery({
     queryKey: ["task-agreement", taskId],
-    queryFn: () => fetchDistribution(taskId!),
+    queryFn: fetchTaskAgreement,
     enabled: useApiData && !!taskId,
     staleTime: 30000, // Consider data fresh for 30 seconds
-    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes (formerly cacheTime)
+    cacheTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
   });
 
   useLayoutEffect(() => {
     if (!rowRef.current) return;
 
     const tr = rowRef.current;
-    const hasOverflowingCells = [...tr.childNodes].some((td) => {
-      const node = td as HTMLElement;
-      return node.firstChild && (node.firstChild as HTMLElement).scrollHeight > tr.scrollHeight;
+    // Skip the first column: it switches between a plain label and a <button> when hasOverflow
+    // changes, which alters row height and can flip overflow on every layout → infinite updates.
+    const dataCells = [...tr.childNodes].slice(1) as HTMLElement[];
+    const hasOverflowingCells = dataCells.some((td) => {
+      const node = td.firstChild as HTMLElement | null;
+      return node && node.scrollHeight > tr.scrollHeight;
     });
 
-    setHasOverflow(hasOverflowingCells);
-  }, [annotations, controls, distributionData]);
+    setHasOverflow((prev) => (prev === hasOverflowingCells ? prev : hasOverflowingCells));
+  }, [aggregationContentKey, controls, distributionData, isFetching]);
 
   return (
     <tr ref={rowRef} className={cnm("relative z-2", styles["aggregation-row"])}>
@@ -347,11 +362,13 @@ export const AggregationTableRow = ({
                 <span className="font-semibold text-neutral-content">{t("Distribution")}</span>
               )}
               {/* Show total count from API */}
-              {useApiData && distributionData && (
+              {useApiData && isFetching ? (
+                <Skeleton className="h-3.5 w-36 rounded-small mt-0.5" />
+              ) : useApiData && distributionData ? (
                 <span className="text-xs text-neutral-content-subtle">
                   {distributionData.total_annotations} {t("annotations")}
                 </span>
-              )}
+              ) : null}
             </div>
           </td>
         ) : (
@@ -360,7 +377,7 @@ export const AggregationTableRow = ({
             className="px-4 py-2.5 overflow-hidden border-y-2 border-neutral-border-bold"
             style={{ width: header.getSize() }}
           >
-            {useApiData && isLoading ? (
+            {useApiData && isFetching ? (
               <DistributionSkeleton />
             ) : useApiData && error ? (
               <span className="text-neutral-content-subtler text-xs italic">{t("Failed to load")}</span>

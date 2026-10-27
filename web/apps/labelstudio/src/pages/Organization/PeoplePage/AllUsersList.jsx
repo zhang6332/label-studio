@@ -7,7 +7,7 @@ import { CopyableTooltip } from "../../../components/CopyableTooltip/CopyableToo
 import { useAPI } from "../../../providers/ApiProvider";
 import { cn } from "../../../utils/bem";
 import { getLang, t } from "../../../i18n";
-import "./PeopleList.scss";
+import "./PeopleList.prefix.css";
 
 const ROLE_LABELS = {
   owner: t("Owner"),

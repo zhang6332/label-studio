@@ -1,25 +1,37 @@
-"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license.
-"""
+"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license."""
+
 import inspect
 import logging
 import os
 import time
 
 from core.permissions import ViewClassPermission, all_permissions
+from core.utils.common import load_func
 from core.utils.io import read_yaml
 from django.conf import settings
 from drf_spectacular.utils import extend_schema
 from io_storages.serializers import ExportStorageSerializer, ImportStorageSerializer
 from projects.models import Project
 from rest_framework import generics, status
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
 logger = logging.getLogger(__name__)
 
 
-class ImportStorageListAPI(generics.ListCreateAPIView):
+class StorageCreateMixin:
+    def create(self, request, *args, **kwargs):
+        # serializer validation copies credentials from the storage passed in `id`
+        storage_id = request.data.get('id')
+        if storage_id:
+            storage = generics.get_object_or_404(self.serializer_class.Meta.model.objects.all(), pk=storage_id)
+            if not storage.has_permission(request.user):
+                raise PermissionDenied()
+        return super().create(request, *args, **kwargs)
+
+
+class ImportStorageListAPI(StorageCreateMixin, generics.ListCreateAPIView):
     permission_required = ViewClassPermission(
         GET=all_permissions.storages_view,
         POST=all_permissions.storages_change,
@@ -42,6 +54,12 @@ class ImportStorageListAPI(generics.ListCreateAPIView):
         StorageClass.ensure_storage_statuses(storages)
         return storages
 
+    def perform_create(self, serializer):
+        project = serializer.validated_data.get('project')
+        if project is not None and not project.has_permission(self.request.user):
+            raise PermissionDenied('You do not have permission to create storages for this project.')
+        super().perform_create(serializer)
+
 
 class ImportStorageDetailAPI(generics.RetrieveUpdateDestroyAPIView):
     """RUD storage by pk specified in URL"""
@@ -60,8 +78,7 @@ class ImportStorageDetailAPI(generics.RetrieveUpdateDestroyAPIView):
         return super(ImportStorageDetailAPI, self).put(request, *args, **kwargs)
 
 
-class ExportStorageListAPI(generics.ListCreateAPIView):
-
+class ExportStorageListAPI(StorageCreateMixin, generics.ListCreateAPIView):
     permission_required = ViewClassPermission(
         GET=all_permissions.storages_view,
         POST=all_permissions.storages_change,
@@ -84,6 +101,10 @@ class ExportStorageListAPI(generics.ListCreateAPIView):
         return storages
 
     def perform_create(self, serializer):
+        project = serializer.validated_data.get('project')
+        if project is not None and not project.has_permission(self.request.user):
+            raise PermissionDenied('You do not have permission to create storages for this project.')
+
         # double check: not export storages don't validate connection in serializer,
         # just make another explicit check here, note: in this create API we have credentials in request.data
         instance = serializer.Meta.model(**serializer.validated_data)
@@ -115,7 +136,6 @@ class ExportStorageDetailAPI(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ImportStorageSyncAPI(generics.GenericAPIView):
-
     permission_required = ViewClassPermission(
         POST=all_permissions.storages_sync,
     )
@@ -132,6 +152,11 @@ class ImportStorageSyncAPI(generics.GenericAPIView):
         if not storage.synchronizable:
             response_data = {'message': f'Storage {str(storage.id)} is not synchronizable'}
             return Response(status=status.HTTP_400_BAD_REQUEST, data=response_data)
+        sync_guard = load_func(getattr(settings, 'IMPORT_STORAGE_SYNC_GUARD', None))
+        if sync_guard:
+            error = sync_guard(storage)
+            if error:
+                return Response(status=status.HTTP_409_CONFLICT, data={'message': error})
         storage.validate_connection()
         storage.sync()
         storage.refresh_from_db()
@@ -139,7 +164,6 @@ class ImportStorageSyncAPI(generics.GenericAPIView):
 
 
 class ExportStorageSyncAPI(generics.GenericAPIView):
-
     permission_required = ViewClassPermission(
         POST=all_permissions.storages_sync,
     )
@@ -163,7 +187,6 @@ class ExportStorageSyncAPI(generics.GenericAPIView):
 
 
 class StorageValidateAPI(generics.CreateAPIView):
-
     permission_required = all_permissions.storages_change
     parser_classes = (JSONParser, FormParser, MultiPartParser)
 
@@ -176,7 +199,6 @@ class StorageValidateAPI(generics.CreateAPIView):
 
 @extend_schema(exclude=True)
 class ImportStorageListFilesAPI(generics.CreateAPIView):
-
     permission_required = all_permissions.storages_change
     parser_classes = (JSONParser, FormParser, MultiPartParser)
     serializer_class = None  # Default serializer
@@ -218,7 +240,6 @@ class ImportStorageListFilesAPI(generics.CreateAPIView):
 
 @extend_schema(exclude=True)
 class StorageFormLayoutAPI(generics.RetrieveAPIView):
-
     permission_required = all_permissions.storages_change
     parser_classes = (JSONParser, FormParser, MultiPartParser)
     storage_type = None

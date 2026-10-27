@@ -1,12 +1,12 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react";
-import { useEffect, useState } from "react";
-import { Button, IconChevronLeft, IconChevronRight, Tooltip } from "@humansignal/ui";
+import { Button, Tooltip } from "@humansignal/ui";
+import { CaretLeftIcon, CaretRightIcon } from "@humansignal/icons";
 import { cn } from "../../utils/bem";
 import { FF_DEV_4174, FF_LEAP_1173, FF_TASK_COUNT_FIX, isFF } from "../../utils/feature-flags";
 import { guidGenerator } from "../../utils/unique";
 import { isDefined } from "../../utils/utilities";
-import "./CurrentTask.scss";
+import "./CurrentTask.prefix.css";
 import { reaction } from "mobx";
 
 // Manager roles that can force-skip unskippable tasks (OW=Owner, AD=Admin, MA=Manager)
@@ -123,7 +123,7 @@ export const CurrentTask = observer(({ store }) => {
                 disabled={!historyEnabled || !store.canGoPrevTask}
                 onClick={store.prevTask}
                 variant="neutral"
-                leading={<IconChevronLeft />}
+                leading={<CaretLeftIcon size={24} />}
                 size="small"
               />
             </Tooltip>
@@ -135,7 +135,7 @@ export const CurrentTask = observer(({ store }) => {
                 disabled={!canNavigateNext && !canPostponeTask}
                 onClick={canNavigateNext ? store.nextTask : store.postponeTask}
                 variant={!canNavigateNext && canPostponeTask ? "primary" : "neutral"}
-                leading={<IconChevronRight />}
+                leading={<CaretRightIcon size={24} />}
                 size="small"
               />
             </Tooltip>

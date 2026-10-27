@@ -1,0 +1,127 @@
+.people-list {
+  width: 100%;
+  font-size: 16px;
+
+  &__wrapper {
+    border-radius: 4px;
+    border: 1px solid var(--color-neutral-border);
+    background: var(--color-neutral-background);
+    overflow: hidden;
+  }
+
+  &__loading {
+    width: 100%;
+    display: flex;
+    min-height: 250px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  // Grid + subgrid layout: each column is min-width .. max-content, so columns
+  // shrink to their minimum when content is short and grow to fit long content.
+  // Header and every user row share the SAME column tracks via subgrid, so they
+  // stay perfectly aligned. When the summed column widths exceed the container,
+  // the table scrolls horizontally (overflow-x) instead of wrapping/squishing.
+  &__users {
+    display: grid;
+    grid-template-columns:
+      32px
+      minmax(100px, max-content)
+      minmax(150px, max-content)
+      minmax(90px, max-content)
+      minmax(90px, max-content)
+      minmax(120px, max-content)
+      minmax(120px, max-content);
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    text-align: left;
+  }
+
+  &__header {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    font-weight: 500;
+  }
+
+  // body doesn't need its own box — let user rows participate directly in the
+  // users grid so subgrid column sharing works across header + all rows.
+  &__body {
+    display: contents;
+  }
+
+  &__column,
+  &__field {
+    z-index: 2;
+    min-height: 48px;
+    padding: 0 10px;
+    border: none;
+    color: var(--color-neutral-content);
+    display: flex;
+    align-items: center;
+    // Column width is decided by the grid track above; content that exceeds it
+    // is truncated with an ellipsis (single line — no more row-height chaos).
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.avatar {
+      justify-content: center;
+    }
+
+    &.role {
+      text-transform: capitalize;
+    }
+
+    &.last-activity {
+      color: var(--color-neutral-content);
+    }
+  }
+
+  &__column {
+    font-weight: 500;
+    background: none;
+  }
+
+  &__user {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    cursor: pointer;
+
+    &:nth-child(odd):not(&_active) {
+      background-color: var(--color-neutral-emphasis-subtle);
+    }
+
+    &_active {
+      position: relative;
+      background-color: var(--color-primary-surface);
+
+      &::before,
+      &::after {
+        top: 0;
+        bottom: 0;
+        left: 0;
+        content: "";
+        display: block;
+        position: absolute;
+      }
+
+      &::after {
+        z-index: 1;
+        background-color: var(--color-neutral-surface);
+        width: calc(100% + 22px);
+        box-shadow:
+          inset 4px 0 0 var(--grape_500),
+          1px 0 0 1px var(--color-neutral-border) inset;
+      }
+
+      &::before {
+        z-index: 0;
+        height: 100%;
+        width: calc(100% + 22px);
+      }
+    }
+  }
+}

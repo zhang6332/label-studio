@@ -3,7 +3,7 @@ import React from "react";
 import { Spinner } from "../../../components";
 import { useAPI } from "../../../providers/ApiProvider";
 import { cn } from "../../../utils/bem";
-import "./Config.scss";
+import "./Config.prefix.css";
 import { IconInfo } from "@humansignal/icons";
 import { Button, EnterpriseBadge } from "@humansignal/ui";
 
@@ -39,7 +39,14 @@ const TemplatesInGroup = ({ templates, group, onSelectRecipe, isEdition }) => {
           >
             <img src={recipe.image} alt={""} />
             <div className="flex flex-col items-center w-full">
-              <h3 className="flex flex-1 justify-center text-center w-full">{t(recipe.title)}</h3>
+              <h3
+                className={cn(
+                  listClass.elem("template-title").toClassName(),
+                  "flex flex-1 justify-center text-center w-full",
+                )}
+              >
+                {recipe.title}
+              </h3>
               {isEnterpriseTemplate && isCommunityEdition && <EnterpriseBadge className="mb-base" />}
             </div>
           </li>

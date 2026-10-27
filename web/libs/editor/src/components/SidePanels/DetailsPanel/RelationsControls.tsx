@@ -2,7 +2,8 @@ import { Button } from "@humansignal/ui";
 import { observer } from "mobx-react";
 import { type FC, useCallback } from "react";
 import { cn } from "../../../utils/bem";
-import "./RelationsControls.scss";
+import { emitRelationVisibilityToggled } from "../../../utils/labelingTelemetry";
+import "./RelationsControls.prefix.css";
 import { IconOutlinerEyeClosed, IconOutlinerEyeOpened, IconSortDown, IconSortUp } from "@humansignal/icons";
 
 const RelationsControlsComponent: FC<any> = ({ relationStore }) => {
@@ -23,6 +24,11 @@ const ToggleRelationsVisibilityButton = observer<FC<ToggleRelationsVisibilityBut
     (e: any) => {
       e.preventDefault();
       e.stopPropagation();
+      const annotation = relationStore?.annotation;
+      emitRelationVisibilityToggled(annotation?.store, annotation, {
+        visible: Boolean(relationStore?.isAllHidden),
+        scope: "all",
+      });
       relationStore.toggleAllVisibility();
     },
     [relationStore],

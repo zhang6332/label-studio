@@ -65,6 +65,7 @@ export const s3Provider: ProviderConfig = {
       label: t("Session Token"),
       placeholder: t("Session token (optional)"),
       autoComplete: "new-password",
+      accessKey: true,
       schema: z.string().optional().default(""),
     },
     {

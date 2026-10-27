@@ -1,12 +1,16 @@
 import { forwardRef, useRef, useEffect, useState } from "react";
 import { Badge, type BadgeProps } from "../badge/badge";
 import { useBadgeOverflow } from "./useBadgeOverflow";
-import styles from "./badge-group.module.scss";
+import styles from "./badge-group.module.css";
 import clsx from "clsx";
 
 export interface BadgeGroupItem {
   id: string | number;
   label: string;
+  /** Overrides the group variant for this badge, e.g. one colour per status. */
+  variant?: BadgeProps["variant"];
+  /** Rendered before the label. */
+  icon?: React.ReactNode;
 }
 
 export interface BadgeGroupProps {
@@ -16,8 +20,8 @@ export interface BadgeGroupProps {
   variant?: BadgeProps["variant"];
   /** Badge shape (default: "square") */
   shape?: BadgeProps["shape"];
-  /** Badge style (default: "filled") */
-  style?: BadgeProps["style"];
+  /** Badge look (default: "filled") */
+  look?: BadgeProps["look"];
   /** Badge size (default: "medium") */
   size?: BadgeProps["size"];
   /** Additional CSS class for the container */
@@ -26,6 +30,10 @@ export interface BadgeGroupProps {
   "data-testid"?: string;
   /** Whether to truncate badges that overflow (default: true) */
   truncate?: boolean;
+  /** Called when truncation state changes (e.g. when the "+n" overflow badge appears or disappears). Use to show/hide a "Show All" button only when needed. */
+  onTruncationChange?: (isTruncated: boolean) => void;
+  /** When provided, each badge label is capped at this width with ellipsis truncation and a tooltip on hover. */
+  badgeMaxWidth?: number | string;
 }
 
 /**
@@ -52,17 +60,20 @@ export const BadgeGroup = forwardRef<HTMLDivElement, BadgeGroupProps>(
       items,
       variant = "primary",
       shape = "square",
-      style,
+      look,
       size,
       className,
       "data-testid": dataTestId,
       truncate = true,
+      onTruncationChange,
+      badgeMaxWidth,
     },
     ref,
   ) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const mergedRef = ref || containerRef;
     const [recalcTrigger, setRecalcTrigger] = useState(0);
+    const lastReportedTruncatedRef = useRef<boolean | null>(null);
 
     // Force recalculation when truncate changes to true (from false)
     useEffect(() => {
@@ -80,9 +91,22 @@ export const BadgeGroup = forwardRef<HTMLDivElement, BadgeGroupProps>(
       recalcTrigger,
     });
 
+    // Notify parent when truncation state changes (for "Show All" button visibility)
+    useEffect(() => {
+      if (!onTruncationChange || items.length === 0) return;
+      const isTruncated = truncate && visibleBadgeCount !== null && visibleBadgeCount < items.length;
+      if (lastReportedTruncatedRef.current !== isTruncated) {
+        lastReportedTruncatedRef.current = isTruncated;
+        onTruncationChange(isTruncated);
+      }
+    }, [truncate, items.length, visibleBadgeCount, onTruncationChange]);
+
     if (items.length === 0) {
       return null;
     }
+
+    // Per-item colours carry meaning, so the overflow count stays neutral instead of borrowing one.
+    const overflowVariant = items.some((item) => item.variant) ? "neutral" : variant;
 
     return (
       <div
@@ -96,10 +120,12 @@ export const BadgeGroup = forwardRef<HTMLDivElement, BadgeGroupProps>(
           return (
             <Badge
               key={item.id}
-              variant={variant}
+              variant={item.variant ?? variant}
+              icon={item.icon}
               shape={shape}
-              style={style}
+              look={look}
               size={size}
+              maxWidth={badgeMaxWidth}
               className={shouldHide ? "invisible absolute" : undefined}
             >
               {item.label}
@@ -108,7 +134,7 @@ export const BadgeGroup = forwardRef<HTMLDivElement, BadgeGroupProps>(
         })}
         {/* Show +n badge if truncate is enabled and there are hidden badges */}
         {truncate && visibleBadgeCount !== null && visibleBadgeCount < items.length && (
-          <Badge variant={variant} shape={shape} style={style} size={size} data-overflow-badge="true">
+          <Badge variant={overflowVariant} shape={shape} look={look} size={size} data-overflow-badge="true">
             +{items.length - visibleBadgeCount}
           </Badge>
         )}

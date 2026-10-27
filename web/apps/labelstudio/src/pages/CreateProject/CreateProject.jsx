@@ -10,7 +10,7 @@ import { HeidiTips } from "../../components/HeidiTips/HeidiTips";
 import { useAPI } from "../../providers/ApiProvider";
 import { cn } from "../../utils/bem";
 import { ConfigPage } from "./Config/Config";
-import "./CreateProject.scss";
+import "./CreateProject.prefix.css";
 import { ImportPage } from "./Import/Import";
 import { useImportPage } from "./Import/useImportPage";
 import { useDraftProject } from "./utils/useDraftProject";
@@ -62,7 +62,7 @@ const ProjectName = ({ name, setName, onSaveName, onSubmit, error, description, 
             {t("Workspace")}
             <EnterpriseBadge className="ml-tight" />
           </label>
-          <Select placeholder={t("Select an option")} disabled options={[]} triggerClassName="!flex-1" />
+          <Select placeholder="Select an option" disabled options={[]} />
           <Typography size="small" className="mt-tight mb-wider">
             {t("Simplify project management by organizing projects into workspaces.")}{" "}
             <a

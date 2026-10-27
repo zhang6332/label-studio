@@ -1,9 +1,10 @@
-"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license.
-"""
+"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license."""
+
 import json
 import logging
 import mimetypes
 import time
+import traceback
 from urllib.parse import unquote, urlparse
 
 from core.decorators import override_report_only_csp
@@ -18,10 +19,12 @@ from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from django.http import HttpResponse
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from label_studio_sdk.label_interface import LabelInterface
+from projects.import_health import mark_import_job_finished
 from projects.models import Project, ProjectImport, ProjectReimport
 from ranged_fileresponse import RangedFileResponse
 from rest_framework import generics, status
@@ -53,7 +56,15 @@ from .uploader import create_file_uploads, load_tasks
 
 logger = logging.getLogger(__name__)
 
+_ENQUEUE_FAIL_ERROR = 'Failed to enqueue background job. No tasks were committed from this job; safe to retry.'
+
 ProjectImportPermission = load_func(settings.PROJECT_IMPORT_PERMISSION)
+
+# Types a browser renders as a document (and would execute scripts from); mirrored
+# by the $uploaded_file_csp map in deploy/default.conf for the NGINX serving paths.
+SANDBOXED_UPLOAD_CONTENT_TYPES = frozenset(
+    ['text/html', 'application/xhtml+xml', 'image/svg+xml', 'text/xml', 'application/xml']
+)
 
 task_create_response_scheme = {
     201: OpenApiResponse(
@@ -240,9 +251,7 @@ task_create_response_scheme = {
             ```
 
             <br>
-        """.format(
-            host=(settings.HOSTNAME or 'https://localhost:8080')
-        ),
+        """.format(host=(settings.HOSTNAME or 'https://localhost:8080')),
         request=ImportApiSerializer(many=True),
         extensions={
             'x-fern-sdk-group-name': 'projects',
@@ -373,15 +382,15 @@ class ImportAPI(generics.CreateAPIView):
 
     @timeit
     def async_import(self, request, project, preannotated_from_fields, commit_to_project, return_task_ids):
-
         project_import = ProjectImport.objects.create(
             project=project,
             preannotated_from_fields=preannotated_from_fields,
             commit_to_project=commit_to_project,
             return_task_ids=return_task_ids,
+            updated_at=timezone.now(),
         )
 
-        if len(request.FILES):
+        if len(request.FILES) > 0:
             logger.debug(f'Import from files: {request.FILES}')
             file_upload_ids, could_be_tasks_list = create_file_uploads(request.user, project, request.FILES)
             project_import.file_upload_ids = file_upload_ids
@@ -393,6 +402,8 @@ class ImportAPI(generics.CreateAPIView):
             url = request.data.get('url')
             if not url:
                 raise ValidationError('"url" is not found in request data')
+            if len(url) > 2048:
+                raise ValidationError('"url" must be 2048 characters or fewer')
             project_import.url = url
             project_import.save(update_fields=['url'])
         # take one task from request DATA
@@ -409,15 +420,33 @@ class ImportAPI(generics.CreateAPIView):
         else:
             raise ValidationError('load_tasks: No data found in DATA or in FILES')
 
-        start_job_async_or_sync(
-            async_import_background,
-            project_import.id,
-            request.user.id,
-            queue_name='high',
-            on_failure=set_import_background_failure,
-            project_id=project.id,
-            organization_id=request.user.active_organization.id,
-        )
+        try:
+            job = start_job_async_or_sync(
+                async_import_background,
+                project_import.id,
+                request.user.id,
+                queue_name='high',
+                job_timeout=settings.RQ_LONG_JOB_TIMEOUT,
+                on_failure=set_import_background_failure,
+                project_id=project.id,
+                organization_id=request.user.active_organization.id,
+            )
+        except Exception:
+            # Enqueue failed after the CREATED row was committed — mark failed so it
+            # is not left as an orphan with no job_id. Do not wrap job_id save: if
+            # enqueue succeeded, a worker may already be running.
+            mark_import_job_finished(
+                project_import,
+                ProjectImport.Status.FAILED,
+                error=_ENQUEUE_FAIL_ERROR,
+                traceback_text=traceback.format_exc(),
+            )
+            raise
+
+        job_id = getattr(job, 'id', None)
+        if job_id:
+            project_import.job_id = str(job_id)
+            project_import.save(update_fields=['job_id'])
 
         response = {'import': project_import.id}
         return Response(response, status=status.HTTP_201_CREATED)
@@ -505,6 +534,15 @@ class ImportPredictionsAPI(generics.CreateAPIView):
         else:
             return self._create_legacy(project)
 
+    @staticmethod
+    def _validate_custom_interface_prediction(project, item, index):
+        custom_interface_validator = load_func(getattr(settings, 'CUSTOM_INTERFACE_PREDICTION_VALIDATOR', None))
+        if not custom_interface_validator:
+            return []
+
+        errors = custom_interface_validator(project, item.get('result', []))
+        return [f'Prediction {index}: {error}' for error in errors]
+
     def _create_memory_efficient(self, project):
         """Memory-efficient batch processing implementation"""
         # Configure batch processing settings
@@ -537,14 +575,21 @@ class ImportPredictionsAPI(generics.CreateAPIView):
 
             # Build predictions for this batch
             batch_predictions = []
-            for item in batch_items:
+            batch_validation_errors = []
+            for batch_offset, item in enumerate(batch_items):
                 item = sanitize_prediction_import_payload(item)
                 task_id = item.get('task')
+                prediction_index = batch_start + batch_offset
 
                 if task_id not in existing_task_ids:
                     raise ValidationError(
-                        f'{item} contains invalid "task" field: task ID {task_id} ' f'not found in project {project}'
+                        f'{item} contains invalid "task" field: task ID {task_id} not found in project {project}'
                     )
+
+                custom_interface_errors = self._validate_custom_interface_prediction(project, item, prediction_index)
+                if custom_interface_errors:
+                    batch_validation_errors.extend(custom_interface_errors)
+                    continue
 
                 batch_predictions.append(
                     Prediction(
@@ -557,12 +602,15 @@ class ImportPredictionsAPI(generics.CreateAPIView):
                 )
                 all_task_ids.add(task_id)
 
+            if batch_validation_errors:
+                raise ValidationError(batch_validation_errors)
+
             # Bulk create this batch with the configured batch size
             batch_created = Prediction.objects.bulk_create(batch_predictions, batch_size=settings.BATCH_SIZE)
             total_created += len(batch_created)
 
             logger.debug(
-                f'Processed batch {batch_start}-{batch_end-1}: created {len(batch_created)} predictions '
+                f'Processed batch {batch_start}-{batch_end - 1}: created {len(batch_created)} predictions '
                 f'(total so far: {total_created})'
             )
 
@@ -581,7 +629,10 @@ class ImportPredictionsAPI(generics.CreateAPIView):
             f'Importing {len(self.request.data)} predictions to project {project} with {len(tasks_ids)} tasks (legacy mode)'
         )
 
-        li = LabelInterface(project.label_config)
+        # Custom Interface projects normally keep the default <View></View>
+        # label_config and are validated below against output_schema instead.
+        should_validate_label_config = project.label_config_is_not_default
+        li = LabelInterface(project.label_config) if should_validate_label_config else None
 
         # Validate all predictions before creating any
         validation_errors = []
@@ -603,19 +654,24 @@ class ImportPredictionsAPI(generics.CreateAPIView):
                         f'from project {project} tasks'
                     )
 
-            # Validate prediction using LabelInterface only
-            try:
-                validation_errors_list = li.validate_prediction(item, return_errors=True)
+            if should_validate_label_config:
+                try:
+                    validation_errors_list = li.validate_prediction(item, return_errors=True)
 
-                # If prediction is invalid, add error to validation_errors list and continue to next prediction
-                if validation_errors_list:
-                    # Format errors for better readability
-                    for error in validation_errors_list:
-                        validation_errors.append(f'Prediction {i}: {error}')
+                    # If prediction is invalid, add error to validation_errors list and continue to next prediction
+                    if validation_errors_list:
+                        # Format errors for better readability
+                        for error in validation_errors_list:
+                            validation_errors.append(f'Prediction {i}: {error}')
+                        continue
+
+                except Exception as e:
+                    validation_errors.append(f'Prediction {i}: Error validating prediction - {extract_message(e)}')
                     continue
 
-            except Exception as e:
-                validation_errors.append(f'Prediction {i}: Error validating prediction - {extract_message(e)}')
+            custom_interface_errors = self._validate_custom_interface_prediction(project, item, i)
+            if custom_interface_errors:
+                validation_errors.extend(custom_interface_errors)
                 continue
 
             # If prediction is valid, add it to predictions list to be created
@@ -701,20 +757,37 @@ class ReImportAPI(ImportAPI):
         )
 
     def async_reimport(self, project, file_upload_ids, files_as_tasks_list, organization_id):
-
         project_reimport = ProjectReimport.objects.create(
-            project=project, file_upload_ids=file_upload_ids, files_as_tasks_list=files_as_tasks_list
+            project=project,
+            file_upload_ids=file_upload_ids,
+            files_as_tasks_list=files_as_tasks_list,
+            updated_at=timezone.now(),
         )
 
-        start_job_async_or_sync(
-            async_reimport_background,
-            project_reimport.id,
-            organization_id,
-            self.request.user,
-            queue_name='high',
-            on_failure=set_reimport_background_failure,
-            project_id=project.id,
-        )
+        try:
+            job = start_job_async_or_sync(
+                async_reimport_background,
+                project_reimport.id,
+                organization_id,
+                self.request.user,
+                queue_name='high',
+                job_timeout=settings.RQ_LONG_JOB_TIMEOUT,
+                on_failure=set_reimport_background_failure,
+                project_id=project.id,
+            )
+        except Exception:
+            mark_import_job_finished(
+                project_reimport,
+                ProjectReimport.Status.FAILED,
+                error=_ENQUEUE_FAIL_ERROR,
+                traceback_text=traceback.format_exc(),
+            )
+            raise
+
+        job_id = getattr(job, 'id', None)
+        if job_id:
+            project_reimport.job_id = str(job_id)
+            project_reimport.save(update_fields=['job_id'])
 
         response = {'reimport': project_reimport.id}
         return Response(response, status=status.HTTP_201_CREATED)
@@ -881,7 +954,12 @@ class FileUploadListAPI(generics.mixins.ListModelMixin, generics.mixins.DestroyM
 )
 class FileUploadAPI(generics.RetrieveUpdateDestroyAPIView):
     parser_classes = (JSONParser, MultiPartParser, FormParser)
-    permission_classes = (IsAuthenticated,)
+    permission_required = ViewClassPermission(
+        GET=all_permissions.projects_view,
+        PATCH=all_permissions.projects_change,
+        PUT=all_permissions.projects_change,
+        DELETE=all_permissions.projects_change,
+    )
     serializer_class = FileUploadSerializer
     queryset = FileUpload.objects.all()
 
@@ -999,6 +1077,17 @@ class DownloadStorageData(APIView):
         if file_obj is None:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
+        # When the request comes from the streamer service (validated by
+        # StreamerSecretMiddleware), hand off S3-backed uploads to the streamer:
+        # it streams bytes from the default/persistent bucket itself, with Range
+        # support and bounded concurrency. Permission checks above already ran,
+        # so RBAC is preserved. Non-S3 backends return None and fall through to
+        # the existing NGINX/Django path (the streamer relays that verbatim).
+        if getattr(request, 'is_streamer_delegation', False):
+            delegation = self.build_streamer_delegation(file_obj, filepath)
+            if delegation is not None:
+                return delegation
+
         # NGINX handling is the default for better performance
         if settings.USE_NGINX_FOR_UPLOADS:
             if isinstance(file_obj.storage, FileSystemStorage):
@@ -1030,4 +1119,52 @@ class DownloadStorageData(APIView):
             response = RangedFileResponse(request, file_obj.open(mode='rb'), content_type=content_type)
             response['Content-Disposition'] = f'inline; filename="{filepath}"'
             response['filename'] = filepath
+            # Served inline from the app origin, so an uploaded document would run its
+            # scripts with the viewer's session; sandbox only the types a browser
+            # renders as a document, to keep the PDF viewer working.
+            if content_type in SANDBOXED_UPLOAD_CONTENT_TYPES:
+                response['Content-Security-Policy'] = 'sandbox'
             return response
+
+    def build_streamer_delegation(self, file_obj, filepath):
+        """Build a JSON delegation payload for the Go streamer (S3 uploads only).
+
+        Returns a JsonResponse with ``X-Streamer-Action: delegate`` when the
+        file lives in an S3 (or S3-compatible, e.g. MinIO) default/persistent
+        bucket, so the streamer streams it itself with the pod's ambient AWS
+        identity. Returns None for any other backend (GCS, Azure, local
+        FileSystemStorage), so the caller falls back to the existing
+        NGINX/Django path — which the streamer relays verbatim.
+
+        The default bucket has no io_storages row, so there is no storage_id and
+        no DB credential lookup: storage_id is sent as 0, and region/endpoint are
+        read from the storage instance (the values django-storages resolved),
+        not a DB row the way import storages do. The key is normalized exactly
+        the way django-storages computes the S3 object key, matching what boto3
+        uploaded.
+        """
+        from django.http import JsonResponse
+        from storages.backends.s3boto3 import S3Boto3Storage
+
+        storage = file_obj.storage
+        if not isinstance(storage, S3Boto3Storage):
+            return None
+
+        # Canonical S3 object key — same normalization django-storages uses on
+        # write, so the streamer fetches the exact object that was uploaded.
+        key = storage._normalize_name(storage._clean_name(file_obj.name))
+
+        response = JsonResponse(
+            {
+                'action': 'proxy',
+                'storage_type': 's3_default',
+                'storage_id': 0,
+                'bucket': storage.bucket_name,
+                'key': key,
+                'region': storage.region_name or '',
+                'endpoint': storage.endpoint_url or '',
+                'content_type': mimetypes.guess_type(filepath)[0] or 'application/octet-stream',
+            }
+        )
+        response['X-Streamer-Action'] = 'delegate'
+        return response

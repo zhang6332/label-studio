@@ -1,7 +1,7 @@
 import { t } from "@humansignal/core";
 import { observer } from "mobx-react";
 import type { MSTTimelineRegion } from "../../Timeline/Types";
-import styles from "./TimelineRegionEditor.module.scss";
+import styles from "./TimelineRegionEditor.module.css";
 
 export const TimelineRegionEditor = observer(({ region }: { region: MSTTimelineRegion }) => {
   const { start, end } = region.ranges[0];

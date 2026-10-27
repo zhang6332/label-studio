@@ -1,7 +1,7 @@
 import React from "react";
 import * as d3 from "d3";
 import { inject, observer } from "mobx-react";
-import { getEnv, getRoot, getType, types, isAlive } from "mobx-state-tree";
+import { getEnv, getRoot, getType, types, isAlive, flow } from "mobx-state-tree";
 import { throttle } from "@humansignal/core/lib/utils/lodash-replacements";
 import { Spin } from "antd";
 
@@ -29,7 +29,6 @@ import { Hotkey } from "../../core/Hotkey";
 import "./TimeSeries/MultiChannel";
 import "./TimeSeries/Channel";
 import { getChannelColor } from "./TimeSeries/palette";
-import { ff } from "@humansignal/core";
 /**
  * The `TimeSeries` tag can be used to label time series data. Read more about Time Series Labeling on [the time series template page](../templates/time_series.html).
  *
@@ -103,7 +102,14 @@ const Model = types
     children: Types.unionArray(["channel", "timeseriesoverview", "view", "hypertext", "multichannel"]),
 
     width: 840,
-    margin: types.frozen({ top: 20, right: 20, bottom: 30, left: 50, min: 10, max: 10 }),
+    margin: types.frozen({
+      top: 20,
+      right: 20,
+      bottom: 30,
+      left: 50,
+      min: 10,
+      max: 10,
+    }),
     brushRange: types.array(types.number),
 
     // _value: types.optional(types.string, ""),
@@ -122,6 +128,7 @@ const Model = types
     playStartPosition: null,
     animationFrameId: null,
     playbackSpeed: 1,
+    initialRange: null,
     // Cursor position in native units (same units as keysRange). Used for visual playhead.
     cursorTime: null,
     // Suppress sync while user drags overview
@@ -461,6 +468,10 @@ const Model = types
       return [keys[0], keys[keys.length - 1]];
     },
 
+    get persistentValuesKey() {
+      return `labelStudio:storedValues:timeseries:${self.name}`;
+    },
+
     get persistentValues() {
       return {
         brushRange: self.brushRange,
@@ -664,10 +675,14 @@ const Model = types
     },
 
     updateTR(tr, scale = 1) {
-      if (tr === null) return;
+      if (!isAlive(self) || tr === null || tr.length !== 2) return;
 
       self.initialRange = tr;
-      self.brushRange = tr;
+      if (self.brushRange) {
+        self.brushRange.replace(tr);
+      } else {
+        self.brushRange = tr;
+      }
       self.setZoomedRange(tr[1] - tr[0]);
       self.setScale(scale);
       self.updateView();
@@ -685,9 +700,14 @@ const Model = types
       const [control, ...rest] = states;
       const labels = { [control.valueType]: control.selectedValues() };
 
-      const r = ff.isActive(ff.FF_MULTIPLE_LABELS_REGIONS)
-        ? self.annotation.createResult({ start, end, instant: start === end }, labels, control, self, false, rest)
-        : self.annotation.createResult({ start, end, instant: start === end }, labels, control, self, false);
+      const r = self.annotation.createResult(
+        { start, end, instant: start === end },
+        labels,
+        control,
+        self,
+        false,
+        rest,
+      );
 
       return r;
     },
@@ -708,7 +728,7 @@ const Model = types
       needUpdate && self.updateView();
     },
 
-    async preloadValue(store) {
+    preloadValue: flow(function* (store) {
       const dataObj = store.task.dataObj;
 
       if (self.valuetype !== "url") {
@@ -717,6 +737,7 @@ const Model = types
         } else {
           self.setData(dataObj);
         }
+
         return;
       }
 
@@ -739,7 +760,7 @@ const Model = types
       let res;
 
       try {
-        res = await fetch(url);
+        res = yield fetch(url);
         if (!res.ok) {
           if (res.status === 400) {
             store.annotationStore.addErrors([
@@ -754,13 +775,13 @@ const Model = types
           }
           throw new Error(`${res.status} ${res.statusText}`);
         }
-        text = await res.text();
+        text = yield res.text();
       } catch (e) {
         let error = e;
 
         if (!res) {
           try {
-            res = await fetch(url, { mode: "no-cors" });
+            res = yield fetch(url, { mode: "no-cors" });
             if (!res.ok && res.status === 0) cors = true;
           } catch (e) {
             error = e;
@@ -780,7 +801,14 @@ const Model = types
           let separator = self.sep;
 
           if (separator?.length > 1) {
-            const aliases = { tab: "\t", "\\t": "\t", space: " ", auto: "auto", comma: ",", dot: "." };
+            const aliases = {
+              tab: "\t",
+              "\\t": "\t",
+              space: " ",
+              auto: "auto",
+              comma: ",",
+              dot: ".",
+            };
 
             separator = aliases[separator] || separator[0];
           }
@@ -789,27 +817,31 @@ const Model = types
         if (!isAlive(self)) return;
         self.setData(data);
         self.setColumnNames(headers);
-        self.updateValue(store);
+        yield self.updateValue(store);
       } catch (e) {
         const message = `Problems with parsing CSV: ${e?.message || e}<br>URL: ${url}`;
 
         store.annotationStore.addErrors([errorBuilder.generalError(message)]);
       }
-    },
+    }),
 
-    async updateValue(store) {
+    updateValue: flow(function* (store) {
       let data;
 
       try {
         if (!self.dataObj) {
-          await self.preloadValue(store);
+          yield self.preloadValue(store);
         }
+        if (!isAlive(self)) return;
         data = self.dataObj;
       } catch (e) {
+        if (!isAlive(self)) return;
         store.annotationStore.addErrors([errorBuilder.generalError(e.message)]);
         return;
       }
       if (!data) return;
+      if (!isAlive(self)) return;
+
       const times = data[self.keyColumn];
 
       if (!times) {
@@ -821,13 +853,15 @@ const Model = types
         store.annotationStore.addErrors([errorBuilder.generalError(message)]);
         return;
       }
+
       // if current view already restored by PersistentState
       if (self.brushRange?.length) return;
+      if (!isAlive(self)) return;
 
       // Calculate initial brush range ensuring minimum points are visible
       const boundaries = self.calculateInitialBrushRange(times);
       self.updateTR(boundaries);
-    },
+    }),
 
     onHotKey() {},
 
@@ -1086,6 +1120,7 @@ const Model = types
 
     emitSeekSync() {
       if (!isAlive(self)) return;
+      if (!self.syncManager) return; // Wait until initialized
       if (self.suppressSync) return;
 
       const centerTime = self.centerTime; // centerTime is in NATIVE units (ms if isDate, else seconds/indices)
@@ -1505,12 +1540,13 @@ const HtxTimeSeriesViewRTS = ({ item }) => {
   }, [item, item?.brushRange?.length]);
 
   // the last thing updated during initialisation
-  if (!item?.brushRange?.length || !item.data)
+  if (!item?.brushRange?.length || !item.data) {
     return (
       <div style={{ textAlign: "center", height: 100 }}>
         <Spin size="large" delay={300} />
       </div>
     );
+  }
 
   return (
     <div ref={ref} className="htx-timeseries">

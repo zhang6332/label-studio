@@ -1,5 +1,5 @@
-"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license.
-"""
+"""This file and its contents are licensed under the Apache License 2.0. Please see the included NOTICE for copyright information and LICENSE for a copy of the license."""
+
 import getpass
 import io
 import json
@@ -447,7 +447,7 @@ def main():
         key_file = input_args.key_file or config.get('key')
         if cert_file or key_file:
             logger.error(
-                "Label Studio doesn't support SSL web server with cert and key.\n" 'Use nginx or other servers for it.'
+                "Label Studio doesn't support SSL web server with cert and key.\nUse nginx or other servers for it."
             )
             return
 

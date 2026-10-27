@@ -1,26 +1,20 @@
-import { t } from "../../../i18n";
+import { Button, EmptyState, SimpleCard, Spinner, Tooltip, Typography } from "@humansignal/ui";
 import {
-  Button,
-  EmptyState,
   IconCloudCustom,
   IconCloudProviderAzure,
   IconCloudProviderGCS,
   IconCloudProviderRedis,
   IconCloudProviderS3,
   IconExternal,
-  SimpleCard,
-  Spinner,
-  Tooltip,
-  Typography,
-} from "@humansignal/ui";
+} from "@humansignal/icons";
 import { useEffect, useRef } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { useUpdatePageTitle, createTitleFromSegments } from "@humansignal/core";
+import { t, useUpdatePageTitle, createTitleFromSegments } from "@humansignal/core";
 import { useProject } from "../../../providers/ProjectProvider";
 import { cn } from "../../../utils/bem";
 import { StorageSet } from "./StorageSet";
 import { useStorageCard } from "./hooks/useStorageCard";
-import "./StorageSettings.scss";
+import "./StorageSettings.prefix.css";
 
 export const StorageSettings = () => {
   const { project } = useProject();

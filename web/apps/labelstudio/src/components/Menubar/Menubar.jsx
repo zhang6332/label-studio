@@ -27,12 +27,10 @@ import { Dropdown } from "@humansignal/ui";
 import { Hamburger } from "../Hamburger/Hamburger";
 import { Menu } from "../Menu/Menu";
 import { VersionNotifier, VersionProvider } from "../VersionNotifier/VersionNotifier";
-import "./Menubar.scss";
-import "./MenuContent.scss";
-import "./MenuSidebar.scss";
-import { FF_HOMEPAGE } from "../../utils/feature-flags";
+import "./Menubar.prefix.css";
+import "./MenuContent.prefix.css";
+import "./MenuSidebar.prefix.css";
 import { pages } from "@humansignal/app-common";
-import { isFF } from "../../utils/feature-flags";
 import { ff } from "@humansignal/core";
 import { openHotkeyHelp } from "@humansignal/app-common/pages/AccountSettings/sections/Hotkeys/Help";
 
@@ -62,7 +60,7 @@ export const Menubar = ({ enabled, defaultOpened, defaultPinned, children, onSid
   const { user, isLoading } = useAuth();
   const location = useFixedLocation();
 
-  const config = useConfig();
+  const _config = useConfig();
   const [sidebarOpened, setSidebarOpened] = useState(defaultOpened ?? false);
   const [sidebarPinned, setSidebarPinned] = useState(defaultPinned ?? false);
   const [PageContext, setPageContext] = useState({

@@ -14,9 +14,36 @@ export const DEFAULT_HOTKEYS = [
     id: 200,
     section: "annotation",
     element: "annotation:skip",
-    label: t("Skip Task"),
+    label: t("Skip Task / Reject (default)"),
     key: "ctrl+space",
-    description: t("Skip the current task"),
+    description: t("Skip the current task, or reject with the project's default option"),
+    active: true,
+  },
+  {
+    id: 210,
+    section: "annotation",
+    element: "annotation:reject-remove",
+    label: t("Reject: No Rework"),
+    key: "ctrl+shift+1",
+    description: t("Reject without sending for rework"),
+    active: true,
+  },
+  {
+    id: 220,
+    section: "annotation",
+    element: "annotation:reject-requeue",
+    label: t("Reject: Return to Same Annotator"),
+    key: "ctrl+shift+2",
+    description: t("Reject and send back to the original annotator for rework"),
+    active: true,
+  },
+  {
+    id: 230,
+    section: "annotation",
+    element: "annotation:reject-redistribute",
+    label: t("Reject: Pass to Another Annotator"),
+    key: "ctrl+shift+3",
+    description: t("Reject and send to a different annotator"),
     active: true,
   },
   {
@@ -35,6 +62,15 @@ export const DEFAULT_HOTKEYS = [
     label: t("Redo"),
     key: "ctrl+shift+z",
     description: t("Redo previously undone action"),
+    active: true,
+  },
+  {
+    id: 450,
+    section: "annotation",
+    element: "annotation:toggle-auto-annotation",
+    label: "Toggle Auto-Annotation",
+    key: "shift+alt+a",
+    description: "Turn Auto-Annotation on or off",
     active: true,
   },
 
@@ -239,6 +275,24 @@ export const DEFAULT_HOTKEYS = [
     label: t("Step Forward"),
     key: "alt+d",
     description: t("Step forward one frame"),
+    active: true,
+  },
+  {
+    id: 2710,
+    section: "audio",
+    element: "audio:zoom-in",
+    label: "Zoom In",
+    key: "=",
+    description: "Increase waveform zoom level",
+    active: true,
+  },
+  {
+    id: 2720,
+    section: "audio",
+    element: "audio:zoom-out",
+    label: "Zoom Out",
+    key: "-",
+    description: "Decrease waveform zoom level",
     active: true,
   },
 
@@ -710,6 +764,65 @@ export const HOTKEY_SECTIONS = [
     description: t("Shortcuts for navigating phrases and regions in paragraph/dialogue view"),
   },
 ];
+
+let dynamicSections = [];
+let dynamicHotkeys = [];
+const dynamicSubscribers = new Set();
+
+let dynamicVersion = 0;
+
+const notifyDynamicSubscribers = () => {
+  dynamicVersion += 1;
+  for (const sub of dynamicSubscribers) {
+    try {
+      sub();
+    } catch (err) {
+      console.error("Error in dynamic hotkey subscriber:", err);
+    }
+  }
+};
+
+export const registerDynamicHotkeySection = (section, hotkeys = []) => {
+  if (!section || !section.id) return;
+  const existingIndex = dynamicSections.findIndex((s) => s.id === section.id);
+  if (existingIndex >= 0) {
+    dynamicSections[existingIndex] = section;
+  } else {
+    dynamicSections.push(section);
+  }
+
+  // Remove existing hotkeys for this section before re-adding
+  dynamicHotkeys = dynamicHotkeys.filter((h) => h.section !== section.id);
+  for (const h of hotkeys) {
+    dynamicHotkeys.push(h);
+  }
+  notifyDynamicSubscribers();
+};
+
+export const unregisterDynamicHotkeySection = (sectionId) => {
+  if (!sectionId) return;
+  dynamicSections = dynamicSections.filter((s) => s.id !== sectionId);
+  dynamicHotkeys = dynamicHotkeys.filter((h) => h.section !== sectionId);
+  notifyDynamicSubscribers();
+};
+
+export const clearDynamicHotkeySections = () => {
+  if (dynamicSections.length === 0 && dynamicHotkeys.length === 0) return;
+  dynamicSections = [];
+  dynamicHotkeys = [];
+  notifyDynamicSubscribers();
+};
+
+export const subscribeDynamicHotkeys = (listener) => {
+  dynamicSubscribers.add(listener);
+  return () => {
+    dynamicSubscribers.delete(listener);
+  };
+};
+
+export const getDynamicVersion = () => dynamicVersion;
+export const getDynamicSections = () => [...dynamicSections];
+export const getDynamicHotkeys = () => [...dynamicHotkeys];
 
 /**
  * URL patterns mapped to their corresponding hotkey sections

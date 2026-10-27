@@ -10,8 +10,8 @@ import { useAPI } from "../../../providers/ApiProvider";
 import { cn } from "../../../utils/bem";
 import { unique } from "../../../utils/helpers";
 import { sampleDatasetAtom } from "../utils/atoms";
-import "./Import.scss";
-import { Button, CodeBlock, SimpleCard, Spinner, Tooltip, Typography, Badge } from "@humansignal/ui";
+import "./Import.prefix.css";
+import { Badge, Button, CodeBlock, Message, SimpleCard, Spinner, Tooltip, Typography } from "@humansignal/ui";
 import truncate from "truncate-middle";
 import samples from "./samples.json";
 import { importFiles } from "./utils";
@@ -633,9 +633,9 @@ export const ImportPage = ({
                         <Spinner className="h-6 w-6" />
                       </div>
                     ) : sampleConfig.isError ? (
-                      <div className="w-[calc(100%-24px)] text-lg text-negative-content bg-negative-background border m-3 rounded-md border-negative-border-subtle p-4">
-                        {t("Something went wrong, the sample data could not be loaded.")}
-                      </div>
+                      <Message variant="negative" className="m-tight">
+                        Something went wrong, the sample data could not be loaded.
+                      </Message>
                     ) : null}
                   </SimpleCard>
                 ) : (

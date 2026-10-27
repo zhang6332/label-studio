@@ -1,7 +1,7 @@
 import { t } from "@humansignal/core";
 import { inject, observer } from "mobx-react";
 import { RadioGroup } from "../../Common/RadioGroup/RadioGroup";
-import { IconGrid, IconList } from "@humansignal/icons";
+import { SquaresFourIcon, ListIcon } from "@humansignal/icons";
 import { Tooltip } from "@humansignal/ui";
 
 const viewInjector = inject(({ store }) => ({
@@ -10,6 +10,9 @@ const viewInjector = inject(({ store }) => ({
 
 export const ViewToggle = viewInjector(
   observer(({ view, size, ...rest }) => {
+    const isLocked = view?.isLockedByManager;
+    const lockedTooltip = view?.lockedUpdateMessage;
+
     return (
       <RadioGroup
         size={size}
@@ -18,17 +21,27 @@ export const ViewToggle = viewInjector(
         {...rest}
         style={{ "--button-padding": "0 var(--spacing-tighter)" }}
       >
-        <Tooltip title={t("List view")}>
+        <Tooltip title={isLocked ? lockedTooltip : "List view"}>
           <div>
-            <RadioGroup.Button value="list" aria-label={t("Switch to list view")}>
-              <IconList />
+            <RadioGroup.Button
+              value="list"
+              aria-label="Switch to list view"
+              data-testid="dm-view-toggle-list"
+              disabled={isLocked}
+            >
+              <ListIcon size={20} />
             </RadioGroup.Button>
           </div>
         </Tooltip>
-        <Tooltip title={t("Grid view")}>
+        <Tooltip title={isLocked ? lockedTooltip : "Grid view"}>
           <div>
-            <RadioGroup.Button value="grid" aria-label={t("Switch to grid view")}>
-              <IconGrid />
+            <RadioGroup.Button
+              value="grid"
+              aria-label="Switch to grid view"
+              data-testid="dm-view-toggle-grid"
+              disabled={isLocked}
+            >
+              <SquaresFourIcon size={20} />
             </RadioGroup.Button>
           </div>
         </Tooltip>

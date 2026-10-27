@@ -15,11 +15,11 @@ import { cn } from "../../../utils/bem";
 import { filename } from "../../../utils/helpers";
 import { Space } from "../Space/Space";
 import { Spinner } from "../Spinner";
-import "./MediaPlayer.scss";
+import "./MediaPlayer.prefix.css";
 import { MediaSeeker } from "./MediaSeeker";
 import { Duration } from "./Duration";
 
-const mediaDefaultProps = { crossOrigin: "anonymous" };
+const mediaDefaultProps = { crossOrigin: "anonymous", playsInline: true };
 
 const initialState = {
   duration: 0,

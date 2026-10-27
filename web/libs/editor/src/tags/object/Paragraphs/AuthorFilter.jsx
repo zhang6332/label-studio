@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import { Select } from "@humansignal/ui";
 import ColorScheme from "pleasejs";
 import Utils from "../../../utils";
-import styles from "./Paragraphs.module.scss";
+import styles from "./Paragraphs.module.css";
 
 const AuthorTag = ({ name, selected }) => {
   const itemStyle = { border: `2px solid ${Utils.Colors.convertToRGBA(ColorScheme.make_color({ seed: name })[0])}` };
@@ -23,7 +23,7 @@ const AuthorTag = ({ name, selected }) => {
   );
 };
 
-const renderMultipleSelected = (selected) => {
+const _renderMultipleSelected = (selected) => {
   if (selected.length === 0) return null;
 
   return (

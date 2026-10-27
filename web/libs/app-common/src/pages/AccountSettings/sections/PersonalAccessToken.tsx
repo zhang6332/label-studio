@@ -1,6 +1,7 @@
 import { t } from "@humansignal/core";
 import { useCopyText } from "@humansignal/core";
-import { Button, IconFileCopy, IconLaunch, Label, Typography } from "@humansignal/ui";
+import { ArrowSquareOutIcon, CopyIcon } from "@humansignal/icons";
+import { Button, Label, Typography } from "@humansignal/ui";
 /**
  * FIXME: This is legacy imports. We're not supposed to use such statements
  * each one of these eventually has to be migrated to core/ui
@@ -8,7 +9,7 @@ import { Button, IconFileCopy, IconLaunch, Label, Typography } from "@humansigna
 import { Input, TextArea } from "apps/labelstudio/src/components/Form";
 import { atom, useAtomValue } from "jotai";
 import { atomWithMutation, atomWithQuery } from "jotai-tanstack-query";
-import styles from "./PersonalAccessToken.module.scss";
+import styles from "./PersonalAccessToken.module.css";
 
 const tokenAtom = atomWithQuery(() => ({
   queryKey: ["access-token"],
@@ -56,7 +57,7 @@ export const PersonalAccessToken = () => {
           <div className="flex gap-2 w-full justify-between">
             <Input name="token" className={styles.input} readOnly value={token ?? ""} />
             <Button
-              leading={<IconFileCopy />}
+              leading={<CopyIcon />}
               onClick={() => copyToken()}
               disabled={tokenCopied}
               variant="primary"
@@ -81,7 +82,7 @@ export const PersonalAccessToken = () => {
               value={curl ?? ""}
             />
             <Button
-              leading={<IconFileCopy />}
+              leading={<CopyIcon />}
               onClick={() => copyCurl()}
               disabled={curlCopied}
               variant="primary"
@@ -108,7 +109,7 @@ export function PersonalAccessTokenDescription() {
           <a href="https://labelstud.io/guide/api.html" target="_blank" rel="noreferrer" className="inline-flex gap-1">
             {t("Docs")}{" "}
             <span>
-              <IconLaunch className="h-6 w-6" />
+              <ArrowSquareOutIcon size={20} />
             </span>
           </a>
         </>

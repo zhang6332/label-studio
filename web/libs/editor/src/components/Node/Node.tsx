@@ -5,10 +5,11 @@ import { observer } from "mobx-react";
 import { ApartmentOutlined, AudioOutlined, LineChartOutlined, MessageOutlined } from "@ant-design/icons";
 
 import Registry from "../../core/Registry";
-import "./Node.scss";
+import "./Node.prefix.css";
 import {
   IconBrushTool,
   IconBrushToolSmart,
+  IconChecklist,
   IconCircleTool,
   IconCircleToolSmart,
   IconKeypointsTool,
@@ -93,6 +94,13 @@ const NodeViews: Record<string, NodeViewProps> = {
     getContent: (node) => <span style={{ color: "#5a5a5a" }}>{t("from")} {node.sequence[0]?.frame} {t("frame")}</span>,
   },
 
+  VideoVectorRegionModel: {
+    name: "Video Vector",
+    icon: IconPolygonTool,
+    altIcon: IconPolygonToolSmart,
+    getContent: (node) => <span style={{ color: "#5a5a5a" }}>from {node.sequence[0]?.frame} frame</span>,
+  },
+
   PolygonRegionModel: {
     name: "Polygon",
     icon: IconPolygonTool,
@@ -133,6 +141,11 @@ const NodeViews: Record<string, NodeViewProps> = {
   ChoicesModel: {
     name: "Classification",
     icon: ApartmentOutlined,
+  },
+
+  ClassificationArea: {
+    name: "Classification",
+    icon: IconChecklist,
   },
 
   TextAreaModel: {

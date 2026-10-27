@@ -19,8 +19,8 @@ export const ViewToggle = ({ view, onViewChange, className }: ViewToggleProps) =
   return (
     <Tabs value={view} onValueChange={(newValue: string) => onViewChange(newValue as ViewMode)} variant="default">
       <TabsList className={className}>
-        <TabsTrigger value="code">{t("Code")}</TabsTrigger>
-        <TabsTrigger value="interactive">{t("Interactive")}</TabsTrigger>
+        <TabsTrigger value="interactive">Interactive</TabsTrigger>
+        <TabsTrigger value="code">Code</TabsTrigger>
       </TabsList>
     </Tabs>
   );

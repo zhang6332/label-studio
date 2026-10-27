@@ -1,6 +1,6 @@
-import { useState, type ReactNode } from "react";
+import { CaretDownIcon } from "@humansignal/icons";
+import { type ReactNode, useState } from "react";
 import { cn } from "../../utils/utils";
-import { IconChevronDown } from "@humansignal/icons";
 import { Button } from "../button/button";
 
 export type CollapsiblePanelProps = {
@@ -26,6 +26,8 @@ export type CollapsiblePanelProps = {
   disableToggle?: boolean;
   /** Test ID for the panel container */
   dataTestId?: string;
+  /** Name used in the toggle's accessible label, e.g. "Expand Languages" */
+  toggleLabel?: string;
 };
 
 export const CollapsiblePanel = ({
@@ -40,6 +42,7 @@ export const CollapsiblePanel = ({
   onExpandedChange,
   disableToggle = false,
   dataTestId,
+  toggleLabel = "panel",
 }: CollapsiblePanelProps) => {
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
 
@@ -90,6 +93,7 @@ export const CollapsiblePanel = ({
         data-testid={dataTestId ? `${dataTestId}-header` : undefined}
       >
         <Button
+          type="button"
           variant="neutral"
           look="string"
           size="small"
@@ -99,11 +103,12 @@ export const CollapsiblePanel = ({
             disableToggle && "opacity-40 cursor-not-allowed pointer-events-none",
           )}
           disabled={disableToggle}
-          aria-label={isExpanded ? "Collapse panel" : "Expand panel"}
+          aria-label={`${isExpanded ? "Collapse" : "Expand"} ${toggleLabel}`}
           aria-expanded={isExpanded}
           data-testid="collapsible-panel-toggle"
         >
-          <IconChevronDown
+          <CaretDownIcon
+            weight="bold"
             size={16}
             className={cn("transition-transform ease-out duration-200", !isExpanded && "-rotate-90")}
           />

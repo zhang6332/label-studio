@@ -1,15 +1,13 @@
-import { t } from "@humansignal/core";
-import { IconChevronDown } from "@humansignal/icons";
-import { isStarterCloudPlan } from "@humansignal/core";
+import { t, isStarterCloudPlan  } from "@humansignal/core";
 import { cn } from "../../../utils/bem";
 import { ErrorBox } from "../../Common/ErrorBox";
 import { FieldsButton } from "../../Common/FieldsButton";
 import { FiltersPane } from "../../Common/FiltersPane";
-import { Icon } from "../../Common/Icon/Icon";
 import { Interface } from "../../Common/Interface";
 import { ExportButton, ImportButton } from "../../Common/SDKButtons";
 import { Tooltip } from "@humansignal/ui";
 import { ActionsButton } from "./ActionsButton";
+import { GridSelectAll } from "./GridSelectAll";
 import { DensityToggle } from "./DensityToggle";
 import { GridWidthButton } from "./GridWidthButton";
 import { LabelButton } from "./LabelButton";
@@ -75,20 +73,14 @@ export const instruments = {
     return <DensityToggle size={size} />;
   },
   columns: ({ size }) => {
-    const iconProps = {
-      style: {
-        marginRight: 4,
-      },
-      icon: IconChevronDown,
-    };
     return (
       <FieldsButton
-        wrapper={FieldsButton.Checkbox}
-        trailingIcon={<Icon {...iconProps} />}
+        multiSelect={true}
         title={"Columns"}
         size={size}
         style={style}
         openUpwardForShortViewport={false}
+        showProjectDefaultsFooter
       />
     );
   },
@@ -109,6 +101,9 @@ export const instruments = {
   },
   "label-button": ({ size }) => {
     return <LabelButton size={size} />;
+  },
+  "grid-select-all": () => {
+    return <GridSelectAll />;
   },
   actions: ({ size }) => {
     return <ActionsButton size={size} style={style} />;

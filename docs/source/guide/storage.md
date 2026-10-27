@@ -19,6 +19,7 @@ Integrate popular cloud and external storage systems with Label Studio to collec
 | [Amazon S3 with IAM role](storage_s3#Amazon-S3-with-IAM-role) | ❌ | ✅ |
 | [Google Cloud Storage](storage_gcp) | ✅ | ✅ |
 | [Google Cloud Storage WIF Auth](storage_gcp#Google-Cloud-Storage-with-Workload-Identity-Federation-WIF) | ❌ | ✅ |
+| [Google Cloud Storage with service account impersonation for GKE](storage_gcp#Google-Cloud-Storage-with-service-account-impersonation-for-GKE) | ❌ | ✅ |
 | [Microsoft Azure Blob Storage](storage_azure) | ✅ | ✅ |
 | [Microsoft Azure Blob Storage with Service Principal](storage_azure#Azure-blob-storage-with-Service-Principal) | ❌ | ✅ |
 | [Databricks Files (UC Volumes)](storage_databricks) | ❌ | ✅ |
@@ -281,11 +282,14 @@ Add the **Storage Blob Data Reader** role, which includes:
 
 ## Target storage
 
-When annotators click **Submit** or **Update** while labeling tasks, Label Studio saves annotations in the Label Studio database. 
+If you configure target storage, your annotations will be saved in two places: in the Label Studio database and in your target storage.
 
-If you configure target storage, annotations are sent to target storage after you click **Sync** for the configured target storage connection. The target storage receives a JSON-formatted export of each annotation. See [Label Studio JSON format of annotated tasks](export.html#Label-Studio-JSON-format-of-annotated-tasks) for details about how exported tasks appear in  target storage.
+* When annotators click **Submit** or **Update** while labeling tasks, an annotation is sent to the target storage as well as to the Label Studio database.
+* When a user clicks the **Sync** button on the target storage, all annotations will be saved again from scratch.
 
-You can also delete annotations in target storage when they are deleted in Label Studio. 
+The target storage receives a JSON-formatted export of each annotation. See [Label Studio JSON format of annotated tasks](export#Label-Studio-JSON-format-of-annotated-tasks) for details about how exported tasks appear in target storage.
+
+You can also delete annotations in target storage when they are deleted in Label Studio. By default this option is off.
 
 ### Target storage permissions
 

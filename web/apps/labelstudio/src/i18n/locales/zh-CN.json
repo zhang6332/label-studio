@@ -1421,5 +1421,13 @@
   "Paragraph Navigation": "段落导航",
   "Shortcuts for navigating and managing tasks in Project's Data Manager": "在项目数据管理器中导航和管理任务的快捷键",
   "Segmentation Tools": "分割工具",
-  "Perform these actions at your own risk. Actions you take on this page can't be reverted. Make sure your data is backed up.": "执行这些操作的风险由您自行承担。在此页面执行的操作无法撤销。请确保已备份数据。"
+  "Perform these actions at your own risk. Actions you take on this page can't be reverted. Make sure your data is backed up.": "执行这些操作的风险由您自行承担。在此页面执行的操作无法撤销。请确保已备份数据。",
+  "Skip Task / Reject (default)": "跳过任务 / 驳回（默认）",
+  "Skip the current task, or reject with the project's default option": "跳过当前任务，或以项目默认选项驳回",
+  "Reject: No Rework": "驳回：无需返工",
+  "Reject without sending for rework": "驳回且不发送返工",
+  "Reject: Return to Same Annotator": "驳回：退回原标注员",
+  "Reject and send back to the original annotator for rework": "驳回并退回原标注员返工",
+  "Reject: Pass to Another Annotator": "驳回：转给其他标注员",
+  "Reject and send to a different annotator": "驳回并转给其他标注员"
 }

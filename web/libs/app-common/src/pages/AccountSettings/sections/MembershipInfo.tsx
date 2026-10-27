@@ -1,6 +1,6 @@
 import { t } from "@humansignal/core";
 import { format } from "date-fns";
-import styles from "./MembershipInfo.module.scss";
+import styles from "./MembershipInfo.module.css";
 import { useQuery } from "@tanstack/react-query";
 import { getApiInstance } from "@humansignal/core";
 import { useMemo } from "react";
@@ -32,7 +32,8 @@ export const MembershipInfo = () => {
         contributed_projects_count: number;
         annotations_count: number;
         created_at: string;
-        role: string;
+        role?: string;
+        user_type?: string;
       }>;
 
       const annotationCount = response?.annotations_count;
@@ -61,6 +62,18 @@ export const MembershipInfo = () => {
         case "NO":
           role = "Pending";
           break;
+        case "VO":
+          role = "View-Only";
+          break;
+        default:
+          if (response.role) {
+            role = response.role;
+          }
+          break;
+      }
+
+      if (response.user_type === "viewonly") {
+        role = "View-Only";
       }
 
       return {

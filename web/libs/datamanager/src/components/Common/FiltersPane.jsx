@@ -1,10 +1,9 @@
 import { t } from "@humansignal/core";
 import { inject, observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
-import { IconChevronDown } from "@humansignal/icons";
+import { CaretDownIcon } from "@humansignal/icons";
 import { Filters } from "../Filters/Filters";
 import { Badge, Button, Dropdown } from "@humansignal/ui";
-import { Icon } from "./Icon/Icon";
 
 const buttonInjector = inject(({ store }) => {
   const { viewsStore, currentView } = store;
@@ -20,7 +19,6 @@ export const FiltersButton = buttonInjector(
   observer(
     React.forwardRef(({ activeFiltersNumber, size, sidebarEnabled, viewsStore, ...rest }, ref) => {
       const hasFilters = activeFiltersNumber > 0;
-
       return (
         <Button
           ref={ref}
@@ -28,8 +26,9 @@ export const FiltersButton = buttonInjector(
           variant="neutral"
           look="outlined"
           onClick={() => sidebarEnabled && viewsStore.toggleSidebar()}
-          trailing={<Icon icon={IconChevronDown} />}
-          aria-label={t("Filters")}
+          trailing={<CaretDownIcon size={16} />}
+          aria-label="Filters"
+          data-testid="dm-filters-button"
           {...rest}
         >
           {t("Filters")}{" "}
