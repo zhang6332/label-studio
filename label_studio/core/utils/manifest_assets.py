@@ -18,12 +18,37 @@ except Exception:
     pass
 
 
+def _load_manifest_if_stale():
+    # zjh: In DEBUG the frontend is rebuilt frequently; re-read manifest.json when
+    # its mtime changes so a Django restart isn't needed after every build.
+    # Production reads once at import (previous behavior).
+    if not settings.DEBUG:
+        return
+    global _MANIFEST, _MANIFEST_MTIME
+    manifest_path = Path(settings.STATIC_ROOT) / 'js/manifest.json'
+    try:
+        mtime = manifest_path.stat().st_mtime
+    except OSError:
+        return
+    if mtime != _MANIFEST_MTIME:
+        try:
+            with open(manifest_path, 'r') as f:
+                _MANIFEST = json.load(f)
+            _MANIFEST_MTIME = mtime
+        except Exception:
+            pass
+
+
+_MANIFEST_MTIME = None
+
+
 def get_manifest_asset(path: str) -> str:
     """Maps a path to its hashed filename using manifest.json, or falls back to /react-app/ prefix
 
     Usage in template:
     {% manifest_asset 'main.js' %}
     """
+    _load_manifest_if_stale()
     _p = getattr(settings, 'URL_PREFIX', '') or ''
     if path in _MANIFEST:
         return f'{settings.FRONTEND_HOSTNAME}{_p}{_MANIFEST[path]}'
