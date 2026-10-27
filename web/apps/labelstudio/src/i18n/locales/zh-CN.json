@@ -1575,5 +1575,7 @@
   "Specify the folder path within your bucket where your files are located": "指定存储桶中文件所在的文件夹路径",
   ".*\\.(jpg|png)$ - imports only JPG, PNG files": ".*\\.(jpg|png)$ —— 仅导入 JPG、PNG 文件",
   ".*\\.(json|jsonl|parquet)$ - imports task definitions": ".*\\.(json|jsonl|parquet)$ —— 导入任务定义",
-  "Your redis password": "你的 Redis 密码"
+  "Your redis password": "你的 Redis 密码",
+  "Configure your import settings and click \"Load Preview\" to see a sample of files that will be imported.": "配置导入设置并点击\"加载预览\"，预览将要导入的文件样例。",
+  "No files matching your current criteria were found. Try adjusting your filter settings and reload the preview.": "没有符合当前条件的文件。请调整筛选设置后重新加载预览。"
 }

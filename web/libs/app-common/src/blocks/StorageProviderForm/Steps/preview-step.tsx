@@ -273,8 +273,7 @@ export const PreviewStep = ({
                 </div>
                 <h3 className="font-medium mb-1">{t("No Preview Available")}</h3>
                 <p className="text-sm text-muted-foreground max-w-md">
-                  Configure your import settings and click "Load Preview" to see a sample of files that will be
-                  imported.
+                  {t('Configure your import settings and click "Load Preview" to see a sample of files that will be imported.')}
                 </p>
               </div>
             ) : filesPreview.length === 0 ? (
@@ -285,8 +284,7 @@ export const PreviewStep = ({
                 </div>
                 <h3 className="font-medium mb-1">{t("No Files Found")}</h3>
                 <p className="text-sm text-muted-foreground max-w-md">
-                  No files matching your current criteria were found. Try adjusting your filter settings and reload the
-                  preview.
+                  {t('No files matching your current criteria were found. Try adjusting your filter settings and reload the preview.')}
                 </p>
               </div>
             ) : (
