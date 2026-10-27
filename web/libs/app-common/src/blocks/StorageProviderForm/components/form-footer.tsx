@@ -63,14 +63,14 @@ export const FormFooter = ({
               })}
               style={connectionChecked ? { textShadow: "none" } : {}}
             >
-              {connectionChecked ? "Connection Verified" : "Test Connection"}
+              {connectionChecked ? t("Connection Verified") : t("Test Connection")}
             </Button>
           </>
         )}
 
         {(isEditMode ? currentStep === 1 : currentStep === 2) && (
           <Button waiting={loadPreview.isLoading} onClick={loadPreview.mutate} disabled={filesPreview !== null}>
-            {filesPreview !== null ? "✓ Preview Loaded" : "Load Preview"}
+            {filesPreview !== null ? t("✓ Preview Loaded") : t("Load Preview")}
           </Button>
         )}
 
@@ -83,13 +83,13 @@ export const FormFooter = ({
           look={currentStep === totalSteps - 1 && target !== "export" ? "outlined" : undefined}
           tooltip={
             currentStep === 1 && !connectionChecked
-              ? "Test connection before continuing"
+              ? t("Test connection before continuing")
               : currentStep === 0 && isProviderDisabled
-                ? "This provider is not available in the current version"
+                ? t("This provider is not available in the current version")
                 : undefined
           }
         >
-          {currentStep < totalSteps - 1 ? "Next" : target === "export" ? "Save" : "Save & Sync"}
+          {currentStep < totalSteps - 1 ? t("Next") : target === "export" ? t("Save") : t("Save & Sync")}
         </Button>
 
         {currentStep === totalSteps - 1 && target !== "export" && onSave && (

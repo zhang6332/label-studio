@@ -7,7 +7,7 @@ export const ossProvider: ProviderConfig = {
   name: "oss",
   title: t("Aliyun OSS"),
   description:
-    "Configure your Aliyun Object Storage Service (OSS) connection. OSS is S3-compatible, so credentials map to the standard access key pair.",
+    t("Configure your Aliyun Object Storage Service (OSS) connection. OSS is S3-compatible, so credentials map to the standard access key pair."),
   icon: IconCloudCustom,
   fields: [
     {

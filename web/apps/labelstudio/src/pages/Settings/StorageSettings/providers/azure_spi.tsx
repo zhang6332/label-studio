@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { EnterpriseBadge, Message } from "@humansignal/ui";
 import { IconCloudProviderAzure } from "@humansignal/icons";
 import type { ProviderConfig } from "@humansignal/app-common/blocks/StorageProviderForm/types/provider";
@@ -6,7 +7,7 @@ const azureSpiProvider: ProviderConfig = {
   name: "azure_spi",
   title: "Azure Blob Storage\nwith Service Principal",
   description:
-    "Configure your Azure Blob Storage connection using Service Principal authentication for enhanced security (proxy only)",
+    t("Configure your Azure Blob Storage connection using Service Principal authentication for enhanced security (proxy only)"),
   icon: IconCloudProviderAzure,
   disabled: true,
   badge: <EnterpriseBadge />,

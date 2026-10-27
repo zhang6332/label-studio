@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { EnterpriseBadge, Message } from "@humansignal/ui";
 import { IconCloudProviderS3 } from "@humansignal/icons";
 import type { ProviderConfig } from "@humansignal/app-common/blocks/StorageProviderForm/types/provider";
@@ -5,7 +6,7 @@ import type { ProviderConfig } from "@humansignal/app-common/blocks/StorageProvi
 const s3sProvider: ProviderConfig = {
   name: "s3s",
   title: "Amazon S3\nwith IAM Role",
-  description: "Configure your AWS S3 connection using IAM role access for enhanced security (proxy only)",
+  description: t("Configure your AWS S3 connection using IAM role access for enhanced security (proxy only)"),
   icon: IconCloudProviderS3,
   disabled: true,
   badge: <EnterpriseBadge />,

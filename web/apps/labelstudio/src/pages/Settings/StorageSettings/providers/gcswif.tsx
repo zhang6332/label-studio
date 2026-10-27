@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { EnterpriseBadge, Message } from "@humansignal/ui";
 import { IconCloudProviderGCS } from "@humansignal/icons";
 import type { ProviderConfig } from "@humansignal/app-common/blocks/StorageProviderForm/types/provider";
@@ -6,7 +7,7 @@ const gcsWifProvider: ProviderConfig = {
   name: "gcswif",
   title: "Google Cloud Storage\n(WIF Auth)",
   description:
-    "Configure your Google Cloud Storage connection with Workload Identity Federation authentication (proxy only)",
+    t("Configure your Google Cloud Storage connection with Workload Identity Federation authentication (proxy only)"),
   icon: IconCloudProviderGCS,
   disabled: true,
   badge: <EnterpriseBadge />,

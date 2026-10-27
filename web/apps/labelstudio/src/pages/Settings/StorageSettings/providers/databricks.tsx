@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { EnterpriseBadge, Message } from "@humansignal/ui";
 import { IconCloudProviderDatabricks } from "@humansignal/icons";
 import type { ProviderConfig } from "@humansignal/app-common/blocks/StorageProviderForm/types/provider";
@@ -5,7 +6,7 @@ import type { ProviderConfig } from "@humansignal/app-common/blocks/StorageProvi
 const databricksProvider: ProviderConfig = {
   name: "databricks",
   title: "Databricks Files\n(UC Volumes)",
-  description: "Configure your Databricks Unity Catalog Volumes connection with all required settings (proxy only)",
+  description: t("Configure your Databricks Unity Catalog Volumes connection with all required settings (proxy only)"),
   icon: IconCloudProviderDatabricks,
   disabled: true,
   badge: <EnterpriseBadge />,

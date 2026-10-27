@@ -39,27 +39,27 @@ const regexFilters = [
     blob: true,
   },
   {
-    title: "Tabular",
+    title: t("Tabular"),
     regex: ".*\\.(csv|tsv)$",
     blob: true,
   },
   {
-    title: "JSON",
+    title: t("JSON"),
     regex: ".*\\.json$",
     blob: false,
   },
   {
-    title: "JSONL",
+    title: t("JSONL"),
     regex: ".*\\.jsonl$",
     blob: false,
   },
   {
-    title: "Parquet",
+    title: t("Parquet"),
     regex: ".*\\.parquet$",
     blob: false,
   },
   {
-    title: "All Tasks Files",
+    title: t("All Tasks Files"),
     regex: ".*\\.(json|jsonl|parquet)$",
     blob: false,
   },
@@ -113,11 +113,11 @@ export const PreviewStep = ({
               {/* Path/Bucket Prefix Section - Hide for localfiles since it has its own path field */}
               {type !== "localfiles" && (
                 <div className="space-y-2">
-                  <Label text={`${type === "redis" ? "Path to Files" : "Bucket Prefix"} (optional)`} />
+                  <Label text={type === "redis" ? t("Path to Files (optional)") : t("Bucket Prefix (optional)")} />
                   <p className="text-sm text-muted-foreground">
                     {type === "redis"
-                      ? "Specify the folder path within your storage where your files are located"
-                      : "Specify the folder path within your bucket where your files are located"}
+                      ? t("Specify the folder path within your storage where your files are located")
+                      : t("Specify the folder path within your bucket where your files are located")}
                   </p>
                   <Input
                     id={type === "redis" ? "path" : "prefix"}
@@ -167,7 +167,7 @@ export const PreviewStep = ({
                       },
                       {
                         value: "Tasks",
-                        label: "Tasks - Treat each JSON, JSONL, or Parquet as one or more task definitions per file",
+                        label: t("Tasks - Treat each JSON, JSONL, or Parquet as one or more task definitions per file"),
                       },
                     ] as any
                   }
@@ -190,8 +190,8 @@ export const PreviewStep = ({
                   }}
                   placeholder={
                     formData.use_blob_urls
-                      ? ".*\\.(jpg|png)$ - imports only JPG, PNG files"
-                      : ".*\\.(json|jsonl|parquet)$ - imports task definitions"
+                      ? t(".*\\.(jpg|png)$ - imports only JPG, PNG files")
+                      : t(".*\\.(json|jsonl|parquet)$ - imports task definitions")
                   }
                   style={{ width: "100%" }}
                   label=""
