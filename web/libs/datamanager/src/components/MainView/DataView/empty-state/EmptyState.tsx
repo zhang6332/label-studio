@@ -2,6 +2,7 @@ import { t } from "@humansignal/core";
 import React, { type FC, type ReactNode } from "react";
 import {
   IconCheck,
+  IconCloudCustom,
   IconCloudProviderAzure,
   IconCloudProviderGCS,
   IconCloudProviderRedis,
