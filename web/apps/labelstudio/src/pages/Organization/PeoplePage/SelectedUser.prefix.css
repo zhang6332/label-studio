@@ -50,8 +50,8 @@
     margin-bottom: 0;
   }
 
-  // Read-only role pill. Uses theme tokens so it matches both light and dark
-  // themes (the previous <select> fell back to the browser default white box).
+  /* Read-only role pill. Uses theme tokens so it matches both light and dark */
+  /* themes (the previous <select> fell back to the browser default white box). */
   &__role-badge {
     display: inline-flex;
     align-items: center;

@@ -1,7 +1,7 @@
 import { t } from "../../../../i18n";
 import { z } from "zod";
 import type { ProviderConfig } from "@humansignal/app-common/blocks/StorageProviderForm/types/provider";
-import { IconCloudCustom } from "@humansignal/ui";
+import { IconCloudCustom } from "@humansignal/icons";
 
 export const ossProvider: ProviderConfig = {
   name: "oss",

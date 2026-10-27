@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("io_storages", "0022_normalize_localfiles_paths"),
-        ("projects", "0035_projectmember_role"),
+        ("projects", "0039_projectmember_role"),
         ("tasks", "0060_add_allow_skip_to_task"),
     ]
 

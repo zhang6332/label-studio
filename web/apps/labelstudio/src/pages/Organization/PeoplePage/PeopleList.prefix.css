@@ -17,11 +17,11 @@
     align-items: center;
   }
 
-  // Grid + subgrid layout: each column is min-width .. max-content, so columns
-  // shrink to their minimum when content is short and grow to fit long content.
-  // Header and every user row share the SAME column tracks via subgrid, so they
-  // stay perfectly aligned. When the summed column widths exceed the container,
-  // the table scrolls horizontally (overflow-x) instead of wrapping/squishing.
+  /* Grid + subgrid layout: each column is min-width .. max-content, so columns */
+  /* shrink to their minimum when content is short and grow to fit long content. */
+  /* Header and every user row share the SAME column tracks via subgrid, so they */
+  /* stay perfectly aligned. When the summed column widths exceed the container, */
+  /* the table scrolls horizontally (overflow-x) instead of wrapping/squishing. */
   &__users {
     display: grid;
     grid-template-columns:
@@ -45,8 +45,8 @@
     font-weight: 500;
   }
 
-  // body doesn't need its own box — let user rows participate directly in the
-  // users grid so subgrid column sharing works across header + all rows.
+  /* body doesn't need its own box — let user rows participate directly in the */
+  /* users grid so subgrid column sharing works across header + all rows. */
   &__body {
     display: contents;
   }
@@ -60,8 +60,8 @@
     color: var(--color-neutral-content);
     display: flex;
     align-items: center;
-    // Column width is decided by the grid track above; content that exceeds it
-    // is truncated with an ellipsis (single line — no more row-height chaos).
+    /* Column width is decided by the grid track above; content that exceeds it */
+    /* is truncated with an ellipsis (single line — no more row-height chaos). */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
