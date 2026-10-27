@@ -54,7 +54,20 @@ const DropdownWrapper = observer(({ column, cellViews, children, onChange, disab
   return (
     <Dropdown.Trigger
       content={
-        <Menu title={t("Display as")} size="compact" selectedKeys={[column.currentType]}>
+        <Menu
+          title={t("Display as")}
+          size="compact"
+          selectedKeys={[column.currentType === column.type ? "auto" : column.currentType]}
+        >
+          {/* zjh: reset entry — clears the manual display-type override */}
+          {column.currentType !== column.type && (
+            <Menu.Item key="auto" onClick={() => onChange?.(column, column.type)}>
+              <Space>
+                <Badge size="small">{ViewColumnTypeShort(column.type)}</Badge>
+                {t("Auto")}
+              </Space>
+            </Menu.Item>
+          )}
           {types.map((type) => {
             return (
               <Menu.Item key={type} onClick={() => onChange?.(column, type)}>
