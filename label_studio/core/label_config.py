@@ -477,7 +477,13 @@ def replace_task_data_undefined_with_config_field(data, project, first_key=None)
         # and blind first-key selection renames the media URI into a label-values
         # field — breaking image display (inventory-tracking template hit this).
         if first_key is None:
-            object_types = {'Image', 'Audio', 'Text', 'HyperText', 'TimeSeries', 'Video'}
+            # Object tags per the editor registry (editor/src/tags/object):
+            # Image, Text, Audio, Video, HyperText, TimeSeries, Paragraphs, PDF,
+            # RichText, Table, List, PagedView.
+            object_types = {
+                'Image', 'Text', 'Audio', 'Video', 'HyperText', 'TimeSeries',
+                'Paragraphs', 'PDF', 'Pdf', 'RichText', 'Table', 'List', 'PagedView',
+            }
             for data_key, tag_type in project.data_types.items():
                 if tag_type in object_types:
                     key = data_key
