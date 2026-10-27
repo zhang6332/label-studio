@@ -80,6 +80,36 @@ class OssClientMixin:
         auth = oss2.Auth(self.aws_access_key_id, self.aws_secret_access_key)
         return oss2.Bucket(auth, endpoint, self.bucket)
 
+    def get_client(self):
+        raise NotImplementedError('OSS storage uses oss2 native signing; use _oss_client()')
+
+    def get_client_and_resource(self):
+        raise NotImplementedError('OSS storage uses oss2 native signing; use _oss_client()')
+
+    def get_client_and_bucket(self, validate_connection=True):
+        raise NotImplementedError('OSS storage uses oss2 native signing; use _oss_client()')
+
+    def get_blob_metadata(self, key):
+        # S3-style metadata dict for parity with the boto3 implementation.
+        res = self._oss_client().head_object(key)
+        return {
+            'ETag': res.etag,
+            'ContentLength': res.content_length,
+            'ContentType': res.headers.get('Content-Type'),
+            'LastModified': res.headers.get('Last-Modified'),
+        }
+
+    def generate_http_url(self, url):
+        # Shared by import (per-connection presign flag) and export (settings-level).
+        key = urlparse(url, allow_fragments=False).path.lstrip('/')
+        if getattr(self, 'presign', True):
+            return self._oss_client().sign_url('GET', key, self.presign_ttl * 60, slash_safe=True)
+        res = self._oss_client().get_object(key)
+        content_type = res.headers.get('Content-Type', 'application/octet-stream')
+        import base64
+
+        return 'data:' + content_type + ';base64,' + base64.b64encode(res.read()).decode('utf-8')
+
     def _normalized_prefix(self) -> str:
         # OSS object keys never start with '/'; users habitually type a leading
         # slash, which would silently list nothing. Normalize for them.
@@ -176,19 +206,6 @@ class OssImportStorageBase(OssClientMixin, S3ImportStorageBase):
         return load_tasks_json(content, key)
 
     @catch_and_reraise_from_none
-    def generate_http_url(self, url):
-        key = urlparse(url, allow_fragments=False).path.lstrip('/')
-        if self.presign:
-            # Native presigned URL; slash_safe keeps object paths intact
-            return self._oss_client().sign_url('GET', key, self.presign_ttl * 60, slash_safe=True)
-        # Proxy through the platform: return the blob as a base64 data URI
-        res = self._oss_client().get_object(key)
-        content_type = res.headers.get('Content-Type', 'application/octet-stream')
-        import base64
-
-        return 'data:' + content_type + ';base64,' + base64.b64encode(res.read()).decode('utf-8')
-
-    @catch_and_reraise_from_none
     def scan_and_create_links(self):
         return self._scan_and_create_links(OssImportStorageLink)
 
@@ -203,6 +220,11 @@ class OssImportStorage(ProjectStorageMixin, OssImportStorageBase):
 
 class OssExportStorage(OssClientMixin, S3StorageMixin, ExportStorage):
     url_scheme = 'oss'
+
+    # Read-back support (Data Collection): proxy_api checks hasattr(storage, 'presign')
+    # to decide preview availability. Mirrors S3ExportStorage's settings-level attrs.
+    presign = settings.EXPORT_STORAGE_PRESIGN
+    presign_ttl = settings.EXPORT_STORAGE_PRESIGN_TTL_MINUTES
 
     @property
     def type_full(self):

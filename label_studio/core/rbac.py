@@ -140,6 +140,16 @@ _ANNOTATOR_PERMS = {
     # Self-service: every role manages its own avatar and personal API tokens.
     all_permissions.avatar_any,
     all_permissions.users_token_any,
+    # Self-service annotation workflow: manage personal DM views (save/reset
+    # filter tabs), align with REVIEWER extras. NOTE: annotations_delete is
+    # deliberately NOT granted to annotators (product decision, see
+    # TestRBACPermissionMatrix.test_annotator_cannot_delete_annotations).
+    all_permissions.views_create,
+    all_permissions.views_change,
+    all_permissions.views_delete,
+    all_permissions.views_reset,
+    all_permissions.projects_reset_cache,
+    all_permissions.storages_view,
     all_permissions.views_view,
     all_permissions.annotations_create,
     all_permissions.annotations_view,
@@ -185,6 +195,12 @@ def permissions_for_role(role: str | None) -> frozenset[str]:
 
 
 def user_effective_permissions(user) -> set[str]:
+    # zjh: django superuser (createsuperuser / invited superuser without an
+    # OrganizationMember row) must bypass role whitelists — otherwise every
+    # permission_required API returns 403 and the account is unusable.
+    if getattr(user, 'is_superuser', False):
+        return set(_ALL)
+
     """Union of permissions granted by the user's org role and any
     project-member roles. Anonymous / unauthenticated users get the empty set.
     """

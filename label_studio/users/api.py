@@ -127,7 +127,9 @@ logger = logging.getLogger(__name__)
 class UserAPI(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_required = ViewClassPermission(
-        GET=all_permissions.organizations_change,
+        # zjh: GET (list members) is self-service for annotators/reviewers —
+        # organizations_change would lock it behind managers; view suffices.
+        GET=all_permissions.organizations_view,
         PUT=all_permissions.organizations_change,
         POST=all_permissions.organizations_change,
         PATCH=all_permissions.organizations_view,
