@@ -108,6 +108,27 @@ class DataExport(object):
         return sorted(formats, key=lambda f: f.get('disabled', False))
 
     @staticmethod
+    def _export_access_token(project):
+        """zjh: JWT access token for the export converter's media downloads.
+
+        The converter authenticates presign/resolve requests with this token.
+        Organizations may have legacy API tokens disabled (JWT phaseout), in
+        which case the DRF auth_token is rejected with 401 — issue a short-lived
+        JWT (Bearer) instead, which is the phaseout target and always accepted.
+        """
+        owner = project.organization.created_by
+        try:
+            from datetime import timedelta
+
+            from rest_framework_simplejwt.tokens import AccessToken
+
+            token = AccessToken.for_user(owner)
+            token.set_exp(lifetime=timedelta(hours=2))  # cover long exports
+            return str(token)
+        except Exception:
+            return owner.auth_token.key
+
+    @staticmethod
     def generate_export_file(project, tasks, output_format, download_resources, get_args, hostname=None):
         """Generate export file and return it as an open file object.
 
@@ -125,7 +146,7 @@ class DataExport(object):
             project_dir=None,
             upload_dir=os.path.join(settings.MEDIA_ROOT, settings.UPLOAD_DIR),
             download_resources=download_resources,
-            access_token=project.organization.created_by.auth_token.key,
+            access_token=DataExport._export_access_token(project),
             hostname=hostname,
             local_files_resolver=project_local_files_resolver(project),
             http_session=converter_http_session(hostname),
