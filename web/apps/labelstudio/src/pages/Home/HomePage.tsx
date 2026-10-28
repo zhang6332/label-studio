@@ -1,6 +1,7 @@
 import { t } from "../../i18n";
 import {
   ArrowSquareOutIcon,
+  FolderOpenIcon,
   FolderSimplePlusIcon,
   IconHumanSignal,
   UserPlusIcon,
