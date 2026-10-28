@@ -37,7 +37,12 @@ from io_storages.base_models import (
 )
 from io_storages.s3.models import S3ImportStorageBase, S3StorageMixin
 from io_storages.s3.utils import catch_and_reraise_from_none
-from io_storages.utils import StorageObject, is_collection_submission_key, load_tasks_json
+from io_storages.utils import (
+    StorageObject,
+    get_uri_via_regex,
+    is_collection_submission_key,
+    load_tasks_json,
+)
 from tasks.models import Annotation
 
 logger = logging.getLogger(__name__)
@@ -88,6 +93,43 @@ class OssClientMixin:
 
     def get_client_and_bucket(self, validate_connection=True):
         raise NotImplementedError('OSS storage uses oss2 native signing; use _oss_client()')
+
+    def resolve_uris(self, data, task):
+        """zjh: resolve oss:// URIs to ABSOLUTE presigned URLs.
+
+        The inherited implementation produces relative /resolve/ proxy URLs,
+        which work for browser rendering but not for the export converter
+        (plain http_get can't fetch a relative URL, and the oss:// scheme is
+        invisible to its cloud-URI detection). Presigned absolute URLs work
+        everywhere: table thumbnails, grid, and the with-Images export
+        converters (which download directly from OSS without auth).
+        """
+        import posixpath
+
+        def _resolve_value(value):
+            if isinstance(value, list):
+                return [_resolve_value(item) for item in value]
+            if isinstance(value, dict):
+                return {k: _resolve_value(v) for k, v in value.items()}
+            if isinstance(value, str) and self.url_scheme in value:
+                try:
+                    uri, _ = get_uri_via_regex(value, prefixes=(self.url_scheme,))
+                    bucket, path = uri.split('://', 1)[1].split('/', 1)
+                    key = posixpath.normpath(path).lstrip('/')
+                    presigned = self._oss_client().sign_url('GET', key, self.presign_ttl * 60, slash_safe=True)
+                    return value.replace(uri, presigned)
+                except Exception:
+                    logger.debug('resolve_uris: could not resolve %s', value, exc_info=True)
+            return value
+
+        return self._resolve_data(data, _resolve_value)
+
+    def _resolve_data(self, data, resolver):
+        if isinstance(data, list):
+            return [self._resolve_data(item, resolver) for item in data]
+        if isinstance(data, dict):
+            return {k: self._resolve_data(v, resolver) for k, v in data.items()}
+        return resolver(data)
 
     def get_blob_metadata(self, key):
         # S3-style metadata dict for parity with the boto3 implementation.
