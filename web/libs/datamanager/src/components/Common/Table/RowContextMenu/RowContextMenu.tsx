@@ -1,3 +1,4 @@
+import { t } from "@humansignal/core";
 import { type FC, useCallback } from "react";
 import { getRoot } from "mobx-state-tree";
 import { IconBraces, IconCopyOutline, IconUserStats, IntersectSquareIcon } from "@humansignal/icons";
@@ -189,7 +190,7 @@ export const RowContextMenu: FC<RowContextMenuProps> = ({
     };
 
     const modalInstance = modal({
-      title: `Source for task ${taskId}`,
+      title: `${t("Source for task")} ${taskId}`,
       style: { width: 900 },
       header: null, // Will be set by renderToggle
       body: (
@@ -224,7 +225,7 @@ export const RowContextMenu: FC<RowContextMenuProps> = ({
   // Use annotators array which only contains actual annotators, not predictions
   const hasAnnotators = row.annotators && row.annotators.length > 0;
   const annotatorCount = row.annotators?.length ?? 0;
-  const annotatorLabel = annotatorCount === 1 ? "Annotator" : "Annotators";
+  const annotatorLabel = annotatorCount === 1 ? t("Annotator") : t("Annotators");
 
   return (
     <Menu closeDropdownOnItemClick={true} className="row-context-menu">
@@ -233,7 +234,7 @@ export const RowContextMenu: FC<RowContextMenuProps> = ({
         data-testid="menu-item-compare-annotations"
         icon={<IntersectSquareIcon size="20" />}
       >
-        Compare All Annotations
+        {t("Compare All Annotations")}
       </Menu.Item>
 
       <Menu.Divider />
@@ -245,11 +246,11 @@ export const RowContextMenu: FC<RowContextMenuProps> = ({
       )}
 
       <Menu.Item onClick={handleCopyTaskId} data-testid="menu-item-copy-task-id" icon={<IconCopyOutline />}>
-        Copy Task ID
+        {t("Copy Task ID")}
       </Menu.Item>
 
       <Menu.Item onClick={handleViewTaskSource} data-testid="menu-item-view-source" icon={<IconBraces />}>
-        View Task Source
+        {t("View Task Source")}
       </Menu.Item>
 
       {onViewAnalytics && hasAnnotators && (
