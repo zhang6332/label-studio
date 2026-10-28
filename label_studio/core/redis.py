@@ -366,7 +366,10 @@ def start_job_async_or_sync(job, *args, in_seconds=0, **kwargs):
         except Exception:
             exc_info = sys.exc_info()
             if on_failure:
-                on_failure(job, *exc_info)
+                # zjh: match the RQ on_failure contract (job, connection, type,
+                # value, traceback) — the sync path previously dropped
+                # `connection`, masking the real job exception.
+                on_failure(job, None, *exc_info)
             raise
 
 

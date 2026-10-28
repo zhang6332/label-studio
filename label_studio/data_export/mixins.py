@@ -29,6 +29,26 @@ from label_studio_sdk.converter import Converter
 from tasks.models import Annotation, AnnotationDraft, Prediction, Task
 from users.models import User
 
+def _export_jwt_access_token(project):
+    """zjh: JWT access token for the export converter's media downloads.
+
+    Legacy auth_token is rejected with 401 when the organization disables
+    legacy API tokens (JWT phaseout) — issue a 2h Bearer JWT instead, which
+    the token middleware always accepts.
+    """
+    owner = project.organization.created_by
+    try:
+        from datetime import timedelta
+
+        from rest_framework_simplejwt.tokens import AccessToken
+
+        token = AccessToken.for_user(owner)
+        token.set_exp(lifetime=timedelta(hours=2))
+        return str(token)
+    except Exception:
+        return owner.auth_token.key
+
+
 ONLY = 'only'
 EXCLUDE = 'exclude'
 
@@ -448,7 +468,10 @@ class ExportMixin:
                 upload_dir=os.path.join(settings.MEDIA_ROOT, settings.UPLOAD_DIR),
                 download_resources=download_resources,
                 # for downloading resource we need access to the API
-                access_token=self.project.organization.created_by.auth_token.key,
+                # zjh: JWT Bearer (phaseout target) — legacy auth_token is rejected
+                # with 401 when the organization disables legacy API tokens,
+                # which silently dropped images from new-export with-Images formats.
+                access_token=_export_jwt_access_token(self.project),
                 hostname=hostname,
                 local_files_resolver=project_local_files_resolver(self.project),
                 http_session=converter_http_session(hostname),
