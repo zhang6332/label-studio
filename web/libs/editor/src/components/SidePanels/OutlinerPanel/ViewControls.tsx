@@ -77,9 +77,9 @@ export const ViewControls: FC<ViewControlsProps> = observer(
                 <IconList /> {t("Group Manually")}
               </>
             ),
-            selectedLabel: "Manual",
+            selectedLabel: t("Manual"),
             icon: <IconList width={16} height={16} />,
-            tooltip: "Manually Grouped",
+            tooltip: t("Manually Grouped"),
           };
         case "label":
           return {
@@ -88,9 +88,9 @@ export const ViewControls: FC<ViewControlsProps> = observer(
                 <IconBoundingBox /> {t("Group by Label")}
               </>
             ),
-            selectedLabel: "By Label",
+            selectedLabel: t("By Label"),
             icon: <IconBoundingBox width={16} height={16} />,
-            tooltip: "Grouped by Label",
+            tooltip: t("Grouped by Label"),
           };
         case "type":
           return {
@@ -99,9 +99,9 @@ export const ViewControls: FC<ViewControlsProps> = observer(
                 <IconCursor /> {t("Group by Tool")}
               </>
             ),
-            selectedLabel: "By Tool",
+            selectedLabel: t("By Tool"),
             icon: <IconCursor width={16} height={16} />,
-            tooltip: "Grouped by Tool",
+            tooltip: t("Grouped by Tool"),
           };
       }
     }, []);
@@ -125,7 +125,7 @@ export const ViewControls: FC<ViewControlsProps> = observer(
                 <IconPredictions /> {t("Order by Score")}
               </>
             ),
-            selectedLabel: "By Score",
+            selectedLabel: t("By Score"),
             icon: <IconPredictions width={16} height={16} />,
           };
         case "mediaStartTime":
@@ -135,7 +135,7 @@ export const ViewControls: FC<ViewControlsProps> = observer(
                 <IconTimelineRegion /> {t("Order by Media Start Time")}
               </>
             ),
-            selectedLabel: "By Media Start Time",
+            selectedLabel: t("By Media Start Time"),
             icon: <IconTimelineRegion width={16} height={16} />,
           };
       }

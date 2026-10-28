@@ -1588,5 +1588,12 @@
   "Date Time": "日期时间",
   "objects": "对象",
   "content": "内容",
-  "data": "数据"
+  "data": "数据",
+  "Manually Grouped": "手动分组",
+  "By Label": "按标签",
+  "Grouped by Label": "按标签分组",
+  "By Tool": "按工具",
+  "Grouped by Tool": "按工具分组",
+  "By Score": "按评分",
+  "By Media Start Time": "按媒体开始时间"
 }
