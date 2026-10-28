@@ -29,7 +29,15 @@ const CellRenderer = observer(({ col: colInput, data, decoration, cellViews }) =
   const altType = normalizeCellAlias(valuePath.split(".").pop());
   const value = getProperty(data, valuePath);
 
-  const Renderer = cellViews[altType] ?? cellViews[col.original.currentType] ?? cellViews.String;
+  // zjh: a manual "Display as" override (currentType from columnsDisplayType)
+  // must win over the leaf-name inference — otherwise forcing a column to
+  // String/Image has no effect on nested data columns.
+  const hasOverride = col.original?.displayType != null;
+  const Renderer =
+    (hasOverride ? cellViews[col.original.currentType] : undefined) ??
+    cellViews[altType] ??
+    cellViews[col.original.currentType] ??
+    cellViews.String;
   const renderProps = { column: col, original: data, value };
   const Decoration = decoration?.get?.(col);
   const style = getStyle(cellViews, col, Decoration);

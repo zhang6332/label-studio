@@ -34,19 +34,12 @@ def _export_jwt_access_token(project):
 
     Legacy auth_token is rejected with 401 when the organization disables
     legacy API tokens (JWT phaseout) — issue a 2h Bearer JWT instead, which
-    the token middleware always accepts.
+    the token middleware always accepts. Single source of truth lives on
+    DataExport (models); late import avoids the models<->mixins cycle.
     """
-    owner = project.organization.created_by
-    try:
-        from datetime import timedelta
+    from data_export.models import DataExport
 
-        from rest_framework_simplejwt.tokens import AccessToken
-
-        token = AccessToken.for_user(owner)
-        token.set_exp(lifetime=timedelta(hours=2))
-        return str(token)
-    except Exception:
-        return owner.auth_token.key
+    return DataExport._export_access_token(project)
 
 
 ONLY = 'only'

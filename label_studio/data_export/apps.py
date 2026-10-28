@@ -7,16 +7,29 @@ class DataExportConfig(AppConfig):
     name = 'data_export'
 
     def ready(self):
-        _patch_upload_url_unquote()
-        _extend_cloud_uri_schemes_for_oss()
-        # Re-bind into the converter module: it imported the originals at load
-        # time, so replacing the io module attributes alone leaves the
-        # converter calling the unpatched functions.
-        from label_studio_sdk.converter import converter as ls_conv_mod
-        from label_studio_sdk._extensions.label_studio_tools.core.utils import io as ls_io
+        try:
+            _patch_upload_url_unquote()
+            _extend_cloud_uri_schemes_for_oss()
+            # Re-bind into the converter module: it imported the originals at load
+            # time, so replacing the io module attributes alone leaves the
+            # converter calling the unpatched functions.
+            from label_studio_sdk.converter import converter as ls_conv_mod
+            from label_studio_sdk._extensions.label_studio_tools.core.utils import io as ls_io
 
-        ls_conv_mod.get_local_path = ls_io.get_local_path
-        ls_conv_mod.is_cloud_storage_uri = ls_io.is_cloud_storage_uri
+            ls_conv_mod.get_local_path = ls_io.get_local_path
+            ls_conv_mod.is_cloud_storage_uri = ls_io.is_cloud_storage_uri
+        except ImportError as e:
+            # zjh: never block startup if the SDK layout changes on upgrade —
+            # exports degrade to the pre-patch behavior instead.
+            from django.core.exceptions import AppRegistryNotReady
+
+            import logging
+
+            logging.getLogger(__name__).warning('OSS export compat patches skipped (SDK import moved): %s', e)
+        except Exception as e:
+            import logging
+
+            logging.getLogger(__name__).warning('OSS export compat patches failed: %s', e)
 
 
 def _patch_upload_url_unquote():

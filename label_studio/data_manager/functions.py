@@ -62,11 +62,7 @@ def get_all_columns(project, *_):
     # <PolygonLabels value="$objects"> registers 'objects': 'PolygonLabels').
     # Those are label definitions, not data fields — emitting them as data
     # columns produces ghost columns full of "{}". Only object tags are data.
-    object_tag_types = {
-        'Image', 'Audio', 'AudioPlus', 'Video', 'Text', 'HyperText',
-        'TimeSeries', 'Paragraphs', 'PDF', 'Pdf', 'RichText', 'Table',
-        'List', 'PagedView',
-    }
+    from core.label_config import OBJECT_TAG_DATA_TYPES as object_tag_types
     for key, value in project.data_types.items():
         # skip keys from Repeater tag, because we already have its base data,
         # e.g.: skip 'image[{{idx}}]' because we have 'image' list already

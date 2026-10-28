@@ -30,9 +30,6 @@ const DropdownWrapper = observer(({ column, cellViews, children, onChange, disab
   const types = ViewColumnType._types
     .map((t) => t.value)
     .filter((t) => {
-      // zjh: not real display choices — Unknown only exists as a str-fallback
-      // (duplicate "字符串" entry) and GroundTruth is the review-verdict column.
-      if (t === "Unknown" || t === "GroundTruth") return false;
       const cellView = cellViews[t];
 
       const selectable = cellView?.userSelectable !== false;
@@ -61,7 +58,7 @@ const DropdownWrapper = observer(({ column, cellViews, children, onChange, disab
         >
           {/* zjh: reset entry — clears the manual display-type override */}
           {column.currentType !== column.type && (
-            <Menu.Item key="auto" onClick={() => onChange?.(column, column.type)}>
+            <Menu.Item key="auto" onClick={() => onChange?.(column, null)}>
               <Space>
                 <Badge size="small">{ViewColumnTypeShort(column.type)}</Badge>
                 {t("Auto")}

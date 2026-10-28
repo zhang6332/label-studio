@@ -467,6 +467,15 @@ def config_essential_data_has_changed(new_config_str, old_config_str):
             return True
 
 
+# zjh: object tags whose value IS a data field (vs control tags whose value=
+# references one). Single source of truth for backend type sniffing/renames —
+# keep in sync with web/libs/editor/src/tags/object/.
+OBJECT_TAG_DATA_TYPES = frozenset({
+    'Image', 'Text', 'Audio', 'Video', 'HyperText', 'TimeSeries',
+    'Paragraphs', 'PDF', 'Pdf', 'RichText', 'Table', 'List',
+    'PagedView', 'Chat',
+})
+
 def replace_task_data_undefined_with_config_field(data, project, first_key=None):
     """Use first key is passed (for speed up) or project.data.types.keys()[0]"""
     # assign undefined key name from data to the first key from config, e.g. for txt loading
@@ -477,15 +486,8 @@ def replace_task_data_undefined_with_config_field(data, project, first_key=None)
         # and blind first-key selection renames the media URI into a label-values
         # field — breaking image display (inventory-tracking template hit this).
         if first_key is None:
-            # Object tags per the editor registry (editor/src/tags/object):
-            # Image, Text, Audio, Video, HyperText, TimeSeries, Paragraphs, PDF,
-            # RichText, Table, List, PagedView.
-            object_types = {
-                'Image', 'Text', 'Audio', 'Video', 'HyperText', 'TimeSeries',
-                'Paragraphs', 'PDF', 'Pdf', 'RichText', 'Table', 'List', 'PagedView',
-            }
             for data_key, tag_type in project.data_types.items():
-                if tag_type in object_types:
+                if tag_type in OBJECT_TAG_DATA_TYPES:
                     key = data_key
                     break
         data[key] = data[settings.DATA_UNDEFINED_NAME]
