@@ -19,11 +19,10 @@ except Exception:
 
 
 def _load_manifest_if_stale():
-    # zjh: In DEBUG the frontend is rebuilt frequently; re-read manifest.json when
-    # its mtime changes so a Django restart isn't needed after every build.
-    # Production reads once at import (previous behavior).
-    if not settings.DEBUG:
-        return
+    # zjh: re-read manifest.json whenever its mtime changes so a Django restart
+    # isn't needed after a frontend build — in any environment. The mtime guard
+    # makes this a single stat() per rendered asset; in production the manifest
+    # never changes so the file is effectively read once (previous behavior).
     global _MANIFEST, _MANIFEST_MTIME
     manifest_path = Path(settings.STATIC_ROOT) / 'js/manifest.json'
     try:
